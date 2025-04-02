@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
 import os
 from dotenv import load_dotenv
+import sys
+
+# Add the parent directory to the sys.path to find recommender.py
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from recommender import CityRecommender  # Import your class
 
 load_dotenv()
 
@@ -18,26 +20,9 @@ CORS(app, resources={
     }
 })
 
-# Load and preprocess your dataset
-# Replace this with your actual dataset loading logic
-def load_dataset():
-    # This is a placeholder. Replace with your actual dataset loading
-    data = {
-        'destination': ['Paris', 'London', 'Tokyo', 'New York', 'Barcelona'],
-        'cost': [1000, 800, 1200, 1100, 900],
-        'eco_friendly_score': [8, 7, 6, 5, 9],
-        'popularity': [9, 8, 9, 8, 7],
-        'cultural_score': [9, 8, 9, 8, 9],
-    }
-    return pd.DataFrame(data)
-
-# Initialize the dataset
-df = load_dataset()
-scaler = StandardScaler()
-
-# Preprocess the numerical columns
-numerical_cols = ['cost', 'eco_friendly_score', 'popularity', 'cultural_score']
-df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
+# Initialize the recommender
+DATASET_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'okok.csv')
+recommender = CityRecommender(csv_path=DATASET_PATH)
 
 @app.route('/api/recommendations/test', methods=['GET'])
 def test():
@@ -47,49 +32,44 @@ def test():
 def get_recommendations():
     try:
         data = request.get_json()
-        preferences = {
-            'budget': data.get('budget', 5),  # Scale of 1-10
-            'eco_friendly': data.get('eco_friendly', 5),
-            'popularity': data.get('popularity', 5),
-            'cultural': data.get('cultural', 5)
-        }
+        if not data:
+            return jsonify({"error": "Missing JSON payload"}), 400
+        
+        # Get preferences from the request
+        season = data.get('season')
+        climate = data.get('climate')
+        budget = data.get('budget')
+        pop_weight = data.get('popularity_weight', 0.85) # Default weights
+        eco_weight = data.get('eco_weight', 0.15)
 
-        # Create user preference vector
-        user_preferences = np.array([
-            preferences['budget'],
-            preferences['eco_friendly'],
-            preferences['popularity'],
-            preferences['cultural']
-        ]).reshape(1, -1)
+        if not all([season, climate, budget]):
+            return jsonify({"error": "Missing required preferences: season, climate, budget"}), 400
+        
+        # Update weights if provided
+        recommender.update_weights(pop_weight, eco_weight)
 
-        # Scale user preferences
-        user_preferences_scaled = scaler.transform(user_preferences)
+        # Get recommendations
+        recs_df, message = recommender.recommend(
+            season=season,
+            climate=climate,
+            budget=budget,
+            num_recs=10, # Or get from request?
+            metric="cosine" # Or get from request?
+        )
 
-        # Calculate similarity scores
-        similarity_scores = cosine_similarity(
-            df[numerical_cols],
-            user_preferences_scaled
-        ).flatten()
+        if recs_df is None:
+            return jsonify({'recommendations': [], 'message': message})
 
-        # Get top 3 recommendations
-        top_indices = similarity_scores.argsort()[-3:][::-1]
-        recommendations = []
-
-        for idx in top_indices:
-            recommendations.append({
-                'destination': df.iloc[idx]['destination'],
-                'similarity_score': float(similarity_scores[idx]),
-                'eco_friendly_score': float(df.iloc[idx]['eco_friendly_score']),
-                'cost_score': float(df.iloc[idx]['cost']),
-                'cultural_score': float(df.iloc[idx]['cultural_score']),
-                'popularity_score': float(df.iloc[idx]['popularity'])
-            })
+        # Convert DataFrame to JSON serializable format
+        recommendations_list = recs_df.to_dict(orient='records')
 
         return jsonify({
-            'recommendations': recommendations
+            'recommendations': recommendations_list,
+            'message': message
         })
 
     except Exception as e:
+        app.logger.error(f"Error generating recommendations: {e}", exc_info=True)
         return jsonify({
             'error': str(e),
             'message': 'Error generating recommendations'

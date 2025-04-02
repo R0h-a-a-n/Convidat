@@ -1,0 +1,501 @@
+Global Ranking,City,COUNTRY,popularity_score,eco_score,season,preferred_climate,budget
+1,Tokyo,Japan,0.99,0.5,spring,moderate,high
+2,Boston,United States,0.99,0.5,fall,moderate,high
+3,New York,United States,0.99,0.5,fall,moderate,high
+4,Sydney,Australia,0.99,0.5,spring,moderate,high
+5,Singapore,Singapore,0.99,0.9,summer,tropical,high
+6,Dallas-Fort Worth,United States,0.99,0.5,fall,warm,medium
+7,Seoul,South Korea,0.99,0.5,fall,moderate,high
+8,Houston,United States,0.98,0.5,fall,warm,medium
+9,Chicago,United States,0.98,0.5,summer,moderate,high
+10,Paris,France,0.98,0.5,spring,moderate,high
+11,London,United Kingdom,0.98,0.5,spring,moderate,high
+12,San Francisco - San Jose,United States,0.98,0.5,fall,moderate,high
+13,Atlanta,United States,0.97,0.5,spring,warm,medium
+14,Seattle,United States,0.97,0.5,summer,moderate,high
+15,Shanghai,China,0.97,0.5,spring,moderate,medium
+16,Stockholm,Sweden,0.97,0.9,summer,moderate,high
+17,Miami,United States,0.97,0.5,winter,tropical,high
+18,Washington DC,United States,0.96,0.5,fall,moderate,high
+19,Beijing,China,0.96,0.5,fall,moderate,medium
+20,Los Angeles,United States,0.96,0.5,fall,moderate,high
+21,Austin,United States,0.96,0.5,fall,warm,medium
+22,Vienna,Austria,0.96,0.5,spring,moderate,high
+23,Taipei,Taiwan,0.95,0.5,spring,tropical,medium
+24,Amsterdam,Netherlands,0.95,0.9,spring,moderate,high
+25,Oslo,Norway,0.95,0.9,summer,moderate,high
+26,Shenzhen,China,0.95,0.5,spring,tropical,medium
+27,Las Vegas,United States,0.95,0.2,fall,dry,medium
+28,Denver,United States,0.94,0.5,summer,moderate,medium
+29,Dubai,United Arab Emirates,0.94,0.5,winter,dry,high
+30,Osaka,Japan,0.94,0.5,spring,moderate,high
+31,Berlin,Germany,0.94,0.5,spring,moderate,high
+32,Istanbul,Turkey,0.94,0.5,spring,moderate,medium
+33,Melbourne,Australia,0.93,0.5,spring,moderate,high
+34,Moscow,Russia,0.93,0.5,summer,moderate,medium
+35,Philadelphia,United States,0.93,0.5,fall,moderate,high
+36,Portland,United States,0.93,0.9,summer,moderate,high
+37,Minneapolis-St Paul,United States,0.93,0.5,summer,moderate,medium
+38,Nashville,United States,0.92,0.5,spring,warm,medium
+39,Munich,Germany,0.92,0.9,summer,moderate,high
+40,Madrid,Spain,0.92,0.5,spring,dry,high
+41,Helsinki,Finland,0.92,0.5,summer,moderate,high
+42,Brisbane,Australia,0.92,0.5,spring,tropical,high
+43,Toronto,Canada,0.91,0.5,summer,moderate,high
+44,Phoenix,United States,0.91,0.5,winter,dry,medium
+45,San Diego,United States,0.91,0.5,fall,moderate,high
+46,Charlotte,United States,0.91,0.5,spring,warm,medium
+47,Kansas City,United States,0.91,0.5,spring,moderate,medium
+48,San Antonio,United States,0.90,0.5,fall,warm,medium
+49,Hong Kong,China,0.90,0.5,fall,tropical,high
+50,Detroit,United States,0.90,0.5,summer,moderate,medium
+51,Guangzhou,China,0.90,0.5,fall,tropical,medium
+52,Barcelona,Spain,0.90,0.9,spring,moderate,high
+53,Montréal,Canada,0.89,0.5,summer,moderate,high
+54,Copenhagen,Denmark,0.89,0.9,summer,moderate,high
+55,Baltimore,United States,0.89,0.5,fall,moderate,high
+56,Boulder,United States,0.89,0.5,summer,moderate,medium
+57,Fort Lauderdale,United States,0.89,0.5,winter,tropical,medium
+58,Des Moines,United States,0.88,0.5,summer,moderate,medium
+59,Lexington,United States,0.88,0.5,spring,moderate,medium
+60,Charleston,United States,0.88,0.5,spring,warm,medium
+61,Springfield,United States,0.88,0.5,spring,moderate,medium
+62,Orlando,United States,0.88,0.5,winter,tropical,medium
+63,Milan,Italy,0.87,0.5,spring,moderate,high
+64,Kyoto,Japan,0.87,0.5,spring,moderate,high
+65,Oakland,United States,0.87,0.5,fall,moderate,high
+66,Pittsburgh,United States,0.87,0.5,summer,moderate,medium
+67,Salt Lake City,United States,0.87,0.5,summer,moderate,medium
+68,St Louis,United States,0.86,0.5,spring,moderate,medium
+69,Indianapolis,United States,0.86,0.5,spring,moderate,medium
+70,Zürich,Switzerland,0.86,0.5,summer,moderate,high
+71,Albuquerque,United States,0.86,0.5,fall,dry,medium
+72,Providence,United States,0.86,0.5,fall,moderate,high
+73,Oklahoma City,United States,0.85,0.5,spring,warm,medium
+74,Perth,Australia,0.85,0.5,spring,moderate,high
+75,Newark,United States,0.85,0.5,fall,moderate,high
+76,Nagoya,Japan,0.85,0.5,spring,moderate,high
+77,Savannah,United States,0.85,0.5,spring,warm,medium
+78,Richmond,United States,0.84,0.5,spring,moderate,medium
+79,Tulsa,United States,0.84,0.5,spring,warm,medium
+80,Honolulu,United States,0.84,0.5,winter,tropical,high
+81,Louisville,United States,0.84,0.5,spring,moderate,medium
+82,Little Rock,United States,0.84,0.5,spring,warm,medium
+83,Santa Ana-Anaheim,United States,0.83,0.5,fall,moderate,high
+84,Augusta,United States,0.83,0.5,spring,warm,medium
+85,Canberra,Australia,0.83,0.5,spring,moderate,high
+86,Omaha,United States,0.83,0.5,summer,moderate,medium
+87,Norfolk-Virginia Beach,United States,0.83,0.5,spring,moderate,medium
+88,Chattanooga,United States,0.82,0.5,spring,warm,medium
+89,Anchorage,United States,0.82,0.5,summer,cool,medium
+90,Hamburg,Germany,0.82,0.5,spring,moderate,high
+91,Tel Aviv,Israel,0.82,0.5,spring,dry,high
+92,Dublin,Ireland,0.82,0.5,spring,moderate,high
+93,Rome,Italy,0.81,0.5,spring,moderate,high
+94,Rotterdam,Netherlands,0.81,0.5,spring,moderate,high
+95,Abu Dhabi,United Arab Emirates,0.81,0.5,winter,dry,high
+96,Busan,South Korea,0.81,0.5,spring,moderate,medium
+97,Budapest,Hungary,0.81,0.5,spring,moderate,medium
+98,Wellington,New Zealand,0.80,0.9,spring,moderate,high
+99,Tallahassee,United States,0.80,0.5,spring,warm,medium
+100,Adelaide,Australia,0.80,0.5,spring,moderate,high
+101,Milwaukee,United States,0.80,0.5,summer,moderate,medium
+102,Cedar Rapids,United States,0.80,0.5,summer,moderate,medium
+103,Jacksonville,United States,0.79,0.5,spring,tropical,medium
+104,New Orleans,United States,0.79,0.5,spring,tropical,medium
+105,Rio De Janeiro,Brazil,0.79,0.5,winter,tropical,medium
+106,Fukuoka,Japan,0.79,0.5,spring,moderate,medium
+107,Cleveland,United States,0.79,0.5,summer,moderate,medium
+108,Gothenburg,Sweden,0.78,0.5,summer,moderate,high
+109,Birmingham,United States,0.78,0.5,spring,moderate,medium
+110,Tucson,United States,0.78,0.5,fall,dry,medium
+111,Greensboro,United States,0.78,0.5,spring,moderate,medium
+112,Columbia,United States,0.78,0.5,spring,warm,medium
+113,Tallinn,Estonia,0.77,0.5,summer,moderate,medium
+114,Cincinnati,United States,0.77,0.5,spring,moderate,medium
+115,Knoxville,United States,0.77,0.5,spring,warm,medium
+116,Portland,United States,0.77,0.9,summer,moderate,high
+117,Yokohama,Japan,0.77,0.5,spring,moderate,high
+118,Montgomery,United States,0.76,0.5,spring,warm,medium
+119,Jackson,United States,0.76,0.5,spring,warm,medium
+120,Winston-Salem,United States,0.76,0.5,spring,moderate,medium
+121,St Petersburg,Russia,0.76,0.5,summer,moderate,medium
+122,Christchurch,New Zealand,0.76,0.5,spring,moderate,high
+123,Warsaw,Poland,0.75,0.5,spring,moderate,medium
+124,Frankfurt,Germany,0.75,0.5,spring,moderate,high
+125,Prague,Czech Republic,0.75,0.5,spring,moderate,high
+126,Brussels,Belgium,0.75,0.5,spring,moderate,high
+127,Raleigh-Durham,United States,0.75,0.5,spring,warm,medium
+128,Malmö,Sweden,0.74,0.5,summer,moderate,high
+129,Boise,United States,0.74,0.5,summer,moderate,medium
+130,Stuttgart,Germany,0.74,0.5,spring,moderate,high
+131,Sapporo,Japan,0.74,0.5,spring,cool,medium
+132,The Hague,Netherlands,0.74,0.5,spring,moderate,high
+133,Ulsan,South Korea,0.73,0.5,spring,moderate,medium
+134,São Paulo,Brazil,0.73,0.5,winter,tropical,medium
+135,Memphis,United States,0.73,0.5,spring,warm,medium
+136,Vancouver,Canada,0.73,0.9,summer,moderate,high
+137,Baton Rouge,United States,0.73,0.5,spring,tropical,medium
+138,Columbus,United States,0.72,0.5,spring,moderate,medium
+139,Ann Arbor,United States,0.72,0.5,summer,moderate,medium
+140,Colorado Springs,United States,0.72,0.5,summer,moderate,medium
+141,Corpus Christi,United States,0.72,0.5,spring,warm,medium
+142,Dayton,United States,0.72,0.5,summer,moderate,medium
+143,Grand Rapids,United States,0.71,0.5,summer,moderate,medium
+144,Tampa,United States,0.71,0.5,winter,tropical,medium
+145,Wichita,United States,0.71,0.5,spring,warm,medium
+146,Toledo,United States,0.71,0.5,summer,moderate,medium
+147,Akron,United States,0.71,0.5,summer,moderate,medium
+148,Madison,United States,0.70,0.5,summer,moderate,medium
+149,Reno,United States,0.70,0.5,summer,dry,medium
+150,Sacramento,United States,0.70,0.5,fall,moderate,high
+151,Ningbo,China,0.70,0.5,spring,moderate,medium
+152,Lincoln,United States,0.70,0.5,summer,moderate,medium
+153,El Paso,United States,0.69,0.5,fall,dry,medium
+154,Bozeman,United States,0.69,0.5,summer,moderate,medium
+155,Riverside,United States,0.69,0.5,fall,dry,medium
+156,Düsseldorf,Germany,0.69,0.5,spring,moderate,high
+157,Reykjavik,Iceland,0.69,0.9,summer,cool,high
+158,Lisbon,Portugal,0.68,0.5,spring,moderate,high
+159,Auckland,New Zealand,0.68,0.5,spring,moderate,high
+160,Gold Coast,Australia,0.68,0.5,spring,tropical,high
+161,Mexico City,Mexico,0.68,0.5,spring,moderate,medium
+162,Daegu,South Korea,0.68,0.5,spring,moderate,medium
+163,Buffalo,United States,0.67,0.5,summer,moderate,medium
+164,Basel,Switzerland,0.67,0.5,summer,moderate,high
+165,Albany,United States,0.67,0.5,summer,moderate,medium
+166,Allentown,United States,0.67,0.5,summer,moderate,medium
+167,Luxembourg,Luxembourg,0.67,0.5,spring,moderate,high
+168,Incheon,South Korea,0.66,0.5,spring,moderate,medium
+169,Rochester,United States,0.66,0.5,summer,moderate,medium
+170,Manchester,United States,0.66,0.5,summer,moderate,medium
+171,Buenos Aires,Argentina,0.66,0.5,spring,moderate,medium
+172,Bangkok,Thailand,0.66,0.2,winter,tropical,low
+173,Spokane,United States,0.65,0.5,summer,moderate,medium
+174,Daejeon,South Korea,0.65,0.5,spring,moderate,medium
+175,Green Bay,United States,0.65,0.5,summer,moderate,medium
+176,Chongqing,China,0.65,0.5,spring,moderate,medium
+177,Tianjin,China,0.65,0.5,spring,moderate,medium
+178,Suzhou,China,0.64,0.5,spring,moderate,medium
+179,Hiroshima,Japan,0.64,0.5,spring,moderate,medium
+180,Greenville,United States,0.64,0.5,spring,warm,medium
+181,Ankara,Turkey,0.64,0.5,spring,moderate,medium
+182,Nanjing,China,0.64,0.5,spring,moderate,medium
+183,Chengdu,China,0.63,0.5,spring,moderate,medium
+184,Springfield,United States,0.63,0.5,spring,moderate,medium
+185,Charlottesville,United States,0.63,0.5,spring,moderate,medium
+186,Kaohsiung,Taiwan,0.63,0.5,spring,tropical,medium
+187,Fargo,United States,0.63,0.5,summer,moderate,medium
+188,Hangzhou,China,0.62,0.5,spring,moderate,medium
+189,Izmir,Turkey,0.62,0.5,spring,moderate,medium
+190,Tainan,Taiwan,0.62,0.5,spring,tropical,medium
+191,Sioux Falls,United States,0.62,0.5,summer,moderate,medium
+192,Roanoke,United States,0.62,0.5,spring,moderate,medium
+193,Xiamen,China,0.61,0.5,spring,tropical,medium
+194,Rochester,United States,0.61,0.5,summer,moderate,medium
+195,Wuxi,China,0.61,0.5,spring,moderate,medium
+196,Nagasaki,Japan,0.61,0.5,spring,moderate,medium
+197,Québec,Canada,0.61,0.5,summer,moderate,medium
+198,Valencia,Spain,0.60,0.5,spring,moderate,high
+199,Geneva,Switzerland,0.60,0.5,summer,moderate,high
+200,Manchester,United Kingdom,0.60,0.5,spring,moderate,high
+201,Bucharest,Romania,0.60,0.5,spring,moderate,medium
+202,Kawasaki,Japan,0.60,0.5,spring,moderate,high
+203,Salzburg,Austria,0.59,0.5,summer,moderate,high
+204,Ottawa,Canada,0.59,0.5,summer,moderate,high
+205,Leipzig,Germany,0.59,0.5,spring,moderate,high
+206,Santiago,Chile,0.59,0.5,spring,moderate,medium
+207,Wilmington,United States,0.59,0.5,spring,moderate,medium
+208,Cairo,Egypt,0.58,0.5,winter,dry,medium
+209,Eindhoven,Netherlands,0.58,0.5,spring,moderate,high
+210,Kagoshima,Japan,0.58,0.5,spring,moderate,medium
+211,Fuji,Japan,0.58,0.5,spring,moderate,medium
+212,Newcastle,Australia,0.58,0.5,spring,moderate,high
+213,Utrecht,Netherlands,0.57,0.5,spring,moderate,high
+214,Xi'an,China,0.57,0.5,spring,moderate,medium
+215,Bern,Switzerland,0.57,0.5,summer,moderate,high
+216,Hartford,United States,0.57,0.5,fall,moderate,medium
+217,Wenzhou,China,0.57,0.5,spring,moderate,medium
+218,Syracuse,United States,0.56,0.5,summer,moderate,medium
+219,Fuzhou,China,0.56,0.5,spring,moderate,medium
+220,Ventura-Oxnard,United States,0.56,0.5,fall,moderate,high
+221,Oporto,Portugal,0.56,0.5,spring,moderate,medium
+222,Calgary,Canada,0.56,0.5,summer,moderate,medium
+223,Kuala Lumpur,Malaysia,0.55,0.5,winter,tropical,low
+224,Athens,Greece,0.55,0.5,spring,dry,medium
+225,Riga,Latvia,0.55,0.5,summer,moderate,medium
+226,Edinburgh,United Kingdom,0.55,0.5,spring,moderate,high
+227,Lyon,France,0.55,0.5,spring,moderate,high
+228,Hannover,Germany,0.54,0.5,spring,moderate,high
+229,Dongguan,China,0.54,0.5,spring,tropical,medium
+230,Wrocław,Poland,0.54,0.5,spring,moderate,medium
+231,Birmingham,United Kingdom,0.54,0.5,spring,moderate,high
+232,Bremen,Germany,0.54,0.5,spring,moderate,high
+233,Wollongong,Australia,0.53,0.5,spring,moderate,high
+234,Essen,Germany,0.53,0.5,spring,moderate,high
+235,Suwon,South Korea,0.53,0.5,spring,moderate,medium
+236,Cologne,Germany,0.53,0.5,spring,moderate,high
+237,Taichung,Taiwan,0.53,0.5,spring,tropical,medium
+238,Duisburg,Germany,0.52,0.5,spring,moderate,high
+239,Ho Chi Minh City,Vietnam,0.52,0.5,winter,tropical,low
+240,Karlsruhe,Germany,0.52,0.5,spring,moderate,high
+241,Sharjah,United Arab Emirates,0.52,0.5,winter,dry,high
+242,Nanning,China,0.52,0.5,spring,tropical,medium
+243,Burlington,United States,0.51,0.5,summer,moderate,medium
+244,Nantong,China,0.51,0.5,spring,moderate,medium
+245,Taiyuan,China,0.51,0.5,spring,moderate,medium
+246,Lancaster,United States,0.51,0.5,fall,moderate,medium
+247,Quanzhou,China,0.51,0.5,spring,tropical,medium
+248,Dalian,China,0.50,0.5,spring,moderate,medium
+249,Bridgeport,United States,0.50,0.5,fall,moderate,medium
+250,Qingdao,China,0.50,0.5,spring,moderate,medium
+251,Brasilia,Brazil,0.50,0.5,winter,tropical,medium
+252,Shenyang,China,0.50,0.5,spring,moderate,medium
+253,Florence,Italy,0.49,0.5,spring,moderate,high
+254,Hobart,Australia,0.49,0.5,spring,moderate,high
+255,Bilbao,Spain,0.49,0.5,spring,moderate,medium
+256,Napoli (Naples),Italy,0.49,0.5,spring,moderate,high
+257,Glasgow,United Kingdom,0.49,0.5,spring,moderate,high
+258,Belfast,United Kingdom,0.48,0.5,spring,moderate,high
+259,Dortmund,Germany,0.48,0.5,spring,moderate,high
+260,Queenstown,New Zealand,0.48,0.5,spring,moderate,high
+261,Mumbai,India,0.48,0.5,winter,tropical,low
+262,Graz,Austria,0.48,0.5,summer,moderate,high
+263,Antwerp,Belgium,0.47,0.5,spring,moderate,high
+264,Liverpool,United Kingdom,0.47,0.5,spring,moderate,high
+265,Jakarta,Indonesia,0.47,0.5,winter,tropical,low
+266,Kraków,Poland,0.47,0.5,spring,moderate,medium
+267,Nottingham,United Kingdom,0.47,0.5,spring,moderate,high
+268,Kiel,Germany,0.46,0.5,summer,moderate,high
+269,Bristol,United Kingdom,0.46,0.5,spring,moderate,high
+270,Sheffield,United Kingdom,0.46,0.5,spring,moderate,high
+271,Hamilton,Canada,0.46,0.5,summer,moderate,medium
+272,Alexandria,Egypt,0.46,0.5,winter,dry,medium
+273,Billings,United States,0.45,0.5,summer,moderate,medium
+274,Gdansk,Poland,0.45,0.5,summer,moderate,medium
+275,Bonn,Germany,0.45,0.5,spring,moderate,high
+276,Hanoi,Vietnam,0.45,0.5,winter,tropical,low
+277,Newcastle-upon-Tyne,United Kingdom,0.45,0.5,spring,moderate,high
+278,Katowice,Poland,0.44,0.5,spring,moderate,medium
+279,Yangzhou,China,0.44,0.5,spring,moderate,medium
+280,Belo Horizonte,Brazil,0.44,0.5,winter,tropical,medium
+281,Nanchang,China,0.44,0.5,spring,moderate,medium
+282,Springfield,United States,0.44,0.5,spring,moderate,medium
+283,Kunming,China,0.43,0.5,spring,moderate,medium
+284,Fresno,United States,0.43,0.5,fall,dry,medium
+285,Harbin,China,0.43,0.5,summer,cool,medium
+286,Bakersfield,United States,0.43,0.5,fall,dry,medium
+287,Macau,China,0.43,0.2,fall,tropical,low
+288,Zhongshan,China,0.42,0.5,spring,tropical,medium
+289,Cheyenne,United States,0.42,0.5,spring,tropical,medium
+290,Foshan,China,0.420,0.5,spring,tropical,medium
+291,Edmonton,Canada,0.418,0.5,summer,moderate,medium
+292,Dresden,Germany,0.416,0.5,spring,moderate,high
+293,Bogotá,Colombia,0.414,0.5,spring,moderate,medium
+294,Bangalore,India,0.412,0.5,winter,moderate,low
+295,Seville,Spain,0.410,0.5,spring,dry,medium
+296,Nuremberg,Germany,0.408,0.5,spring,moderate,high
+297,Moncton,Canada,0.406,0.5,summer,moderate,medium
+298,Gijón,Spain,0.404,0.5,spring,moderate,medium
+299,Ljubljana,Slovenia,0.402,0.9,spring,moderate,medium
+300,Mannheim-Heidelberg,Germany,0.400,0.5,spring,moderate,high
+301,Málaga,Spain,0.398,0.5,spring,dry,medium
+302,Pamplona,Spain,0.396,0.5,spring,moderate,medium
+303,Curitiba,Brazil,0.394,0.5,winter,moderate,medium
+304,"Bursa, Turkey",Turkey,0.392,0.5,spring,moderate,medium
+305,Winnipeg,Canada,0.390,0.5,summer,moderate,medium
+306,Bochum,Germany,0.388,0.5,spring,moderate,high
+307,Porto Alegre,Brazil,0.386,0.5,winter,moderate,medium
+308,Nice,France,0.384,0.5,spring,moderate,high
+309,Aachen,Germany,0.382,0.5,spring,moderate,high
+310,Sofia,Bulgaria,0.380,0.5,spring,moderate,medium
+311,Nantes,France,0.378,0.5,spring,moderate,medium
+312,Leeds,United Kingdom,0.376,0.5,spring,moderate,high
+313,Marseille,France,0.374,0.5,spring,moderate,high
+314,Cardiff,United Kingdom,0.372,0.5,spring,moderate,high
+315,Linz,Austria,0.370,0.5,summer,moderate,high
+316,London,Canada,0.368,0.5,summer,moderate,medium
+317,Wuppertal,Germany,0.366,0.5,spring,moderate,high
+318,Odense,Denmark,0.364,0.5,summer,moderate,high
+319,Manila,Philippines,0.362,0.5,winter,tropical,low
+320,Salvador,Brazil,0.360,0.5,winter,tropical,medium
+321,Lucerne,Switzerland,0.358,0.5,summer,moderate,high
+322,Geelong,Australia,0.356,0.5,spring,moderate,high
+323,Fredericton - St John,Canada,0.354,0.5,summer,moderate,medium
+324,Zhuhai,China,0.352,0.5,spring,tropical,medium
+325,Modesto,United States,0.350,0.5,fall,dry,medium
+326,"Changchun, Jilin",China,0.348,0.5,spring,moderate,medium
+327,Hefei,China,0.346,0.5,spring,moderate,medium
+328,Jinan,China,0.344,0.5,spring,moderate,medium
+329,Stockton,United States,0.342,0.5,fall,dry,medium
+330,Yantai-Weihai,China,0.340,0.5,spring,moderate,medium
+331,Zhengzhou,China,0.338,0.5,spring,moderate,medium
+332,Belgrade,Serbia,0.336,0.5,spring,moderate,medium
+333,Medellin,Colombia,0.334,0.5,spring,moderate,medium
+334,Cape Town,South Africa,0.332,0.9,spring,moderate,medium
+335,Vilnius,Lithuania,0.330,0.5,summer,moderate,medium
+336,Timisoara,Romania,0.328,0.5,spring,moderate,medium
+337,Toulouse,France,0.326,0.5,spring,moderate,medium
+338,Bratislava,Slovakia,0.324,0.5,spring,moderate,medium
+339,Adana,Turkey,0.322,0.5,spring,moderate,medium
+340,Venice,Italy,0.320,0.5,spring,moderate,high
+341,Torino,Italy,0.318,0.5,spring,moderate,high
+342,Bordeaux,France,0.316,0.5,spring,moderate,medium
+343,Antalya,Turkey,0.314,0.5,spring,dry,medium
+344,Delhi,India,0.312,0.5,winter,moderate,low
+345,Gent,Belgium,0.310,0.5,spring,moderate,medium
+346,Padova,Italy,0.308,0.5,spring,moderate,medium
+347,Karachi,Pakistan,0.306,0.5,winter,dry,low
+348,Guatemala City,Guatemala,0.304,0.5,spring,tropical,medium
+349,Colombo,Sri Lanka,0.302,0.5,winter,tropical,low
+350,Recife,Brazil,0.300,0.5,winter,tropical,medium
+351,Kuwait City,Kuwait,0.298,0.5,winter,dry,high
+352,Southampton,United Kingdom,0.296,0.5,spring,moderate,medium
+353,Kitchener,Canada,0.294,0.5,summer,moderate,medium
+354,Lille,France,0.292,0.5,spring,moderate,medium
+355,Coventry,United Kingdom,0.290,0.5,spring,moderate,high
+356,Granada,Spain,0.288,0.5,spring,dry,medium
+357,Shantou,China,0.286,0.5,spring,tropical,medium
+358,Wuhan,China,0.284,0.5,spring,moderate,medium
+359,Kiev,Ukraine,0.282,0.5,spring,moderate,medium
+360,Grenoble,France,0.280,0.5,spring,moderate,medium
+361,Modena,Italy,0.278,0.5,spring,moderate,medium
+362,Strasbourg,France,0.276,0.5,spring,moderate,medium
+363,Liège,Belgium,0.274,0.5,spring,moderate,medium
+364,Rennes,France,0.272,0.5,spring,moderate,medium
+365,Verona,Italy,0.270,0.5,spring,moderate,medium
+366,Kazan,Russia,0.268,0.5,summer,moderate,medium
+367,Bath & NE Somerset,United Kingdom,0.266,0.5,spring,moderate,high
+368,Halifax,Canada,0.264,0.5,summer,moderate,medium
+369,Riyadh,Saudi Arabia,0.262,0.5,winter,dry,high
+370,Trieste,Italy,0.260,0.5,spring,moderate,medium
+371,Haifa,Israel,0.258,0.5,spring,dry,medium
+372,Johannesburg,South Africa,0.256,0.5,spring,moderate,medium
+373,Monterrey,Mexico,0.254,0.5,spring,dry,medium
+374,Kingston-Upon-Hull,United Kingdom,0.252,0.5,spring,moderate,high
+375,Brno,Czech Republic,0.250,0.5,spring,moderate,medium
+376,Le Havre,France,0.248,0.5,spring,moderate,medium
+377,Tbilisi,Georgia,0.246,0.5,spring,moderate,medium
+378,Ulaanbaatar,Mongolia,0.244,0.5,summer,dry,low
+379,Al-Ain,United Arab Emirates,0.242,0.5,winter,dry,high
+380,Guadalajara,Mexico,0.240,0.5,spring,moderate,medium
+381,Fortaleza,Brazil,0.238,0.5,winter,tropical,medium
+382,Zagreb,Croatia,0.236,0.5,spring,moderate,medium
+383,Thessaloniki,Greece,0.234,0.5,spring,dry,medium
+384,Montpellier,France,0.232,0.5,spring,moderate,medium
+385,Yekaterinburg,Russia,0.230,0.5,summer,moderate,medium
+386,Kosice,Slovakia,0.228,0.5,spring,moderate,medium
+387,Jerusalem,Israel,0.226,0.5,spring,dry,medium
+388,Bologna,Italy,0.224,0.5,spring,moderate,medium
+389,Dijon,France,0.222,0.5,spring,moderate,medium
+390,Chennai,India,0.220,0.5,winter,tropical,low
+391,Lima,Peru,0.218,0.5,spring,dry,medium
+392,Parma,Italy,0.216,0.5,spring,moderate,medium
+393,Ballarat,Australia,0.214,0.5,spring,moderate,medium
+394,Reims,France,0.212,0.5,spring,moderate,medium
+395,Hyderabad,India,0.210,0.5,winter,moderate,low
+396,Rouen,France,0.208,0.5,spring,moderate,medium
+397,"San Jose, Costa Rica",Costa Rica,0.206,0.5,spring,tropical,medium
+398,Bendigo,Australia,0.204,0.5,spring,moderate,medium
+399,Saint-Étienne,France,0.202,0.5,spring,moderate,medium
+400,Leuven,Belgium,0.200,0.5,spring,moderate,medium
+401,Volgograd,Russia,0.198,0.5,summer,moderate,medium
+402,Jeddah,Saudi Arabia,0.196,0.5,winter,dry,high
+403,Lahore,Pakistan,0.194,0.5,winter,dry,low
+404,Kaliningrad,Russia,0.192,0.5,summer,moderate,medium
+405,Minsk,Belarus,0.190,0.5,summer,moderate,medium
+406,Novosibirsk,Russia,0.188,0.5,summer,moderate,medium
+407,Yangon,Burma,0.186,0.5,winter,tropical,low
+408,"Phnom Penh, Cam",Cambodia,0.184,0.5,winter,tropical,low
+409,Doha,Qatar,0.182,0.5,winter,dry,high
+410,Chisinau,Moldova,0.180,0.5,spring,moderate,medium
+411,Dubrovnik,Croatia,0.178,0.5,spring,moderate,medium
+412,Montevideo,Uruguay,0.176,0.5,spring,moderate,medium
+413,Almaty,Kazakhstan,0.174,0.5,summer,dry,low
+414,Nairobi,Kenya,0.172,0.5,spring,moderate,medium
+415,Muscat,Oman,0.170,0.5,winter,dry,high
+416,San Salvador,El Salvador,0.168,0.5,spring,tropical,medium
+417,Limoges,France,0.166,0.5,spring,moderate,medium
+418,Ajman,United Arab Emirates,0.164,0.5,winter,dry,high
+419,Skopje,Macedonia,0.162,0.5,spring,moderate,medium
+420,Quito,Ecuador,0.160,0.5,spring,moderate,medium
+421,Samara,Russia,0.158,0.5,summer,moderate,medium
+422,Sarajevo,Bosnia and Herzegovina,0.156,0.5,spring,moderate,medium
+423,Nizhny Novgorod,Russia,0.154,0.5,summer,moderate,medium
+424,Amman,Jordan,0.152,0.5,spring,dry,medium
+425,Rostov-na-Donu,Russia,0.150,0.5,summer,moderate,medium
+426,Valparaíso,Chile,0.148,0.5,spring,moderate,medium
+427,"Santo Domingo, DR",Dominican Republic,0.146,0.5,winter,tropical,medium
+428,Vladivostok,Russia,0.144,0.5,summer,moderate,medium
+429,Metz,France,0.142,0.5,spring,moderate,medium
+430,Cordoba,Argentina,0.140,0.5,spring,moderate,medium
+431,Kolkata,India,0.138,0.5,winter,tropical,low
+432,Guimaraes,Portugal,0.136,0.5,spring,moderate,medium
+433,Manama,Bahrain,0.134,0.5,winter,dry,high
+434,Ahmedabad,India,0.132,0.5,winter,dry,low
+435,Santa Cruz de Tenerife,Spain,0.130,0.5,spring,tropical,medium
+436,Pune,India,0.128,0.5,winter,moderate,low
+437,Krasnoyarsk,Russia,0.126,0.5,summer,moderate,medium
+438,Dar es Salaam,Tanzania,0.124,0.5,winter,tropical,low
+439,Omsk,Russia,0.122,0.5,summer,moderate,medium
+440,Caracas,Venezuela,0.120,0.5,spring,tropical,medium
+441,Cannes,France,0.118,0.5,spring,moderate,high
+442,Astana,Kazakhstan,0.116,0.5,summer,dry,low
+443,Durban,South Africa,0.114,0.5,winter,tropical,medium
+444,Kingston,Jamaica,0.112,0.5,winter,tropical,medium
+445,Tehran,Iran,0.110,0.5,spring,dry,low
+446,Guayaquil,Ecuador,0.108,0.5,spring,tropical,medium
+447,Casablanca,Morocco,0.106,0.5,spring,moderate,medium
+448,Saratov,Russia,0.104,0.5,summer,moderate,medium
+449,Dhaka,Bangladesh,0.102,0.5,winter,tropical,low
+450,Perm,Russia,0.100,0.5,summer,moderate,medium
+451,Puebla,Mexico,0.098,0.5,spring,moderate,medium
+452,Tomsk,Russia,0.096,0.5,summer,moderate,medium
+453,Panama City,Panama,0.094,0.5,winter,tropical,medium
+454,Orenburg,Russia,0.092,0.5,summer,moderate,medium
+455,Izhevsk,Russia,0.090,0.5,summer,moderate,medium
+456,Chittagong,Bangladesh,0.088,0.5,winter,tropical,low
+457,Baku,Azerbaijan,0.086,0.5,spring,dry,medium
+458,Beirut,Lebanon,0.084,0.5,spring,dry,medium
+459,Havana,Cuba,0.082,0.5,winter,tropical,medium
+460,Bishkek,Kyrgyzstan,0.080,0.5,summer,dry,low
+461,Pretoria,South Africa,0.078,0.5,spring,moderate,medium
+462,Odessa,Ukraine,0.076,0.5,spring,moderate,medium
+463,Cali,Colombia,0.074,0.5,spring,tropical,medium
+464,Tirana,Albania,0.072,0.5,spring,moderate,medium
+465,Tolyatti,Russia,0.070,0.5,summer,moderate,medium
+466,Tunis,Tunisia,0.068,0.5,spring,moderate,medium
+467,Petaling Jaya,Malaysia,0.066,0.5,winter,tropical,low
+468,Lagos,Nigeria,0.064,0.5,winter,tropical,low
+469,Barnaul,Russia,0.062,0.5,summer,moderate,medium
+470,Port Louis,Mauritius,0.060,0.5,winter,tropical,medium
+471,San Juan,Argentina,0.058,0.5,spring,moderate,medium
+472,Port of Spain,Trinidad and Tobago,0.056,0.5,winter,tropical,medium
+473,Jaipur,India,0.054,0.5,winter,dry,low
+474,Kharkov,Ukraine,0.052,0.5,spring,moderate,medium
+475,Surat,India,0.050,0.5,winter,tropical,low
+476,Rabat,Morocco,0.048,0.5,spring,moderate,medium
+477,Tegucigalpa,Honduras,0.046,0.5,spring,tropical,medium
+478,Bandung,Indonesia,0.044,0.5,winter,tropical,low
+479,Algiers,Algeria,0.042,0.5,spring,moderate,medium
+480,Lviv,Ukraine,0.040,0.5,spring,moderate,medium
+481,Addis Ababa,Ethiopia,0.038,0.5,spring,moderate,medium
+482,Nassau,Bahamas,0.036,0.5,winter,tropical,medium
+483,Asuncion,Paraguay,0.034,0.5,winter,moderate,medium
+484,Dushanbe,Tajikistan,0.032,0.5,spring,dry,low
+485,Cartagena,Colombia,0.030,0.5,winter,tropical,medium
+486,Sevastopol,Ukraine,0.028,0.5,spring,moderate,medium
+487,Lucknow,India,0.026,0.5,winter,moderate,low
+488,Dnepropetrovsk,Ukraine,0.024,0.5,spring,moderate,medium
+489,Port Harcourt,Nigeria,0.022,0.5,winter,tropical,low
+490,Luanda,Angola,0.020,0.5,winter,tropical,low
+491,Kinshasa,Democratic Republic of the Congo,0.018,0.5,winter,tropical,low
+492,Dakar,Senegal,0.016,0.5,winter,dry,low
+493,Simferopol,Ukraine,0.014,0.5,spring,moderate,medium
+494,Donetsk,Ukraine,0.012,0.5,spring,moderate,medium
+495,Kanpur,India,0.010,0.5,winter,moderate,low
+496,Zaporozhye,Ukraine,0.008,0.5,spring,moderate,medium
+497,Douala,Cameroon,0.006,0.5,winter,tropical,low
+498,Madurai,India,0.004,0.5,winter,tropical,low
+499,La Paz,Bolivia,0.002,0.5,spring,cool,low
+500,Khartoum,Sudan,0.000,0.5,winter,dry,low
