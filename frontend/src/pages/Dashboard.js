@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Typography,
-  Grid,
-  Paper,
-  Box,
-  Card,
-  CardContent
-} from '@mui/material';
+import { Box, Container, Typography, Grid, Paper, Card, CardContent } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
@@ -32,16 +24,14 @@ const Dashboard = () => {
   ];
 
   return (
-    <Container maxWidth="lg">
+    <Container>
       <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Welcome, {user?.name}!
-        </Typography>
-        <Typography color="text.secondary" paragraph>
-          Track your sustainable travel journey and earn rewards
+          Dashboard
         </Typography>
 
-        <Grid container spacing={3}>
+        {/* Stats Section */}
+        <Grid container spacing={3} sx={{ mb: 3 }}>
           {stats.map((stat, index) => (
             <Grid item xs={12} md={4} key={index}>
               <Card>
@@ -61,24 +51,31 @@ const Dashboard = () => {
           ))}
         </Grid>
 
-        <Grid container spacing={3} sx={{ mt: 2 }}>
+        {/* Welcome and Quick Links */}
+        <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
-                Recent Activity
+                Welcome, {user?.email}!
               </Typography>
-              <Typography color="text.secondary">
-                No recent activity to display
+              <Typography variant="body1">
+                This is your personal dashboard where you can manage your sustainable travel journey.
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
-                Upcoming Trips
+                Quick Links
               </Typography>
-              <Typography color="text.secondary">
-                No upcoming trips planned
+              <Typography variant="body1" paragraph>
+                • Track your carbon footprint in the Carbon Footprint section
+              </Typography>
+              <Typography variant="body1" paragraph>
+                • Plan sustainable travel routes
+              </Typography>
+              <Typography variant="body1">
+                • View your environmental impact statistics
               </Typography>
             </Paper>
           </Grid>

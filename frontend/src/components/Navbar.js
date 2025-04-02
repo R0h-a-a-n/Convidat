@@ -47,6 +47,20 @@ const Navbar = () => {
                 </Button>
                 <Button
                   color="inherit"
+                  component={RouterLink}
+                  to="/carbon"
+                >
+                  Carbon Footprint
+                </Button>
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/recommendations"
+                >
+                  Travel Recommendations
+                </Button>
+                <Button
+                  color="inherit"
                   onClick={handleLogout}
                 >
                   Logout
