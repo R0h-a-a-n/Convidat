@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 import sys
+import pandas as pd
 
 # Add the parent directory to the sys.path to find recommender.py
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -61,7 +62,7 @@ def get_recommendations():
             return jsonify({'recommendations': [], 'message': message})
 
         # Convert DataFrame to JSON serializable format
-        recommendations_list = recs_df.to_dict(orient='records')
+        recommendations_list = recs_df.where(pd.notna(recs_df), None).to_dict(orient='records')
 
         return jsonify({
             'recommendations': recommendations_list,

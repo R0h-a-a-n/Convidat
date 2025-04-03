@@ -1,5 +1,3 @@
-# recommender.py
-
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import TruncatedSVD
@@ -7,7 +5,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 class CityRecommender:
     def __init__(self, csv_path, pop_weight=0.85, eco_weight=0.15):
@@ -122,7 +119,8 @@ class CityRecommender:
                 return None, "No recommendations found even after relaxing filters."
 
             recs = candidates.sort_values(["match_score", "combined_score"], ascending=False).head(num_recs)
-            recs["similarity_score"] = np.nan
+            recs["similarity_score"] = None  # ✅ JSON-safe null instead of NaN
+            recs["combined_score"] = recs["combined_score"].fillna(0.0)  # ✅ Prevent NaNs
             recs["Recommendation_Type"] = "Relaxed Match"
             message = "⚠ No exact matches found. Showing best approximate recommendations."
 
