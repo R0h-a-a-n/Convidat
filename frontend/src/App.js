@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CarbonFootprint from './pages/CarbonFootprint';
 import TravelRecommendations from './pages/TravelRecommendations';
+import EcoAccommodations from './components/EcoAccommodations';
+import SustainableRoutes from './components/SustainableRoutes';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -37,6 +39,8 @@ function App() {
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/carbon" element={<PrivateRoute><CarbonFootprint /></PrivateRoute>} />
             <Route path="/recommendations" element={<PrivateRoute><TravelRecommendations /></PrivateRoute>} />
+            <Route path="/eco-stays" element={<PrivateRoute><EcoAccommodations /></PrivateRoute>} />
+            <Route path="/sustainable-routes" element={<PrivateRoute><SustainableRoutes /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Router>
