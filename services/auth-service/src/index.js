@@ -6,9 +6,12 @@ const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 
+// Configure CORS with specific options
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
+  origin: 'http://localhost:3000', // Frontend URL
+  credentials: true, // Allow credentials
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -33,30 +36,16 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/convidat-
 });
 
 app.use((err, req, res, next) => {
-  console.error('Error occurred:', {
-    message: err.message,
-    path: req.path,
-    method: req.method,
-    body: req.body
-  });
-
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({ 
-      message: 'Validation Error', 
-      details: err.message 
-    });
-  }
-
-  res.status(err.status || 500).json({ 
-    message: err.message || 'Internal Server Error',
-    details: process.env.NODE_ENV === 'development' ? err.message : undefined
+  console.error('Error:', err);
+  res.status(500).json({
+    success: false,
+    error: err.message || 'Something went wrong!'
   });
 });
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
   console.log(`Auth service running on port ${PORT}`);
-  console.log(`CORS enabled for origin: http://localhost:3000`);
 });
 
 process.on('SIGTERM', () => {

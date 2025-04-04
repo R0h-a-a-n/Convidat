@@ -13,13 +13,15 @@ from recommender import CityRecommender  # Import your class
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={
-    r"/*": {
-        "origins": "http://localhost:3000",
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+CORS(app, 
+     resources={
+         r"/*": {
+             "origins": ["http://localhost:3000"],
+             "methods": ["GET", "POST", "OPTIONS"],
+             "allow_headers": ["Content-Type", "Authorization"],
+             "supports_credentials": True
+         }
+     })
 
 # Initialize the recommender
 DATASET_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'okok.csv')

@@ -26,7 +26,7 @@ const accommodations = [
     location: {
       city: 'Chennai',
       country: 'India',
-      coordinates: { lat: 13.0827, lng: 80.2707 }
+      coordinates: { lat: 13.0627, lng: 80.2807 }
     },
     type: 'hostel',
     priceRange: {
@@ -40,6 +40,48 @@ const accommodations = [
     },
     amenities: ['WiFi', 'Common kitchen', 'Laundry'],
     images: ['https://example.com/eco-hostel.jpg']
+  },
+  {
+    _id: '3',
+    name: 'Green Lodge Chennai',
+    location: {
+      city: 'Chennai',
+      country: 'India',
+      coordinates: { lat: 13.1027, lng: 80.2907 }
+    },
+    type: 'eco-lodge',
+    priceRange: {
+      min: 80,
+      max: 200
+    },
+    sustainability: {
+      ecoRating: 5.0,
+      certifications: ['LEED Certified', 'Carbon Neutral', 'Zero Waste'],
+      features: ['Solar power', 'Greywater system', 'Farm-to-table']
+    },
+    amenities: ['WiFi', 'Organic restaurant', 'Yoga studio', 'Nature trails'],
+    images: ['https://example.com/eco-lodge.jpg']
+  },
+  {
+    _id: '4',
+    name: 'Eco Apartments Marina',
+    location: {
+      city: 'Chennai',
+      country: 'India',
+      coordinates: { lat: 13.0527, lng: 80.2607 }
+    },
+    type: 'apartment',
+    priceRange: {
+      min: 60,
+      max: 180
+    },
+    sustainability: {
+      ecoRating: 4.2,
+      certifications: ['Energy Star', 'Green Living'],
+      features: ['Energy efficient', 'Recycling program', 'Smart thermostats']
+    },
+    amenities: ['WiFi', 'Kitchen', 'Laundry', 'Parking'],
+    images: ['https://example.com/eco-apartment.jpg']
   }
 ];
 
