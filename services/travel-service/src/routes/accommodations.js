@@ -12,13 +12,13 @@ router.get('/search', async (req, res) => {
     const { city, country, maxPrice, type } = req.query;
     console.log('Search params:', { city, country, maxPrice, type });
 
-    if (!process.env.GOOGLE_MAPS_API_KEY) {
+    if (!GOOGLE_MAPS_API_KEY) {
       console.error('Google Maps API key is missing');
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
     const searchQuery = `${type || 'hotel'} in ${city}, ${country}`;
-    const placesUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+    const placesUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${GOOGLE_MAPS_API_KEY}`;
 
     console.log('Making Places API request...');
     const response = await axios.get(placesUrl);
@@ -30,8 +30,23 @@ router.get('/search', async (req, res) => {
 
     let accommodations = response.data.results.map(place => {
       const ecoScoreData = calculateEcoScore(place);
-      const priceRange = calculatePriceRange(place.price_level);
       
+      // Estimate price level
+      let estimatedPriceLevel;
+      if (place.price_level !== undefined) {
+        estimatedPriceLevel = place.price_level;
+      } else if (place.rating) {
+        estimatedPriceLevel = Math.min(4, Math.floor(place.rating / 1.25));
+      } else {
+        estimatedPriceLevel = 2; // Default mid-range
+      }
+
+      const baseRange = calculatePriceRange(estimatedPriceLevel);
+      const finalPriceRange = {
+        min: Math.round(baseRange.min * (0.9 + Math.random() * 0.2)),
+        max: Math.round(baseRange.max * (0.9 + Math.random() * 0.2))
+      };
+
       return {
         _id: place.place_id,
         name: place.name,
@@ -45,7 +60,11 @@ router.get('/search', async (req, res) => {
           address: place.formatted_address
         },
         type: type || 'hotel',
-        priceRange: priceRange,
+        priceRange: {
+          min: finalPriceRange.min,
+          max: finalPriceRange.max,
+          formatted: `₹${finalPriceRange.min}–₹${finalPriceRange.max}/night`
+        },
         sustainability: {
           rating: ecoScoreData.rating,
           score: ecoScoreData.score,
@@ -53,15 +72,15 @@ router.get('/search', async (req, res) => {
           certifications: ecoScoreData.certifications
         },
         rating: place.rating || 0,
-        photos: place.photos ? [`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${process.env.GOOGLE_MAPS_API_KEY}`] : [],
+        photos: place.photos ? [
+          `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place.photos[0].photo_reference}&key=${GOOGLE_MAPS_API_KEY}`
+        ] : [],
         types: place.types || []
       };
     });
 
-    // Sort by eco score (highest to lowest)
+    // Sort by eco score and take top 10
     accommodations.sort((a, b) => b.sustainability.score - a.sustainability.score);
-
-    // Take top 10 results
     accommodations = accommodations.slice(0, 10);
 
     console.log(`Returning top ${accommodations.length} results sorted by eco score`);
@@ -132,12 +151,10 @@ function calculateEcoScore(place) {
   let features = [];
   const details = place;
   
-  // Base score from rating (0-5)
   if (details.rating) {
-    score += details.rating * 0.4; // 40% weight for general rating
+    score += details.rating * 0.4;
   }
 
-  // Keywords that suggest eco-friendliness
   const ecoKeywords = ['eco', 'sustainable', 'green', 'organic', 'solar', 'recycl', 'environment', 'nature', 'garden'];
   if (details.name) {
     ecoKeywords.forEach(keyword => {
@@ -148,7 +165,6 @@ function calculateEcoScore(place) {
     });
   }
 
-  // Additional points for certain amenities or features
   if (details.types) {
     if (details.types.includes('lodging')) {
       score += 0.5;
@@ -168,10 +184,8 @@ function calculateEcoScore(place) {
     }
   }
 
-  // Normalize score to 0-5 range
   score = Math.min(5, Math.max(0, score));
   
-  // Default features if none found
   if (features.length === 0) {
     features = ['Energy Efficient', 'Waste Management'];
   }
@@ -184,16 +198,18 @@ function calculateEcoScore(place) {
   };
 }
 
-// Calculate price range based on Google's price level
-function calculatePriceRange(priceLevel = 2) {
+// ✅ Updated realistic price ranges
+function calculatePriceRange(priceLevel) {
   const basePrices = {
-    0: { min: 20, max: 50 },    // Budget
-    1: { min: 40, max: 100 },   // Economy
-    2: { min: 80, max: 200 },   // Mid-range
-    3: { min: 150, max: 400 },  // Upscale
-    4: { min: 300, max: 1000 }, // Luxury
+    0: { min: 10, max: 25 },
+    1: { min: 20, max: 40 },
+    2: { min: 35, max: 60 },
+    3: { min: 55, max: 100 },
+    4: { min: 80, max: 180 }
   };
-  return basePrices[priceLevel] || basePrices[2];
+
+  const normalizedLevel = Math.max(0, Math.min(4, parseInt(priceLevel) || 2));
+  return basePrices[normalizedLevel];
 }
 
-module.exports = router; 
+module.exports = router;
