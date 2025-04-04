@@ -1,0 +1,12 @@
+# .gitattributes
+
+# Normalize all text files to LF in the repo
+* text=auto eol=lf
+
+# Just to be safe, enforce LF endings for specific file types
+*.js   text eol=lf
+*.ts   text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.md   text eol=lf

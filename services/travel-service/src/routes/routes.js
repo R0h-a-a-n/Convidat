@@ -20,18 +20,63 @@ const TRANSPORT_EMISSIONS = {
 };
 
 const BASE_PRICES = {
-  train: 0.15, // $ per km
+  train: {
+    india: 0.015, // $ per km (approximately ₹1.25 per km)
+    international: 0.15 // $ per km for international
+  },
   flight: 0.25, // $ per km
   bus: 0.10, // $ per km
   ferry: 0.15 // $ per km
 };
 
+// Indian train routes database (simplified)
+const INDIAN_TRAIN_ROUTES = {
+  'Chennai-Mumbai': {
+    distance: 1280, // km
+    duration: 1260, // minutes (21 hours)
+    basePrice: 1250, // INR (will be converted to USD)
+    trains: [
+      {
+        name: "Chennai Express",
+        number: "11041",
+        departure: "11:05 PM",
+        arrival: "5:50 AM",
+        stops: [
+          { name: "Panvel S.T. Bus Stand", time: "11:05 PM" },
+          { name: "Sion", time: "11:25 PM" },
+          { name: "SRM University", time: "5:10 AM" },
+          { name: "Kalasipalyam", time: "5:30 AM" },
+          { name: "Maharaja Travelskarad", time: "5:45 AM" },
+          { name: "Karad Flyover Bridge", time: "5:50 AM" }
+        ]
+      }
+    ]
+  },
+  'Mumbai-Chennai': {
+    distance: 1280,
+    duration: 1260,
+    basePrice: 1250,
+    trains: [
+      {
+        name: "Mumbai Express",
+        number: "11042",
+        departure: "4:00 PM",
+        arrival: "10:00 PM",
+        stops: [
+          { name: "Mumbai CSMT", time: "4:00 PM" },
+          { name: "Pune Junction", time: "7:00 PM" },
+          { name: "Chennai Central", time: "10:00 PM" }
+        ]
+      }
+    ]
+  }
+};
+
 // Helper function to calculate emissions
-const calculateEmissions = (distance, mode) => {
+const calculateEmissions = (distance, mode, country = null) => {
   const emissionFactor = TRANSPORT_EMISSIONS[mode] || TRANSPORT_EMISSIONS.train;
   // For international flights, emissions per km decrease with distance
   if (mode === 'flight' && distance > 1000) {
-    // Reduce emissions factor for long-haul flights
     const reductionFactor = Math.min(0.7, Math.max(0.3, 1 - (distance - 1000) / 15000));
     return Number((distance * emissionFactor * reductionFactor).toFixed(2));
   }
@@ -39,8 +84,16 @@ const calculateEmissions = (distance, mode) => {
 };
 
 // Helper function to calculate price
-const calculatePrice = (distance, mode) => {
-  const priceFactor = BASE_PRICES[mode] || BASE_PRICES.train;
+const calculatePrice = (distance, mode, country = null) => {
+  let priceFactor;
+  if (mode === 'train' && country?.toLowerCase() === 'india') {
+    priceFactor = BASE_PRICES.train.india;
+  } else if (mode === 'train') {
+    priceFactor = BASE_PRICES.train.international;
+  } else {
+    priceFactor = BASE_PRICES[mode] || BASE_PRICES.train.international;
+  }
+
   // For international flights, price per km decreases with distance
   if (mode === 'flight' && distance > 1000) {
     const reductionFactor = Math.min(0.8, Math.max(0.4, 1 - (distance - 1000) / 15000));
@@ -49,7 +102,14 @@ const calculatePrice = (distance, mode) => {
   return Math.round(distance * priceFactor);
 };
 
-// Helper function to get route details from Google Maps
+// Helper function to get Indian train route
+const getIndianTrainRoute = (origin, destination) => {
+  const cities = [origin, destination].map(city => city.split(',')[0].trim());
+  const routeKey = `${cities[0]}-${cities[1]}`;
+  return INDIAN_TRAIN_ROUTES[routeKey];
+};
+
+// Helper function to get route details from Google Maps or simulate flight routes
 const getRouteDetails = async (origin, destination, mode = 'transit') => {
   try {
     if (!GOOGLE_MAPS_API_KEY) {
@@ -61,42 +121,92 @@ const getRouteDetails = async (origin, destination, mode = 'transit') => {
     console.log('To:', destination);
     console.log('Mode:', mode);
 
-    // For international routes or long distances, use flight mode
-    const isInternational = origin.toLowerCase().includes('us') && !destination.toLowerCase().includes('us');
-    const useFlightMode = isInternational || mode === 'flight';
+    // Check if this is an Indian train route
+    if (mode === 'train' && 
+        origin.toLowerCase().includes('india') && 
+        destination.toLowerCase().includes('india')) {
+      console.log('Found Indian train route');
+      const trainRoute = getIndianTrainRoute(origin, destination);
+      if (trainRoute) {
+        const train = trainRoute.trains[0];
+        return {
+          routes: [{
+            legs: [{
+              distance: { value: trainRoute.distance * 1000, text: `${trainRoute.distance} km` },
+              duration: { 
+                value: trainRoute.duration * 60,
+                text: `${Math.floor(trainRoute.duration / 60)}h ${trainRoute.duration % 60}m`
+              },
+              start_location: { lat: 0, lng: 0 }, // Placeholder coordinates
+              end_location: { lat: 0, lng: 0 },
+              start_address: origin,
+              end_address: destination,
+              steps: [{
+                travel_mode: 'TRANSIT',
+                html_instructions: `Take ${train.name} (${train.number}) from ${train.stops[0].name} to ${train.stops[train.stops.length - 1].name}`,
+                distance: { value: trainRoute.distance * 1000, text: `${trainRoute.distance} km` },
+                duration: {
+                  text: `${Math.floor(trainRoute.duration / 60)}h ${trainRoute.duration % 60}m`,
+                  value: trainRoute.duration * 60
+                },
+                transit_details: {
+                  departure_time: { text: train.departure },
+                  arrival_time: { text: train.arrival },
+                  line: {
+                    short_name: train.number,
+                    vehicle: { type: 'TRAIN', name: 'Train' }
+                  },
+                  departure_stop: { name: train.stops[0].name },
+                  arrival_stop: { name: train.stops[train.stops.length - 1].name }
+                }
+              }]
+            }],
+            overview_polyline: { points: null }
+          }]
+        };
+      }
+    }
+
+    // For flight routes, simulate a realistic flight
+    const useFlightMode = mode === 'flight';
     
     // Format origin for better results
     let originFormatted = origin;
+    // For known issues with ambiguous locations, you can force a specific city.
     if (origin.toLowerCase().includes('north carolina')) {
-      originFormatted = 'Charlotte, North Carolina, US'; // Using Charlotte as it's the largest city
+      originFormatted = 'Charlotte, North Carolina, US';
     }
 
-    // For flight routes, we'll create a simulated route
     if (useFlightMode) {
-      // Use geocoding to get coordinates (simplified for now)
+      // Define coordinates including Dubai for accurate simulation
       const coordinates = {
-        'charlotte': { lat: 35.2271, lng: -80.8431 },
+        'dubai': { lat: 25.2048, lng: 55.2708 },
         'mumbai': { lat: 19.0760, lng: 72.8777 },
-        'chennai': { lat: 13.0827, lng: 80.2707 }
+        'chennai': { lat: 13.0827, lng: 80.2707 },
+        'charlotte': { lat: 35.2271, lng: -80.8431 }
       };
 
-      const startCoords = coordinates[originFormatted.split(',')[0].toLowerCase()] || { lat: 35.2271, lng: -80.8431 };
-      const endCoords = coordinates[destination.split(',')[0].toLowerCase()] || { lat: 19.0760, lng: 72.8777 };
+      // Use the first part of the address (city) in lower case to find coordinates
+      const originCityKey = originFormatted.split(',')[0].toLowerCase();
+      const destinationCityKey = destination.split(',')[0].toLowerCase();
 
-      // Calculate distance using Haversine formula
+      const startCoords = coordinates[originCityKey] || { lat: 35.2271, lng: -80.8431 };
+      const endCoords = coordinates[destinationCityKey] || { lat: 19.0760, lng: 72.8777 };
+
+      // Calculate distance using the Haversine formula
       const R = 6371; // Earth's radius in km
       const dLat = (endCoords.lat - startCoords.lat) * Math.PI / 180;
       const dLon = (endCoords.lng - startCoords.lng) * Math.PI / 180;
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      const a = Math.sin(dLat/2) ** 2 +
                 Math.cos(startCoords.lat * Math.PI / 180) * Math.cos(endCoords.lat * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
+                Math.sin(dLon/2) ** 2;
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       const distance = R * c;
 
-      const flightTime = {
-        hours: Math.floor(distance / 800),
-        minutes: Math.round((distance % 800) / 13.33)
-      };
+      // Use a flight speed of 900 km/h for realistic duration
+      const flightSpeed = 900;
+      const flightTimeHours = Math.floor(distance / flightSpeed);
+      const flightTimeMinutes = Math.round((distance % flightSpeed) / 15); // 15 km per minute at 900 km/h
 
       console.log('Creating flight route with distance:', distance.toFixed(2), 'km');
 
@@ -105,8 +215,8 @@ const getRouteDetails = async (origin, destination, mode = 'transit') => {
           legs: [{
             distance: { value: distance * 1000, text: `${distance.toFixed(0)} km` },
             duration: { 
-              value: (flightTime.hours * 3600 + flightTime.minutes * 60),
-              text: `${flightTime.hours}h ${flightTime.minutes}m`
+              value: (flightTimeHours * 3600 + flightTimeMinutes * 60),
+              text: `${flightTimeHours}h ${flightTimeMinutes}m`
             },
             start_location: startCoords,
             end_location: endCoords,
@@ -117,13 +227,13 @@ const getRouteDetails = async (origin, destination, mode = 'transit') => {
               html_instructions: `Flight from ${originFormatted} to ${destination}`,
               distance: { value: distance * 1000, text: `${distance.toFixed(0)} km` },
               duration: {
-                text: `${flightTime.hours}h ${flightTime.minutes}m`,
-                value: (flightTime.hours * 3600 + flightTime.minutes * 60)
+                text: `${flightTimeHours}h ${flightTimeMinutes}m`,
+                value: (flightTimeHours * 3600 + flightTimeMinutes * 60)
               },
               transit_details: {
                 departure_time: { text: '10:00 AM' },
                 arrival_time: { 
-                  text: `${(10 + flightTime.hours) % 24}:${flightTime.minutes.toString().padStart(2, '0')} ${flightTime.hours >= 14 ? 'PM' : 'AM'}`
+                  text: `${(10 + flightTimeHours) % 24}:${flightTimeMinutes.toString().padStart(2, '0')} ${flightTimeHours >= 14 ? 'PM' : 'AM'}`
                 },
                 line: { 
                   short_name: 'INT',
@@ -131,7 +241,8 @@ const getRouteDetails = async (origin, destination, mode = 'transit') => {
                 }
               }
             }]
-          }]
+          }],
+          overview_polyline: { points: null }
         }]
       };
     }
@@ -141,19 +252,21 @@ const getRouteDetails = async (origin, destination, mode = 'transit') => {
       origin: originFormatted,
       destination: destination,
       key: GOOGLE_MAPS_API_KEY,
-      mode: mode === 'train' ? 'transit' : mode
+      mode: mode
     };
 
+    // If the mode is train or bus, use transit with the appropriate filter
     if (mode === 'train') {
+      params.mode = 'transit';
       params.transit_mode = 'train';
+    } else if (mode === 'bus') {
+      params.mode = 'transit';
+      params.transit_mode = 'bus';
     }
 
     const url = 'https://maps.googleapis.com/maps/api/directions/json';
     console.log('Making request to:', url);
-    console.log('With params:', {
-      ...params,
-      key: '***'
-    });
+    console.log('With params:', { ...params, key: '***' });
 
     const response = await axios.get(url, { params });
 
@@ -176,6 +289,28 @@ const getRouteDetails = async (origin, destination, mode = 'transit') => {
     }
     throw error;
   }
+};
+
+// In-memory storage for routes so GET /:id can retrieve from the last search
+let storedRoutes = [];
+
+// Utility to generate detailed instructions string
+const generateDetailedInstructions = (originCity, originCountry, destinationCity, destinationCountry, mode, totalDuration, price, emissions, departureTime, arrivalTime, steps) => {
+  const header = `${originCity}, ${originCountry} to ${destinationCity}, ${destinationCountry}\n\n` +
+                 `${mode.charAt(0).toUpperCase() + mode.slice(1)}\n\n` +
+                 `Duration: ${totalDuration}\n` +
+                 `Price: $${price}\n` +
+                 `Carbon Emissions: ${emissions} kg CO2\n` +
+                 `Schedule: ${departureTime} - ${arrivalTime}\n\n` +
+                 `Journey Details:\n\n`;
+  const details = steps.map(step => {
+    let detail = `${step.travel_mode}: ${step.html_instructions} (${step.distance.text} • ${step.duration.text})`;
+    if (step.transit_details) {
+      detail += `\nfrom ${step.transit_details.departure_stop?.name || 'N/A'} to ${step.transit_details.arrival_stop?.name || 'N/A'}`;
+    }
+    return detail;
+  }).join('\n\n');
+  return header + details;
 };
 
 // Search routes
@@ -213,16 +348,11 @@ router.get('/search', async (req, res) => {
     const origin = `${formattedOriginCity}, ${originCountry}`;
     const destination = `${destinationCity}, ${destinationCountry}`;
     
-    console.log('Formatted Locations:', {
-      origin,
-      destination
-    });
+    console.log('Formatted Locations:', { origin, destination });
 
-    // Determine available transport modes based on distance and location
+    // Determine available transport modes based on parameters
     const isInternational = originCountry !== destinationCountry;
     let transportModes = [];
-    
-    // Handle transport types array
     if (Array.isArray(preferredTransportTypes)) {
       transportModes = preferredTransportTypes.filter(mode => 
         ['train', 'bus', 'flight', 'ferry'].includes(mode.toLowerCase())
@@ -230,17 +360,12 @@ router.get('/search', async (req, res) => {
     } else if (typeof preferredTransportTypes === 'string') {
       transportModes = [preferredTransportTypes];
     }
-
-    // For international routes, ensure flight is included
     if (isInternational && !transportModes.includes('flight')) {
       transportModes.push('flight');
     }
-
-    // If no valid modes specified, use defaults
     if (transportModes.length === 0) {
       transportModes = isInternational ? ['flight'] : ['train', 'bus'];
     }
-
     console.log('Using transport modes:', transportModes);
 
     const routes = [];
@@ -255,26 +380,39 @@ router.get('/search', async (req, res) => {
         if (routeDetails.routes && routeDetails.routes.length > 0) {
           routeDetails.routes.forEach((route, index) => {
             const leg = route.legs[0];
-            const distance = leg.distance.value / 1000; // Convert to km
+            const distance = leg.distance.value / 1000; // in km
             const emissions = calculateEmissions(distance, mode);
             const price = calculatePrice(distance, mode);
+            const totalDuration = leg.duration.text;
+            const departureTime = leg.steps[0].transit_details?.departure_time?.text || '10:00 AM';
+            const arrivalTime = leg.steps[leg.steps.length - 1].transit_details?.arrival_time?.text || '6:00 PM';
+            const mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(leg.start_address)}&destination=${encodeURIComponent(leg.end_address)}&travelmode=${(mode === 'bus' || mode === 'train') ? 'transit' : mode}`;
+
+            // Build markers for origin and destination
+            const markers = [
+              { type: 'origin', label: 'Origin', coordinates: leg.start_location },
+              { type: 'destination', label: 'Destination', coordinates: leg.end_location }
+            ];
+
+            // Generate a detailed instructions string based on steps
+            const detailedInstructions = generateDetailedInstructions(
+              formattedOriginCity, originCountry, destinationCity, destinationCountry,
+              mode, totalDuration, price, emissions, departureTime, arrivalTime, leg.steps
+            );
 
             console.log(`Found ${mode} route:`, {
-              distance: distance,
+              distance: Number(distance.toFixed(2)),
               emissions: emissions,
-              price: price
+              price: price,
+              duration: totalDuration
             });
 
-            // Skip if exceeds max price or emissions
+            // Skip routes that exceed user limits
             if ((maxPrice && price > parseFloat(maxPrice)) || 
                 (maxCarbonEmissions && emissions > parseFloat(maxCarbonEmissions))) {
               console.log(`Route exceeds limits - Price: ${price}/${maxPrice}, Emissions: ${emissions}/${maxCarbonEmissions}`);
               return;
             }
-
-            // Get transit/flight details
-            const mainStep = leg.steps[0];
-            const transitDetails = mainStep.transit_details || {};
 
             routes.push({
               _id: `${mode}-${index}`,
@@ -283,26 +421,23 @@ router.get('/search', async (req, res) => {
                 city: formattedOriginCity,
                 country: originCountry,
                 address: leg.start_address,
-                coordinates: {
-                  lat: leg.start_location.lat,
-                  lng: leg.start_location.lng
-                }
+                coordinates: leg.start_location
               },
               destination: {
                 city: destinationCity,
                 country: destinationCountry,
                 address: leg.end_address,
-                coordinates: {
-                  lat: leg.end_location.lat,
-                  lng: leg.end_location.lng
-                }
+                coordinates: leg.end_location
               },
               distance: Number(distance.toFixed(2)),
-              duration: mainStep.duration.text,
+              duration: totalDuration,
               price: price,
               carbonEmissions: emissions,
-              departureTime: transitDetails.departure_time?.text || '10:00 AM',
-              arrivalTime: transitDetails.arrival_time?.text || '6:00 PM',
+              departureTime: departureTime,
+              arrivalTime: arrivalTime,
+              mapUrl: mapUrl,
+              polyline: route.overview_polyline ? route.overview_polyline.points : null,
+              markers: markers,
               steps: leg.steps.map(step => ({
                 type: step.travel_mode.toLowerCase(),
                 instruction: step.html_instructions,
@@ -315,6 +450,7 @@ router.get('/search', async (req, res) => {
                   vehicle: step.transit_details.line?.vehicle?.name
                 } : null
               })),
+              detailedInstructions: detailedInstructions,
               sustainabilityFeatures: mode === 'train' ? 
                 ['Electric Train', 'Public Transport'] : 
                 mode === 'flight' ? 
@@ -326,11 +462,10 @@ router.get('/search', async (req, res) => {
       } catch (error) {
         console.error(`Error fetching ${mode} route:`, error);
         errors.push(`${mode}: ${error.message}`);
-        // Continue with other transport modes
       }
     }
 
-    // Sort routes by emissions and price
+    // Sort routes by carbon emissions then by price
     routes.sort((a, b) => {
       if (a.carbonEmissions === b.carbonEmissions) {
         return a.price - b.price;
@@ -342,6 +477,9 @@ router.get('/search', async (req, res) => {
     if (errors.length > 0) {
       console.log('Encountered errors:', errors);
     }
+
+    // Save routes in memory for GET /:id retrieval
+    storedRoutes = routes;
 
     res.json({
       success: true,
@@ -359,9 +497,9 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// Get route by ID
+// Retrieve route by ID from in-memory storage
 router.get('/:id', (req, res) => {
-  const route = routes.find(r => r._id === req.params.id);
+  const route = storedRoutes.find(r => r._id === req.params.id);
   if (!route) {
     return res.status(404).json({
       success: false,
@@ -374,4 +512,4 @@ router.get('/:id', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;
