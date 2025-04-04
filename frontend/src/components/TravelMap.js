@@ -77,12 +77,95 @@ const TravelMap = ({ routes, accommodations, center }) => {
     console.log('Map loaded successfully');
     mapRef.current = map;
     setMapLoaded(true);
-  }, []);
 
-  const onMapError = useCallback((error) => {
-    console.error('Map error:', error);
-    setMapError(error.message);
-  }, []);
+    // If we have routes, fit bounds to show all markers
+    if (routes?.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      routes.forEach(route => {
+        if (route.origin?.coordinates?.lat && route.origin?.coordinates?.lng) {
+          bounds.extend(new window.google.maps.LatLng(
+            route.origin.coordinates.lat,
+            route.origin.coordinates.lng
+          ));
+        }
+        if (route.destination?.coordinates?.lat && route.destination?.coordinates?.lng) {
+          bounds.extend(new window.google.maps.LatLng(
+            route.destination.coordinates.lat,
+            route.destination.coordinates.lng
+          ));
+        }
+      });
+      map.fitBounds(bounds);
+    }
+  }, [routes]);
+
+  const renderRouteMarkers = useCallback(() => {
+    if (!routes) return null;
+
+    return routes.map((route, index) => {
+      const markers = [];
+
+      // Origin marker
+      if (route.origin?.coordinates?.lat && route.origin?.coordinates?.lng) {
+        markers.push(
+          <Marker
+            key={`origin-${index}`}
+            position={{
+              lat: route.origin.coordinates.lat,
+              lng: route.origin.coordinates.lng
+            }}
+            label={{
+              text: 'A',
+              color: 'white'
+            }}
+          />
+        );
+      }
+
+      // Destination marker
+      if (route.destination?.coordinates?.lat && route.destination?.coordinates?.lng) {
+        markers.push(
+          <Marker
+            key={`destination-${index}`}
+            position={{
+              lat: route.destination.coordinates.lat,
+              lng: route.destination.coordinates.lng
+            }}
+            label={{
+              text: 'B',
+              color: 'white'
+            }}
+          />
+        );
+      }
+
+      // Draw route line if we have both markers
+      if (route.origin?.coordinates && route.destination?.coordinates) {
+        markers.push(
+          <Polyline
+            key={`route-${index}`}
+            path={[
+              { 
+                lat: route.origin.coordinates.lat, 
+                lng: route.origin.coordinates.lng 
+              },
+              { 
+                lat: route.destination.coordinates.lat, 
+                lng: route.destination.coordinates.lng 
+              }
+            ]}
+            options={{
+              strokeColor: '#2e7d32',
+              strokeOpacity: 0.8,
+              strokeWeight: 3,
+            }}
+          />
+        );
+      }
+
+      return markers;
+    });
+  }, [routes]);
 
   const getMarkerIcon = (type) => {
     switch (type?.toLowerCase()) {
@@ -118,8 +201,13 @@ const TravelMap = ({ routes, accommodations, center }) => {
         center={mapCenter}
         zoom={12}
         onLoad={onMapLoad}
-        onError={onMapError}
-        options={mapOptions}
+        options={{
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+          zoomControl: true,
+          styles: mapOptions.styles
+        }}
       >
         {mapLoaded && accommodations?.map((accommodation) => {
           if (!accommodation.location?.coordinates?.lat || !accommodation.location?.coordinates?.lng) {
@@ -146,61 +234,7 @@ const TravelMap = ({ routes, accommodations, center }) => {
           );
         })}
 
-        {mapLoaded && routes?.map((route) => {
-          if (!route.origin?.coordinates?.lat || !route.origin?.coordinates?.lng ||
-              !route.destination?.coordinates?.lat || !route.destination?.coordinates?.lng) {
-            console.warn('Invalid coordinates for route:', route);
-            return null;
-          }
-
-          return (
-            <React.Fragment key={route._id}>
-              <Marker
-                position={{
-                  lat: parseFloat(route.origin.coordinates.lat),
-                  lng: parseFloat(route.origin.coordinates.lng)
-                }}
-                title={route.origin.name}
-                label={{
-                  text: '📍',
-                  fontSize: '24px',
-                  className: 'marker-label'
-                }}
-              />
-              
-              <Marker
-                position={{
-                  lat: parseFloat(route.destination.coordinates.lat),
-                  lng: parseFloat(route.destination.coordinates.lng)
-                }}
-                title={route.destination.name}
-                label={{
-                  text: '📍',
-                  fontSize: '24px',
-                  className: 'marker-label'
-                }}
-              />
-
-              <Polyline
-                path={[
-                  {
-                    lat: parseFloat(route.origin.coordinates.lat),
-                    lng: parseFloat(route.origin.coordinates.lng)
-                  },
-                  {
-                    lat: parseFloat(route.destination.coordinates.lat),
-                    lng: parseFloat(route.destination.coordinates.lng)
-                  }
-                ]}
-                options={{
-                  strokeColor: '#2e7d32',
-                  strokeOpacity: 0.8,
-                  strokeWeight: 3
-                }}
-              />
-            </React.Fragment>
-          );
-        })}
+        {renderRouteMarkers()}
       </GoogleMap>
     </div>
   );

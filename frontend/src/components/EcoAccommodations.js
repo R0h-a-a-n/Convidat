@@ -24,9 +24,10 @@ import TravelMap from './TravelMap';
 // Create axios instance with default config
 const api = axios.create({
   baseURL: process.env.REACT_APP_TRAVEL_API_URL || 'http://localhost:3006',
-  withCredentials: false,
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
   }
 });
 

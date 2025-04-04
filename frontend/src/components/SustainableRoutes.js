@@ -13,10 +13,13 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  Divider,
   LinearProgress,
   Paper,
   Alert,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import DirectionsTransitIcon from '@mui/icons-material/DirectionsTransit';
 import FlightIcon from '@mui/icons-material/Flight';
@@ -25,9 +28,9 @@ import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import TravelMap from './TravelMap';
 
-// Create axios instance with default config
+// ✅ Axios instance without manual CORS header
 const api = axios.create({
-  baseURL: process.env.REACT_APP_TRAVEL_API_URL || 'http://localhost:3005',
+  baseURL: process.env.REACT_APP_TRAVEL_API_URL || 'http://localhost:3006',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -35,19 +38,28 @@ const api = axios.create({
   }
 });
 
-// Add request interceptor for auth
+// Debugging interceptor
 api.interceptors.request.use(
   config => {
+    console.log('Making request:', {
+      url: config.url,
+      method: config.method,
+      params: config.params,
+      headers: config.headers
+    });
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => Promise.reject(error)
+  error => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
 );
 
-// Add response interceptor for error handling
+// Error handler
 api.interceptors.response.use(
   response => response,
   error => {
@@ -86,7 +98,9 @@ const SustainableRoutes = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await api.post('/api/routes/search', searchParams);
+      const response = await api.get('/api/routes/search', {
+        params: searchParams
+      });
       setRoutes(response.data.data || []);
     } catch (error) {
       console.error('Error searching routes:', error);
@@ -126,8 +140,8 @@ const SustainableRoutes = () => {
   };
 
   const getMapCenter = () => {
-    if (routes.length > 0 && 
-        routes[0].origin?.coordinates?.lat && 
+    if (routes.length > 0 &&
+        routes[0].origin?.coordinates?.lat &&
         routes[0].origin?.coordinates?.lng) {
       return {
         lat: parseFloat(routes[0].origin.coordinates.lat),
@@ -135,6 +149,19 @@ const SustainableRoutes = () => {
       };
     }
     return null;
+  };
+
+  const formatDuration = (duration) => {
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+    return `${hours}h ${minutes}m`;
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
   };
 
   return (
@@ -160,6 +187,7 @@ const SustainableRoutes = () => {
                   label="Origin City"
                   value={searchParams.originCity}
                   onChange={handleInputChange}
+                  required
                   sx={{ mb: 2 }}
                 />
                 <TextField
@@ -168,6 +196,7 @@ const SustainableRoutes = () => {
                   label="Origin Country"
                   value={searchParams.originCountry}
                   onChange={handleInputChange}
+                  required
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -177,6 +206,7 @@ const SustainableRoutes = () => {
                   label="Destination City"
                   value={searchParams.destinationCity}
                   onChange={handleInputChange}
+                  required
                   sx={{ mb: 2 }}
                 />
                 <TextField
@@ -185,6 +215,7 @@ const SustainableRoutes = () => {
                   label="Destination Country"
                   value={searchParams.destinationCountry}
                   onChange={handleInputChange}
+                  required
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -243,37 +274,76 @@ const SustainableRoutes = () => {
           </form>
         </Paper>
 
+        {loading && (
+          <Box sx={{ width: '100%', mb: 3 }}>
+            <LinearProgress />
+          </Box>
+        )}
+
         {routes.length > 0 ? (
           <>
             <Box sx={{ mb: 3 }}>
-              <TravelMap
-                routes={routes}
-                center={getMapCenter()}
-              />
+              <TravelMap routes={routes} />
             </Box>
             <Grid container spacing={2}>
-              {routes.map((route, index) => (
-                <Grid item xs={12} key={route._id || index}>
+              {routes.map((route) => (
+                <Grid item xs={12} key={route._id}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
                         {route.origin.city}, {route.origin.country} to {route.destination.city}, {route.destination.country}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        {getTransportIcon(route.transportType)}
+                        {getTransportIcon(route.type)}
                         <Typography sx={{ ml: 1 }}>
-                          {route.transportType.charAt(0).toUpperCase() + route.transportType.slice(1)}
+                          {route.type.charAt(0).toUpperCase() + route.type.slice(1)}
                         </Typography>
                       </Box>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <Typography variant="body1" gutterBottom>
                         Duration: {route.duration}
                       </Typography>
-                      <Typography variant="body2" gutterBottom>
+                      <Typography variant="body1" gutterBottom>
                         Price: ${route.price}
                       </Typography>
-                      <Typography variant="body2" gutterBottom>
+                      <Typography variant="body1" gutterBottom>
                         Carbon Emissions: {route.carbonEmissions} kg CO2
                       </Typography>
+                      {route.departureTime && route.arrivalTime && (
+                        <Typography variant="body1" gutterBottom>
+                          Schedule: {route.departureTime} - {route.arrivalTime}
+                        </Typography>
+                      )}
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="subtitle1" gutterBottom>
+                          Journey Details:
+                        </Typography>
+                        <List>
+                          {route.steps.map((step, index) => (
+                            <ListItem key={index}>
+                              <ListItemIcon>
+                                {getTransportIcon(step.type)}
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <div dangerouslySetInnerHTML={{ __html: step.instruction }} />
+                                }
+                                secondary={
+                                  <>
+                                    {step.distance} • {step.duration}
+                                    {step.transitDetails && (
+                                      <Typography variant="body2" component="div">
+                                        {step.transitDetails.line && `Line ${step.transitDetails.line}`}
+                                        {step.transitDetails.departureStop && ` from ${step.transitDetails.departureStop}`}
+                                        {step.transitDetails.arrivalStop && ` to ${step.transitDetails.arrivalStop}`}
+                                      </Typography>
+                                    )}
+                                  </>
+                                }
+                              />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
                       <Box sx={{ mt: 1 }}>
                         {route.sustainabilityFeatures?.map((feature, idx) => (
                           <Chip
@@ -291,7 +361,7 @@ const SustainableRoutes = () => {
               ))}
             </Grid>
           </>
-        ) : (
+        ) : !loading && (
           <Typography color="text.secondary" align="center">
             No routes found. Try adjusting your search criteria.
           </Typography>
@@ -301,4 +371,4 @@ const SustainableRoutes = () => {
   );
 };
 
-export default SustainableRoutes; 
+export default SustainableRoutes;

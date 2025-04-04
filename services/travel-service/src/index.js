@@ -1,68 +1,58 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
+const dotenv = require('dotenv');
 const morgan = require('morgan');
 
-const accommodationsRoutes = require('./routes/accommodations');
-const routesRoutes = require('./routes/routes');
+// Import routes
+const accommodationsRouter = require('./routes/accommodations');
+const routesRouter = require('./routes/routes');
 
+// Load environment variables
+dotenv.config();
+
+// Initialize express app
 const app = express();
 
-// CORS configuration
+// Configure CORS
 app.use(cors({
   origin: 'http://localhost:3000',
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Middleware
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Routes
-app.use('/api/accommodations', accommodationsRoutes);
-app.use('/api/routes', routesRoutes);
-
-// Test route
-app.get('/test', (req, res) => {
-  res.json({ message: 'Travel service is running!' });
+// Debug log for environment variables
+console.log('Environment variables status:', {
+  PORT: process.env.PORT || '3006',
+  MONGODB_URI: process.env.MONGODB_URI ? 'Present' : 'Missing',
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY ? 'Present' : 'Missing'
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    error: 'Something went wrong!'
+// Routes
+app.use('/api/accommodations', accommodationsRouter);
+app.use('/api/routes', routesRouter);
+
+// Test route
+app.get('/api/test', (req, res) => {
+  res.json({
+    message: 'Travel service is running',
+    mongodbStatus: process.env.MONGODB_URI ? 'Configured' : 'Not configured',
+    googleMapsStatus: process.env.GOOGLE_MAPS_API_KEY ? 'Configured' : 'Not configured'
   });
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/convidat-travel', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log('Connected to MongoDB');
-})
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/travel-service')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Start server
 const PORT = process.env.PORT || 3006;
-const server = app.listen(PORT, () => {
-  console.log(`Travel service running on port ${PORT}`);
-});
-
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
-  server.close(() => {
-    mongoose.connection.close(false, () => {
-      console.log('MongoDB connection closed.');
-      process.exit(0);
-    });
-  });
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
