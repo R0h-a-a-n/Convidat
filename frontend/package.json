@@ -18,7 +18,7 @@
     "tailwind-merge": "^3.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -40,5 +40,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.20.7",
+    "@types/google.maps": "^3.58.1",
+    "@types/parse-json": "^4.0.2",
+    "@types/prop-types": "^15.7.14"
   }
 }
