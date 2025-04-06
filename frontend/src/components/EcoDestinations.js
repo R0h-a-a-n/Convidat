@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   List,
   ListItem,
@@ -7,7 +7,9 @@ import {
   Typography,
   Divider,
   Box,
-  Link
+  Link,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import {
   Park,
@@ -15,86 +17,93 @@ import {
   Train,
   LocalFlorist,
   Nature,
-  EmojiNature
+  EmojiNature,
+  LocationOn
 } from '@mui/icons-material';
+import axios from 'axios';
 
-// Eco-friendly destinations data
-const cityDestinations = {
-  'Mumbai': [
-    {
-      name: 'Sanjay Gandhi National Park',
-      description: 'One of the largest urban parks in the world, home to diverse flora and fauna',
-      type: 'park',
-      link: 'https://www.google.com/maps/place/Sanjay+Gandhi+National+Park'
-    },
-    {
-      name: 'Maharashtra Nature Park',
-      description: 'A reclaimed land turned into an urban forest with butterfly gardens',
-      type: 'nature',
-      link: 'https://www.google.com/maps/place/Maharashtra+Nature+Park'
-    },
-    {
-      name: 'Coastal and Marine Biodiversity Centre',
-      description: 'Educational center promoting marine conservation',
-      type: 'nature',
-      link: 'https://www.google.com/maps/place/Coastal+and+Marine+Biodiversity+Centre'
-    }
-  ],
-  'Pune': [
-    {
-      name: 'Empress Botanical Garden',
-      description: 'Historic garden with rare plant species and butterfly conservatory',
-      type: 'garden',
-      link: 'https://www.google.com/maps/place/Empress+Botanical+Garden'
-    },
-    {
-      name: 'Pune-Lonavala Cycling Trail',
-      description: 'Scenic cycling route through the Western Ghats',
-      type: 'cycling',
-      link: 'https://www.google.com/maps/place/Lonavala'
-    },
-    {
-      name: 'Pashan Lake',
-      description: 'Restored lake and bird sanctuary',
-      type: 'nature',
-      link: 'https://www.google.com/maps/place/Pashan+Lake'
-    }
-  ],
-  'Chennai': [
-    {
-      name: 'Adyar Eco Park',
-      description: 'Restored wetland ecosystem and bird sanctuary',
-      type: 'park',
-      link: 'https://www.google.com/maps/place/Adyar+Eco+Park'
-    },
-    {
-      name: 'Pallikaranai Marshland',
-      description: 'Protected wetland supporting diverse bird species',
-      type: 'nature',
-      link: 'https://www.google.com/maps/place/Pallikaranai+Marshland'
-    },
-    {
-      name: 'Guindy National Park',
-      description: 'Urban national park with native flora and fauna',
-      type: 'park',
-      link: 'https://www.google.com/maps/place/Guindy+National+Park'
-    }
-  ]
-};
-
-// Icon mapping for different destination types
-const typeIcons = {
-  park: <Park color="primary" />,
-  nature: <Nature color="primary" />,
-  garden: <LocalFlorist color="primary" />,
-  cycling: <DirectionsBike color="primary" />,
+// Icon mapping for different eco-features
+const featureIcons = {
+  'Natural Conservation': <Nature color="primary" />,
+  'Cultural Heritage': <LocalFlorist color="primary" />,
+  'Wildlife Conservation': <Park color="primary" />,
+  'Biodiversity': <EmojiNature color="primary" />,
+  'Local Tourism': <LocationOn color="primary" />,
   default: <EmojiNature color="primary" />
 };
 
-const EcoDestinations = ({ city }) => {
-  const destinations = cityDestinations[city] || [];
+const api = axios.create({
+  baseURL: 'http://localhost:3008',
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
 
-  if (destinations.length === 0) {
+// Add request interceptor to include token
+api.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+const EcoDestinations = ({ city }) => {
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      if (!city) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await api.get('/api/destinations/search', {
+          params: { city }
+        });
+
+        if (response.data.success) {
+          setDestinations(response.data.data);
+        } else {
+          setError('Failed to fetch destinations');
+        }
+      } catch (err) {
+        console.error('Error fetching destinations:', err);
+        setError(err.response?.data?.error || 'Failed to fetch destinations');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestinations();
+  }, [city]);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" p={3}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ m: 2 }}>
+        {error}
+      </Alert>
+    );
+  }
+
+  if (!destinations.length) {
     return (
       <Typography variant="body1" color="text.secondary" sx={{ p: 2 }}>
         No eco-friendly destinations found for {city}.
@@ -109,24 +118,35 @@ const EcoDestinations = ({ city }) => {
       </Typography>
       <List>
         {destinations.map((destination, index) => (
-          <React.Fragment key={destination.name}>
+          <React.Fragment key={destination._id || destination.name}>
             <ListItem>
               <ListItemIcon>
-                {typeIcons[destination.type] || typeIcons.default}
+                {destination.ecoFeatures && destination.ecoFeatures[0] 
+                  ? featureIcons[destination.ecoFeatures[0]] || featureIcons.default
+                  : featureIcons.default}
               </ListItemIcon>
               <ListItemText
-                primary={
-                  <Link
-                    href={destination.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    color="primary"
-                    underline="hover"
-                  >
-                    {destination.name}
-                  </Link>
+                primary={destination.name}
+                secondary={
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {destination.description}
+                    </Typography>
+                    <Box mt={1}>
+                      {destination.ecoFeatures.map((feature) => (
+                        <Typography
+                          key={feature}
+                          variant="caption"
+                          color="primary"
+                          component="span"
+                          sx={{ mr: 2 }}
+                        >
+                          {feature}
+                        </Typography>
+                      ))}
+                    </Box>
+                  </Box>
                 }
-                secondary={destination.description}
               />
             </ListItem>
             {index < destinations.length - 1 && <Divider variant="inset" component="li" />}
