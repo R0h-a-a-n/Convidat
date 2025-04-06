@@ -44,8 +44,9 @@ const Login = () => {
         backgroundAttachment: 'fixed',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        fontFamily: 'Lexend Mega, sans-serif'
+        alignItems: 'flex-start',
+        fontFamily: 'Lexend Mega, sans-serif',
+        pt: 10
       }}
     >
       <Container maxWidth="sm">
@@ -53,7 +54,7 @@ const Login = () => {
           sx={{
             p: 4,
             borderRadius: '1rem',
-            backgroundColor: '#F15BB5',
+            backgroundColor: '#D0F4DE',
             border: '2px solid black',
             boxShadow: '6px 6px 0 black'
           }}
@@ -92,10 +93,14 @@ const Login = () => {
               required
               autoComplete="email"
               sx={{
-                backgroundColor: '#fff',
-                borderRadius: '0.75rem',
+                backgroundColor: '#c4aiff',
+                border: '2px solid black',
                 boxShadow: '4px 4px 0 black',
-                fontFamily: 'Lexend Mega'
+                borderRadius: '0.75rem',
+                fontFamily: 'Lexend Mega',
+                '& .MuiInputBase-input': {
+                  padding: '14px'
+                }
               }}
             />
             <TextField
@@ -108,10 +113,14 @@ const Login = () => {
               required
               autoComplete="current-password"
               sx={{
-                backgroundColor: '#fff',
-                borderRadius: '0.75rem',
+                backgroundColor: '#c4aiff',
+                border: '2px solid black',
                 boxShadow: '4px 4px 0 black',
-                fontFamily: 'Lexend Mega'
+                borderRadius: '0.75rem',
+                fontFamily: 'Lexend Mega',
+                '& .MuiInputBase-input': {
+                  padding: '14px'
+                }
               }}
             />
             <Button
@@ -129,7 +138,8 @@ const Login = () => {
                 borderRadius: '0.75rem',
                 fontFamily: 'Lexend Mega',
                 '&:hover': {
-                  backgroundColor: '#ffe658'
+                  backgroundColor: '#ffe658',
+                  transform: 'translateY(-2px)'
                 }
               }}
               disabled={loading}
