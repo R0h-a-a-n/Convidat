@@ -38,7 +38,7 @@
   html, body, #__next, #root {
     @apply min-h-screen;
     background-color: hsl(var(--background));
-    background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
     background-size: 25px 25px;
     background-repeat: repeat;
     background-attachment: scroll;
@@ -63,7 +63,7 @@
     --primary-foreground: 0 0% 100%;
 
     --secondary: 263 90% 70%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary-foreground: 0 0% 0%;
 
     --muted: 210 10% 25%;
     --muted-foreground: 240 10% 75%;
@@ -78,4 +78,44 @@
     --input: 0 0% 100%;
     --ring: 312 90% 65%;
   }
+
+  @keyframes shinyMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 }
+
+@layer utilities {
+  .shiny-gradient {
+    background-image: linear-gradient(
+      270deg,
+      #ff9a9e,
+      #fad0c4,
+      #fbc2eb,
+      #a18cd1,
+      #ff9a9e
+    );
+    background-size: 600% 600%;
+    animation: shinyMove 6s ease infinite;
+  }
+
+  @keyframes shinyMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+

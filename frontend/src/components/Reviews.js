@@ -121,7 +121,21 @@ const Reviews = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        sx={{
+          fontFamily: 'Lexend Mega, sans-serif',
+          fontWeight: 'bold',
+          mb: 4,
+          backgroundColor: '#FEE440',
+          px: 3,
+          py: 1,
+          border: '2px solid black',
+          boxShadow: '4px 6px 0 black',
+          borderRadius: '0.75rem',
+          width: 'fit-content'
+        }}
+      >
         User Reviews
       </Typography>
 
@@ -132,11 +146,17 @@ const Reviews = () => {
       )}
 
       {stats && (
-        <Card sx={{ mb: 4 }}>
+        <Card sx={{
+          mb: 4,
+          backgroundColor: '#C2F970',
+          border: '2px solid black',
+          boxShadow: '4px 6px 0 black',
+          borderRadius: '0.75rem'
+        }}>
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
-                <Typography variant="h6">Average Rating</Typography>
+                <Typography variant="h6" fontWeight="bold">Average Rating</Typography>
                 <Box display="flex" alignItems="center">
                   <Rating value={parseFloat(stats.averageRating)} precision={0.1} readOnly />
                   <Typography variant="body1" sx={{ ml: 1 }}>
@@ -145,17 +165,22 @@ const Reviews = () => {
                 </Box>
               </Grid>
               <Grid item xs={12} md={4}>
-                <Typography variant="h6">Total Reviews</Typography>
+                <Typography variant="h6" fontWeight="bold">Total Reviews</Typography>
                 <Typography variant="body1">{stats.totalReviews}</Typography>
               </Grid>
               <Grid item xs={12} md={4}>
-                <Typography variant="h6">Feature Popularity</Typography>
+                <Typography variant="h6" fontWeight="bold">Feature Popularity</Typography>
                 <Box display="flex" flexWrap="wrap" gap={1}>
                   {Object.entries(stats.featureStats).map(([feature, count]) => (
                     <Chip
                       key={feature}
                       label={`${feature}: ${count}`}
                       size="small"
+                      sx={{
+                        border: '2px solid black',
+                        backgroundColor: '#FFDD57',
+                        fontWeight: 'bold'
+                      }}
                     />
                   ))}
                 </Box>
@@ -167,9 +192,14 @@ const Reviews = () => {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{
+            backgroundColor: '#B9FBC0',
+            border: '2px solid black',
+            boxShadow: '4px 6px 0 black',
+            borderRadius: '0.75rem'
+          }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Write a Review
               </Typography>
               <form onSubmit={handleSubmit}>
@@ -183,7 +213,7 @@ const Reviews = () => {
                   margin="normal"
                 />
                 <Box sx={{ my: 2 }}>
-                  <Typography component="legend">Rating</Typography>
+                  <Typography component="legend" fontWeight="bold">Rating</Typography>
                   <Rating
                     name="rating"
                     value={Number(formData.rating)}
@@ -225,7 +255,11 @@ const Reviews = () => {
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => (
-                          <Chip key={value} label={value} />
+                          <Chip
+                            key={value}
+                            label={value}
+                            sx={{ backgroundColor: '#FFD6A5', border: '2px solid black', fontWeight: 'bold' }}
+                          />
                         ))}
                       </Box>
                     )}
@@ -240,9 +274,20 @@ const Reviews = () => {
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
                   fullWidth
-                  sx={{ mt: 2 }}
+                  sx={{
+                    mt: 2,
+                    backgroundColor: '#FEE440',
+                    color: 'black',
+                    fontWeight: 'bold',
+                    border: '2px solid black',
+                    boxShadow: '4px 6px 0 black',
+                    borderRadius: '0.75rem',
+                    '&:hover': {
+                      backgroundColor: '#FFD60A',
+                      boxShadow: '6px 8px 0 black'
+                    }
+                  }}
                   disabled={loading}
                 >
                   Submit Review
@@ -253,38 +298,70 @@ const Reviews = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Typography variant="h6" gutterBottom>
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            sx={{
+              mb: 2,
+              backgroundColor: '#A0C4FF',
+              px: 2,
+              py: 1,
+              border: '2px solid black',
+              boxShadow: '4px 6px 0 black',
+              borderRadius: '0.75rem',
+              width: 'fit-content'
+            }}
+          >
             Recent Reviews
           </Typography>
           {reviews.map((review) => (
-            <Card key={review._id} sx={{ mb: 2 }}>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6">{review.title}</Typography>
-                  <Rating value={review.rating} readOnly />
-                </Box>
-                <Typography color="textSecondary" gutterBottom>
-                  By {review.userName} • {new Date(review.createdAt).toLocaleDateString()}
-                </Typography>
-                <Typography paragraph>{review.comment}</Typography>
-                <Box display="flex" flexWrap="wrap" gap={1}>
-                  {review.features.map((feature) => (
-                    <Chip
-                      key={feature}
-                      label={feature}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+  <Card
+  key={review._id}
+  sx={{
+    mb: 2,
+    border: '2px solid black',
+    boxShadow: '4px 6px 0 black',
+    borderRadius: '0.75rem',
+    backgroundColor: '#FFF1A5',
+    color: 'black',
+    overflow: 'hidden',
+    p: 0
+  }}
+>
+  <Box className={review.rating === 5 ? 'shiny-gradient' : ''} sx={{ p: 2 }}>
+    <CardContent sx={{ p: 0 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6" fontWeight="bold">{review.title}</Typography>
+        <Rating value={review.rating} readOnly />
+      </Box>
+      <Typography color="textSecondary" gutterBottom>
+        By {review.userName} • {new Date(review.createdAt).toLocaleDateString()}
+      </Typography>
+      <Typography paragraph>{review.comment}</Typography>
+      <Box display="flex" flexWrap="wrap" gap={1}>
+        {review.features.map((feature) => (
+          <Chip
+            key={feature}
+            label={feature}
+            size="small"
+            color="primary"
+            variant="outlined"
+            sx={{ border: '2px solid black', fontWeight: 'bold' }}
+          />
+        ))}
+      </Box>
+    </CardContent>
+  </Box>
+</Card>
+
+
+))}
+
+
         </Grid>
       </Grid>
     </Container>
   );
 };
 
-export default Reviews; 
+export default Reviews;

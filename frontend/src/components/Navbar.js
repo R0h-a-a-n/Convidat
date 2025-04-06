@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -34,8 +33,6 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const isActiveRoute = (path) => location.pathname === path;
-
   const navItemStyle = {
     fontFamily: 'Lexend Mega, sans-serif',
     fontWeight: 'bold',
@@ -48,11 +45,15 @@ const Navbar = () => {
     boxShadow: '4px 6px 0 black',
     borderRadius: '0.75rem',
     textTransform: 'uppercase',
+    whiteSpace: 'nowrap',
+    minWidth: '120px',
+    textAlign: 'center',
     '&:hover': {
       backgroundColor: '#FFD60A',
       boxShadow: '6px 8px 0 black'
     }
   };
+  
 
   const menuPaperStyle = {
     mt: 1.5,
@@ -60,6 +61,24 @@ const Navbar = () => {
     border: '2px solid black',
     boxShadow: '4px 6px 0 black'
   };
+
+  // Re-ordered authenticated nav items:
+  // Reviews is last and Travel is second last.
+  const authNavItems = [
+    { path: '/carbon', label: 'Carbon' },
+    { path: '/recommendations', label: 'Recommendations' },
+    { path: '/destinations', label: 'Destinations' },
+    { path: '/eco-stays', label: 'Eco-Stays' },
+    { path: '/sustainable-routes', label: 'Routes' },
+    { path: '/responsible-travel', label: 'Guide' },
+    { path: '/reviews', label: 'Reviews' }
+  ];
+
+  const guestNavItems = [
+    { path: '/login', label: 'Login' },
+    { path: '/register', label: 'Register' },
+    { path: '/responsible-travel', label: 'Travel' }
+  ];
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#BAFCA2', borderBottom: '4px solid black' }}>
@@ -86,19 +105,7 @@ const Navbar = () => {
           </Typography>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-            {(user ? [
-              { path: '/carbon', label: 'Carbon' },
-              { path: '/recommendations', label: 'Recommendations' },
-              { path: '/eco-stays', label: 'Eco Stays' },
-              { path: '/sustainable-routes', label: 'Routes' },
-              { path: '/reviews', label: 'Reviews' },
-              { path: '/responsible-travel', label: 'Travel' },
-              { path: '/destinations', label: 'Destinations' }
-            ] : [
-              { path: '/login', label: 'Login' },
-              { path: '/register', label: 'Register' },
-              { path: '/responsible-travel', label: 'Travel' }
-            ]).map((item) => (
+            {(user ? authNavItems : guestNavItems).map((item) => (
               <Button
                 key={item.path}
                 component={RouterLink}
@@ -126,19 +133,7 @@ const Navbar = () => {
               onClose={handleMenuClose}
               PaperProps={{ sx: menuPaperStyle }}
             >
-              {(user ? [
-                { path: '/carbon', label: 'Carbon' },
-                { path: '/recommendations', label: 'Recommendations' },
-                { path: '/eco-stays', label: 'Eco Stays' },
-                { path: '/sustainable-routes', label: 'Routes' },
-                { path: '/reviews', label: 'Reviews' },
-                { path: '/responsible-travel', label: 'Travel' },
-                { path: '/destinations', label: 'Destinations' }
-              ] : [
-                { path: '/login', label: 'Login' },
-                { path: '/register', label: 'Register' },
-                { path: '/responsible-travel', label: 'Travel' }
-              ]).map((item) => (
+              {(user ? authNavItems : guestNavItems).map((item) => (
                 <MenuItem
                   key={item.path}
                   component={RouterLink}
