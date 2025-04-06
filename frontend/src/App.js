@@ -13,6 +13,7 @@ import TravelRecommendations from './pages/TravelRecommendations';
 import EcoAccommodations from './components/EcoAccommodations';
 import SustainableRoutes from './components/SustainableRoutes';
 import ResponsibleTravel from './components/ResponsibleTravel';
+import Reviews from './components/Reviews';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -50,6 +51,7 @@ function App() {
               <Route path="/recommendations" element={<PrivateRoute><TravelRecommendations /></PrivateRoute>} />
               <Route path="/eco-stays" element={<PrivateRoute><EcoAccommodations /></PrivateRoute>} />
               <Route path="/sustainable-routes" element={<PrivateRoute><SustainableRoutes /></PrivateRoute>} />
+              <Route path="/reviews" element={<PrivateRoute><Reviews /></PrivateRoute>} />
               <Route path="/responsible-travel" element={<ResponsibleTravel />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

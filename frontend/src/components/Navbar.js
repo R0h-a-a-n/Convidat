@@ -90,6 +90,7 @@ const Navbar = () => {
               { path: '/recommendations', label: 'Recommendations' },
               { path: '/eco-stays', label: 'Eco Stays' },
               { path: '/sustainable-routes', label: 'Routes' },
+              { path: '/reviews', label: 'Reviews' },
               { path: '/responsible-travel', label: 'Travel' }
             ] : [
               { path: '/login', label: 'Login' },
@@ -128,6 +129,7 @@ const Navbar = () => {
                 { path: '/recommendations', label: 'Recommendations' },
                 { path: '/eco-stays', label: 'Eco Stays' },
                 { path: '/sustainable-routes', label: 'Routes' },
+                { path: '/reviews', label: 'Reviews' },
                 { path: '/responsible-travel', label: 'Travel' }
               ] : [
                 { path: '/login', label: 'Login' },
