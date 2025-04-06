@@ -28,7 +28,6 @@ import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import TravelMap from './TravelMap';
 
-// ✅ Axios instance without manual CORS header
 const api = axios.create({
   baseURL: process.env.REACT_APP_TRAVEL_API_URL || 'http://localhost:3006',
   withCredentials: true,
@@ -38,38 +37,18 @@ const api = axios.create({
   }
 });
 
-// Debugging interceptor
 api.interceptors.request.use(
   config => {
-    console.log('Making request:', {
-      url: config.url,
-      method: config.method,
-      params: config.params,
-      headers: config.headers
-    });
     const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  error => {
-    console.error('Request error:', error);
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
-// Error handler
 api.interceptors.response.use(
   response => response,
-  error => {
-    console.error('API Error:', {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
 const SustainableRoutes = () => {
@@ -98,12 +77,9 @@ const SustainableRoutes = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await api.get('/api/routes/search', {
-        params: searchParams
-      });
+      const response = await api.get('/api/routes/search', { params: searchParams });
       setRoutes(response.data.data || []);
     } catch (error) {
-      console.error('Error searching routes:', error);
       setError(error.response?.data?.message || 'Failed to search routes. Please try again.');
     } finally {
       setLoading(false);
@@ -118,15 +94,10 @@ const SustainableRoutes = () => {
   };
 
   const handleTransportTypeChange = (type) => {
-    const currentTypes = searchParams.preferredTransportTypes;
-    const newTypes = currentTypes.includes(type)
-      ? currentTypes.filter(t => t !== type)
-      : [...currentTypes, type];
-    
-    setSearchParams({
-      ...searchParams,
-      preferredTransportTypes: newTypes,
-    });
+    const newTypes = searchParams.preferredTransportTypes.includes(type)
+      ? searchParams.preferredTransportTypes.filter(t => t !== type)
+      : [...searchParams.preferredTransportTypes, type];
+    setSearchParams({ ...searchParams, preferredTransportTypes: newTypes });
   };
 
   const getTransportIcon = (type) => {
@@ -139,109 +110,55 @@ const SustainableRoutes = () => {
     }
   };
 
-  const getMapCenter = () => {
-    if (routes.length > 0 &&
-        routes[0].origin?.coordinates?.lat &&
-        routes[0].origin?.coordinates?.lng) {
-      return {
-        lat: parseFloat(routes[0].origin.coordinates.lat),
-        lng: parseFloat(routes[0].origin.coordinates.lng)
-      };
-    }
-    return null;
-  };
-
-  const formatDuration = (duration) => {
-    const hours = Math.floor(duration / 60);
-    const minutes = duration % 60;
-    return `${hours}h ${minutes}m`;
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  };
-
   return (
     <Container>
       <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography
+          variant="h4"
+          sx={{
+            mb: 3,
+            fontWeight: 'bold',
+            fontFamily: 'Lexend Mega, sans-serif',
+            backgroundColor: '#FEE440',
+            px: 3,
+            py: 1,
+            border: '2px solid black',
+            borderRadius: '0.75rem',
+            boxShadow: '4px 6px 0 black',
+            width: 'fit-content'
+          }}
+        >
           Sustainable Travel Routes
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        <Paper sx={{ p: 3, mb: 3 }}>
+        <Paper sx={{
+          p: 3,
+          mb: 3,
+          backgroundColor: '#C2F970',
+          border: '2px solid black',
+          boxShadow: '4px 6px 0 black',
+          borderRadius: '0.75rem'
+        }}>
           <form onSubmit={handleSearch}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="originCity"
-                  label="Origin City"
-                  value={searchParams.originCity}
-                  onChange={handleInputChange}
-                  required
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  fullWidth
-                  name="originCountry"
-                  label="Origin Country"
-                  value={searchParams.originCountry}
-                  onChange={handleInputChange}
-                  required
-                />
+                <TextField fullWidth name="originCity" label="Origin City" value={searchParams.originCity} onChange={handleInputChange} required sx={{ mb: 2 }} />
+                <TextField fullWidth name="originCountry" label="Origin Country" value={searchParams.originCountry} onChange={handleInputChange} required />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="destinationCity"
-                  label="Destination City"
-                  value={searchParams.destinationCity}
-                  onChange={handleInputChange}
-                  required
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  fullWidth
-                  name="destinationCountry"
-                  label="Destination Country"
-                  value={searchParams.destinationCountry}
-                  onChange={handleInputChange}
-                  required
-                />
+                <TextField fullWidth name="destinationCity" label="Destination City" value={searchParams.destinationCity} onChange={handleInputChange} required sx={{ mb: 2 }} />
+                <TextField fullWidth name="destinationCountry" label="Destination Country" value={searchParams.destinationCountry} onChange={handleInputChange} required />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="maxPrice"
-                  label="Max Price (USD)"
-                  type="number"
-                  value={searchParams.maxPrice}
-                  onChange={handleInputChange}
-                />
+                <TextField fullWidth name="maxPrice" label="Max Price (USD)" type="number" value={searchParams.maxPrice} onChange={handleInputChange} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="maxCarbonEmissions"
-                  label="Max Carbon Emissions (kg CO2)"
-                  type="number"
-                  value={searchParams.maxCarbonEmissions}
-                  onChange={handleInputChange}
-                />
+                <TextField fullWidth name="maxCarbonEmissions" label="Max Carbon Emissions (kg CO2)" type="number" value={searchParams.maxCarbonEmissions} onChange={handleInputChange} />
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Preferred Transport Types
-                </Typography>
+                <Typography variant="subtitle1" fontWeight="bold">Preferred Transport Types</Typography>
                 <FormGroup row>
                   {transportTypes.map((type) => (
                     <FormControlLabel
@@ -263,9 +180,23 @@ const SustainableRoutes = () => {
                 <Button
                   fullWidth
                   variant="contained"
-                  color="primary"
                   type="submit"
                   disabled={loading}
+                  sx={{
+                    mt: 2,
+                    backgroundColor: '#FEE440',
+                    color: 'black',
+                    fontWeight: 'bold',
+                    border: '2px solid black',
+                    boxShadow: '4px 6px 0 black',
+                    borderRadius: '0.75rem',
+                    textTransform: 'uppercase',
+                    fontFamily: 'Lexend Mega, sans-serif',
+                    '&:hover': {
+                      backgroundColor: '#FFD60A',
+                      boxShadow: '6px 8px 0 black'
+                    }
+                  }}
                 >
                   {loading ? 'Searching...' : 'Search Routes'}
                 </Button>
@@ -288,45 +219,56 @@ const SustainableRoutes = () => {
             <Grid container spacing={2}>
               {routes.map((route) => (
                 <Grid item xs={12} key={route._id}>
-                  <Card>
+                  <Card sx={{
+                    border: '2px solid black',
+                    boxShadow: '4px 6px 0 black',
+                    borderRadius: '0.75rem',
+                    backgroundColor: '#B9FBC0',
+                    color: 'black'
+                  }}>
                     <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {route.origin.city}, {route.origin.country} to {route.destination.city}, {route.destination.country}
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Lexend Mega, sans-serif', mb: 1 }}>
+                        {route.origin.city}, {route.origin.country} → {route.destination.city}, {route.destination.country}
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+
+                      <Box sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        backgroundColor: '#A0C4FF',
+                        px: 2,
+                        py: 0.5,
+                        border: '2px solid black',
+                        boxShadow: '2px 3px 0 black',
+                        borderRadius: '0.5rem',
+                        fontWeight: 'bold',
+                        mb: 1
+                      }}>
                         {getTransportIcon(route.type)}
                         <Typography sx={{ ml: 1 }}>
                           {route.type.charAt(0).toUpperCase() + route.type.slice(1)}
                         </Typography>
                       </Box>
-                      <Typography variant="body1" gutterBottom>
-                        Duration: {route.duration}
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        Price: ${route.price}
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        Carbon Emissions: {route.carbonEmissions} kg CO2
-                      </Typography>
+
+                      <Typography variant="body1">Duration: {route.duration}</Typography>
+                      <Typography variant="body1">Price: ${route.price}</Typography>
+                      <Typography variant="body1">Carbon Emissions: {route.carbonEmissions} kg CO2</Typography>
+
                       {route.departureTime && route.arrivalTime && (
-                        <Typography variant="body1" gutterBottom>
+                        <Typography variant="body1">
                           Schedule: {route.departureTime} - {route.arrivalTime}
                         </Typography>
                       )}
+
                       <Box sx={{ mt: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Journey Details:
-                        </Typography>
+                        <Typography variant="subtitle1" fontWeight="bold">Journey Details:</Typography>
                         <List>
                           {route.steps.map((step, index) => (
-                            <ListItem key={index}>
+                            <ListItem key={index} sx={{ borderBottom: '1px dashed black' }}>
                               <ListItemIcon>
                                 {getTransportIcon(step.type)}
                               </ListItemIcon>
                               <ListItemText
-                                primary={
-                                  <div dangerouslySetInnerHTML={{ __html: step.instruction }} />
-                                }
+                                primary={<div dangerouslySetInnerHTML={{ __html: step.instruction }} />}
                                 secondary={
                                   <>
                                     {step.distance} • {step.duration}
@@ -344,14 +286,22 @@ const SustainableRoutes = () => {
                           ))}
                         </List>
                       </Box>
+
                       <Box sx={{ mt: 1 }}>
                         {route.sustainabilityFeatures?.map((feature, idx) => (
                           <Chip
                             key={idx}
                             label={feature}
                             size="small"
-                            color="success"
-                            sx={{ mr: 0.5, mb: 0.5 }}
+                            sx={{
+                              backgroundColor: '#FFDD57',
+                              border: '2px solid black',
+                              fontWeight: 'bold',
+                              fontFamily: 'Lexend Mega, sans-serif',
+                              boxShadow: '2px 3px 0 black',
+                              mr: 0.5,
+                              mb: 0.5
+                            }}
                           />
                         ))}
                       </Box>
