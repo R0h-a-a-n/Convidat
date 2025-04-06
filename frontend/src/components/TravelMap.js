@@ -1,242 +1,119 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
-import './TravelMap.css';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  Divider
+} from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import EcoDestinations from './EcoDestinations';
 
-const libraries = ['places'];
+const DEFAULT_RECOMMENDATIONS = [
+  {
+    city: 'Mumbai',
+    description: 'A vibrant city with rich cultural heritage and modern attractions',
+    mapUrl: 'https://www.google.com/maps/place/Mumbai'
+  },
+  {
+    city: 'Pune',
+    description: 'Known for its educational institutions and pleasant weather',
+    mapUrl: 'https://www.google.com/maps/place/Pune'
+  },
+  {
+    city: 'Chennai',
+    description: 'A coastal city with beautiful beaches and historical landmarks',
+    mapUrl: 'https://www.google.com/maps/place/Chennai'
+  }
+];
 
-const mapContainerStyle = {
-  width: '100%',
-  height: '400px',
-  position: 'relative'
-};
+const TravelMap = ({ recommendations = DEFAULT_RECOMMENDATIONS }) => {
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
-const defaultCenter = {
-  lat: 13.0827,
-  lng: 80.2707
-};
-
-const mapOptions = {
-  streetViewControl: false,
-  mapTypeControl: false,
-  fullscreenControl: true,
-  zoomControl: true,
-  styles: [
-    {
-      featureType: 'poi',
-      elementType: 'labels',
-      stylers: [{ visibility: 'off' }]
-    }
-  ]
-};
-
-const LoadingContainer = () => (
-  <div className="map-container" style={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    border: '1px solid #ddd'
-  }}>
-    Loading maps...
-  </div>
-);
-
-const ErrorContainer = ({ error }) => (
-  <div className="map-container" style={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    border: '1px solid #ddd',
-    padding: '20px',
-    textAlign: 'center',
-    color: '#d32f2f'
-  }}>
-    {error || 'Error loading Google Maps. Please check your API key and try again.'}
-  </div>
-);
-
-const TravelMap = ({ routes, accommodations, center }) => {
-  const mapRef = useRef(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [mapError, setMapError] = useState(null);
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
-
-  useEffect(() => {
-    if (!process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
-      setMapError('Google Maps API key is missing');
-      console.error('Google Maps API key is missing in environment variables');
-    }
-  }, []);
-
-  const onMapLoad = useCallback((map) => {
-    console.log('Map loaded successfully');
-    mapRef.current = map;
-    setMapLoaded(true);
-
-    // If we have routes, fit bounds to show all markers
-    if (routes?.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      routes.forEach(route => {
-        if (route.origin?.coordinates?.lat && route.origin?.coordinates?.lng) {
-          bounds.extend(new window.google.maps.LatLng(
-            route.origin.coordinates.lat,
-            route.origin.coordinates.lng
-          ));
-        }
-        if (route.destination?.coordinates?.lat && route.destination?.coordinates?.lng) {
-          bounds.extend(new window.google.maps.LatLng(
-            route.destination.coordinates.lat,
-            route.destination.coordinates.lng
-          ));
-        }
-      });
-      map.fitBounds(bounds);
-    }
-  }, [routes]);
-
-  const renderRouteMarkers = useCallback(() => {
-    if (!routes) return null;
-
-    return routes.map((route, index) => {
-      const markers = [];
-
-      // Origin marker
-      if (route.origin?.coordinates?.lat && route.origin?.coordinates?.lng) {
-        markers.push(
-          <Marker
-            key={`origin-${index}`}
-            position={{
-              lat: route.origin.coordinates.lat,
-              lng: route.origin.coordinates.lng
-            }}
-            label={{
-              text: 'A',
-              color: 'white'
-            }}
-          />
-        );
-      }
-
-      // Destination marker
-      if (route.destination?.coordinates?.lat && route.destination?.coordinates?.lng) {
-        markers.push(
-          <Marker
-            key={`destination-${index}`}
-            position={{
-              lat: route.destination.coordinates.lat,
-              lng: route.destination.coordinates.lng
-            }}
-            label={{
-              text: 'B',
-              color: 'white'
-            }}
-          />
-        );
-      }
-
-      // Draw route line if we have both markers
-      if (route.origin?.coordinates && route.destination?.coordinates) {
-        markers.push(
-          <Polyline
-            key={`route-${index}`}
-            path={[
-              { 
-                lat: route.origin.coordinates.lat, 
-                lng: route.origin.coordinates.lng 
-              },
-              { 
-                lat: route.destination.coordinates.lat, 
-                lng: route.destination.coordinates.lng 
-              }
-            ]}
-            options={{
-              strokeColor: '#2e7d32',
-              strokeOpacity: 0.8,
-              strokeWeight: 3,
-            }}
-          />
-        );
-      }
-
-      return markers;
-    });
-  }, [routes]);
-
-  const getMarkerIcon = (type) => {
-    switch (type?.toLowerCase()) {
-      case 'hotel':
-        return '🏨';
-      case 'hostel':
-        return '🏠';
-      case 'eco-lodge':
-        return '🌿';
-      case 'apartment':
-        return '🏢';
-      default:
-        return '📍';
-    }
+  const handleCityClick = (city) => {
+    setSelectedCity(city);
+    setOpenDialog(true);
   };
 
-  if (loadError || mapError) {
-    console.error('Error loading Google Maps:', loadError || mapError);
-    return <ErrorContainer error={loadError?.message || mapError} />;
-  }
-
-  if (!isLoaded) {
-    return <LoadingContainer />;
-  }
-
-  const mapCenter = center || defaultCenter;
-  console.log('Rendering map with center:', mapCenter);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedCity(null);
+  };
 
   return (
-    <div className="map-container">
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={mapCenter}
-        zoom={12}
-        onLoad={onMapLoad}
-        options={{
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: true,
-          zoomControl: true,
-          styles: mapOptions.styles
-        }}
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Travel Recommendations
+      </Typography>
+      <Divider sx={{ mb: 3 }} />
+      <Grid container spacing={3}>
+        {recommendations.map((recommendation, index) => (
+          <Grid item xs={12} md={6} key={index}>
+            <Card sx={{ 
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: 4
+            }}>
+              <CardContent>
+                <Typography variant="h5" gutterBottom>
+                  {recommendation.city}
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  {recommendation.description}
+                </Typography>
+                <Box sx={{ mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleCityClick(recommendation.city)}
+                    sx={{ mr: 2 }}
+                  >
+                    View Eco-Friendly Destinations
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => window.open(recommendation.mapUrl, '_blank')}
+                  >
+                    View on Map
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
       >
-        {mapLoaded && accommodations?.map((accommodation) => {
-          if (!accommodation.location?.coordinates?.lat || !accommodation.location?.coordinates?.lng) {
-            console.warn('Invalid coordinates for accommodation:', accommodation);
-            return null;
-          }
-
-          const position = {
-            lat: parseFloat(accommodation.location.coordinates.lat),
-            lng: parseFloat(accommodation.location.coordinates.lng)
-          };
-
-          return (
-            <Marker
-              key={accommodation._id}
-              position={position}
-              title={accommodation.name}
-              label={{
-                text: getMarkerIcon(accommodation.type),
-                fontSize: '24px',
-                className: 'marker-label'
-              }}
-            />
-          );
-        })}
-
-        {renderRouteMarkers()}
-      </GoogleMap>
-    </div>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6">Eco-Friendly Destinations</Typography>
+            <IconButton onClick={handleCloseDialog}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedCity && <EcoDestinations city={selectedCity} />}
+        </DialogContent>
+      </Dialog>
+    </Box>
   );
 };
 

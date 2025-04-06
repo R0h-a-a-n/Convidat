@@ -17,7 +17,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import { Globe } from '../components/ui/globe';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -117,28 +116,10 @@ const Dashboard = () => {
   const ecoScore = calculateEcoScore(carbonData);
 
   return (
-    <Box sx={{ position: 'relative', width: '100%', minHeight: '100vh' }}>
-      {/* Globe Animation in the Background */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 0,
-          overflow: 'hidden'
-        }}
-      >
-        <Globe />
-      </Box>
-
-      {/* Dashboard Content on Top of the Globe */}
+    <Box sx={{ width: '100%', minHeight: '100vh' }}>
       <Container
         maxWidth="lg"
         sx={{
-          position: 'relative',
-          zIndex: 1,
           pt: 10,
           pb: 10,
           display: 'flex',
@@ -248,7 +229,7 @@ const Dashboard = () => {
                     </Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Based on {carbonData.count} journeys
+                    Across {carbonData.count} trips
                   </Typography>
                 </CardContent>
               </Card>
@@ -264,67 +245,69 @@ const Dashboard = () => {
               }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h6" gutterBottom>
-                    Average per Trip
+                    Average Emission
                   </Typography>
-                  <Typography variant="h3" color="secondary.main">
+                  <Typography variant="h3" color="primary.main" gutterBottom>
                     {carbonData.averageEmission.toFixed(1)}
                     <Typography component="span" variant="h6" color="text.secondary">
                       {' '}kg CO₂
                     </Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Tracking your carbon impact
+                    Per trip
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
 
-          {/* Recent Activity */}
-          <Card sx={{
-            borderRadius: 3,
-            backgroundColor: 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: 4
-          }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Recent Activity
-              </Typography>
-              <List disablePadding>
-                {recentActivity.length > 0 ? (
-                  recentActivity.map((activity, idx) => (
-                    <React.Fragment key={idx}>
-                      <ListItem sx={{ py: 1.5 }}>
-                        <ListItemText
-                          primary={
-                            activity.travelType
-                              ? `${activity.travelType.charAt(0).toUpperCase() + activity.travelType.slice(1)} Journey`
-                              : "Journey details not available"
-                          }
-                          secondary={[
-                            activity.distance && activity.unit ? `${activity.distance} ${activity.unit}` : '',
-                            activity.carbonEmission ? ` ${activity.carbonEmission.toFixed(1)} kg CO₂` : '',
-                            activity.date ? ` ${formatDate(activity.date)}` : ''
-                          ].filter(Boolean).join(' • ')}
-                        />
-                      </ListItem>
-                      {idx < recentActivity.length - 1 && <Divider />}
-                    </React.Fragment>
-                  ))
-                ) : (
-                  <ListItem>
+          {/* Recent Activity Section */}
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              backgroundColor: 'rgba(255, 255, 255, 0.4)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: 4
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              Recent Activity
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            {recentActivity.length > 0 ? (
+              <List>
+                {recentActivity.map((activity, index) => (
+                  <ListItem
+                    key={index}
+                    sx={{
+                      mb: 1,
+                      borderRadius: 2,
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                      },
+                    }}
+                  >
                     <ListItemText
-                      primary="No recent activity"
-                      secondary="Start tracking your travel to see your impact"
+                      primary={activity.origin && activity.destination 
+                        ? `${activity.travelType || 'Journey'} from ${activity.origin} to ${activity.destination}`
+                        : `${activity.travelType + ' '+ 'Journey'}`
+                      }
+                      secondary={`${formatDate(activity.date)} - ${(activity.carbonEmission || 0).toFixed(1)} kg CO₂`}
                     />
                   </ListItem>
-                )}
+                ))}
               </List>
-            </CardContent>
-          </Card>
+            ) : (
+              <Typography variant="body1" color="text.secondary">
+                No recent activity to display.
+              </Typography>
+            )}
+          </Paper>
         </Box>
       </Container>
     </Box>
