@@ -29,6 +29,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import './TravelRecommendations.css';
+
 import axios from 'axios';
 
 const TravelRecommendations = () => {

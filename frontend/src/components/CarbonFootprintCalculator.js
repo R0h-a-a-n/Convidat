@@ -17,12 +17,12 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Paper
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 
-// Create an axios instance with default config
 const api = axios.create({
   baseURL: 'http://localhost:3002',
   withCredentials: true,
@@ -32,41 +32,18 @@ const api = axios.create({
   }
 });
 
-// Add request interceptor to handle errors
 api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  error => {
-    console.error('Request error:', error);
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
-// Add response interceptor to handle errors
 api.interceptors.response.use(
   response => response,
-  error => {
-    console.error('Response error:', error);
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error('Error data:', error.response.data);
-      console.error('Error status:', error.response.status);
-      console.error('Error headers:', error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('No response received:', error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error setting up request:', error.message);
-    }
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
 const initialFormData = {
@@ -88,27 +65,44 @@ const CarbonFootprintCalculator = () => {
   const [deletingEntry, setDeletingEntry] = useState(null);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const fetchTotalEmission = async () => {
+    try {
+      const res = await api.get('/api/carbon/footprint/total');
+      setTotalEmission(res.data);
+    } catch (err) {
+      console.error('Fetch total emission failed');
+    }
+  };
+
+  const fetchHistory = async () => {
+    try {
+      const res = await api.get('/api/carbon/footprint');
+      setHistory(res.data);
+    } catch (err) {
+      console.error('Fetch history failed');
+    }
+  };
+
+  useEffect(() => {
+    fetchTotalEmission();
+    fetchHistory();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSuccess('');
-
     try {
-      const response = await api.post('/api/carbon/footprint', formData);
-      setSuccess('Carbon footprint added successfully!');
+      await api.post('/api/carbon/footprint', formData);
+      setSuccess('Entry added!');
       setFormData(initialFormData);
       fetchTotalEmission();
       fetchHistory();
     } catch (err) {
-      console.error('Submit error:', err);
-      setError(err.response?.data?.message || 'Error adding carbon footprint');
+      setError('Failed to add entry');
     } finally {
       setLoading(false);
     }
@@ -116,11 +110,7 @@ const CarbonFootprintCalculator = () => {
 
   const handleEdit = (entry) => {
     setEditingEntry(entry);
-    setFormData({
-      travelType: entry.travelType,
-      distance: entry.distance,
-      unit: entry.unit
-    });
+    setFormData({ travelType: entry.travelType, distance: entry.distance, unit: entry.unit });
     setEditDialogOpen(true);
   };
 
@@ -131,17 +121,15 @@ const CarbonFootprintCalculator = () => {
 
   const handleEditSubmit = async () => {
     setLoading(true);
-    setError('');
     try {
       await api.put(`/api/carbon/footprint/${editingEntry._id}`, formData);
-      setSuccess('Entry updated successfully!');
+      setSuccess('Entry updated!');
       setEditDialogOpen(false);
       setFormData(initialFormData);
       fetchTotalEmission();
       fetchHistory();
     } catch (err) {
-      console.error('Edit error:', err);
-      setError(err.response?.data?.message || 'Error updating entry');
+      setError('Failed to update entry');
     } finally {
       setLoading(false);
     }
@@ -149,67 +137,36 @@ const CarbonFootprintCalculator = () => {
 
   const handleDeleteConfirm = async () => {
     setLoading(true);
-    setError('');
     try {
       await api.delete(`/api/carbon/footprint/${deletingEntry._id}`);
-      setSuccess('Entry deleted successfully!');
+      setSuccess('Entry deleted!');
       setDeleteDialogOpen(false);
       fetchTotalEmission();
       fetchHistory();
     } catch (err) {
-      console.error('Delete error:', err);
-      setError(err.response?.data?.message || 'Error deleting entry');
+      setError('Failed to delete entry');
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchTotalEmission = async () => {
-    try {
-      const response = await api.get('/api/carbon/footprint/total');
-      setTotalEmission(response.data);
-    } catch (err) {
-      console.error('Error fetching total emission:', err);
-    }
-  };
-
-  const fetchHistory = async () => {
-    try {
-      const response = await api.get('/api/carbon/footprint');
-      setHistory(response.data);
-    } catch (err) {
-      console.error('Error fetching history:', err);
-    }
-  };
-
-  useEffect(() => {
-    fetchTotalEmission();
-    fetchHistory();
-  }, []);
+  const cardHues = ['#9B5DE5', '#F15BB5', '#FEE440', '#00F5D4', '#00BBF9', '#B4F8C8'];
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Carbon Footprint Calculator
-      </Typography>
+      <Typography variant="h4" sx={{ fontFamily: 'Lexend Mega', mb: 3 }}>Carbon Footprint Calculator</Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
+      {success && <Alert severity="success">{success}</Alert>}
 
-      <Card sx={{ mb: 4 }}>
+      <Card sx={{ mb: 4, border: '2px solid black', boxShadow: '4px 6px 0 black' }}>
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Travel Type</InputLabel>
-                  <Select
-                    name="travelType"
-                    value={formData.travelType}
-                    onChange={handleChange}
-                    label="Travel Type"
-                    required
-                  >
+                  <Select name="travelType" value={formData.travelType} onChange={handleChange} required>
                     <MenuItem value="flight">Flight</MenuItem>
                     <MenuItem value="car">Car</MenuItem>
                     <MenuItem value="train">Train</MenuItem>
@@ -219,43 +176,20 @@ const CarbonFootprintCalculator = () => {
                   </Select>
                 </FormControl>
               </Grid>
-
               <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  label="Distance"
-                  name="distance"
-                  type="number"
-                  value={formData.distance}
-                  onChange={handleChange}
-                  required
-                />
+                <TextField fullWidth label="Distance" name="distance" type="number" value={formData.distance} onChange={handleChange} required />
               </Grid>
-
               <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Unit</InputLabel>
-                  <Select
-                    name="unit"
-                    value={formData.unit}
-                    onChange={handleChange}
-                    label="Unit"
-                    required
-                  >
+                  <Select name="unit" value={formData.unit} onChange={handleChange} required>
                     <MenuItem value="km">Kilometers</MenuItem>
                     <MenuItem value="miles">Miles</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
-
               <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  disabled={loading}
-                >
+                <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
                   {loading ? <CircularProgress size={24} /> : 'Calculate Carbon Footprint'}
                 </Button>
               </Grid>
@@ -265,68 +199,51 @@ const CarbonFootprintCalculator = () => {
       </Card>
 
       {totalEmission && (
-        <Card sx={{ mb: 4 }}>
+        <Card sx={{ mb: 4, border: '2px solid black', boxShadow: '4px 6px 0 black', backgroundColor: '#FEE440' }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Your Total Carbon Footprint
-            </Typography>
-            <Typography variant="h4" color="primary">
-              {totalEmission.totalEmission.toFixed(2)} kg CO2
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Based on {totalEmission.count} travel entries
-            </Typography>
+            <Typography variant="h6">Your Total Carbon Footprint</Typography>
+            <Typography variant="h4" color="primary">{totalEmission.totalEmission.toFixed(2)} kg CO2</Typography>
+            <Typography variant="body2">Based on {totalEmission.count} travel entries</Typography>
           </CardContent>
         </Card>
       )}
 
-      <Card>
+      <Card sx={{ border: '2px solid black', boxShadow: '4px 6px 0 black' }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Travel History
-          </Typography>
-          {history.map((entry) => (
-            <Box key={entry._id} sx={{ mb: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1, position: 'relative' }}>
-              <Box sx={{ position: 'absolute', right: 8, top: 8 }}>
-                <IconButton size="small" onClick={() => handleEdit(entry)} sx={{ mr: 1 }}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton size="small" onClick={() => handleDelete(entry)} color="error">
-                  <DeleteIcon />
-                </IconButton>
+          <Typography variant="h6" gutterBottom>Travel History</Typography>
+          {history.map((entry, index) => (
+            <Paper
+              key={entry._id}
+              sx={{
+                mb: 2,
+                p: 2,
+                border: '2px solid black',
+                boxShadow: '4px 6px 0 black',
+                backgroundColor: cardHues[index % cardHues.length],
+                position: 'relative'
+              }}
+            >
+              <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                <IconButton onClick={() => handleEdit(entry)}><EditIcon /></IconButton>
+                <IconButton onClick={() => handleDelete(entry)} color="error"><DeleteIcon /></IconButton>
               </Box>
-              <Typography variant="subtitle1">
-                {entry.travelType.charAt(0).toUpperCase() + entry.travelType.slice(1)}
-              </Typography>
-              <Typography variant="body2">
-                Distance: {entry.distance} {entry.unit}
-              </Typography>
-              <Typography variant="body2" color="primary">
-                Carbon Emission: {entry.carbonEmission.toFixed(2)} kg CO2
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Date: {new Date(entry.date).toLocaleDateString()}
-              </Typography>
-            </Box>
+              <Typography variant="subtitle1">{entry.travelType.charAt(0).toUpperCase() + entry.travelType.slice(1)}</Typography>
+              <Typography variant="body2">Distance: {entry.distance} {entry.unit}</Typography>
+              <Typography variant="body2">Carbon Emission: {entry.carbonEmission.toFixed(2)} kg CO2</Typography>
+              <Typography variant="caption">Date: {new Date(entry.date).toLocaleDateString()}</Typography>
+            </Paper>
           ))}
         </CardContent>
       </Card>
 
-      {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit Travel Entry</DialogTitle>
+        <DialogTitle>Edit Entry</DialogTitle>
         <DialogContent>
-          <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid container spacing={2} mt={1}>
             <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel>Travel Type</InputLabel>
-                <Select
-                  name="travelType"
-                  value={formData.travelType}
-                  onChange={handleChange}
-                  label="Travel Type"
-                  required
-                >
+                <Select name="travelType" value={formData.travelType} onChange={handleChange} required>
                   <MenuItem value="flight">Flight</MenuItem>
                   <MenuItem value="car">Car</MenuItem>
                   <MenuItem value="train">Train</MenuItem>
@@ -337,26 +254,12 @@ const CarbonFootprintCalculator = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Distance"
-                name="distance"
-                type="number"
-                value={formData.distance}
-                onChange={handleChange}
-                required
-              />
+              <TextField fullWidth label="Distance" name="distance" type="number" value={formData.distance} onChange={handleChange} required />
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel>Unit</InputLabel>
-                <Select
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleChange}
-                  label="Unit"
-                  required
-                >
+                <Select name="unit" value={formData.unit} onChange={handleChange} required>
                   <MenuItem value="km">Kilometers</MenuItem>
                   <MenuItem value="miles">Miles</MenuItem>
                 </Select>
@@ -372,11 +275,10 @@ const CarbonFootprintCalculator = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Travel Entry</DialogTitle>
+        <DialogTitle>Delete Entry</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this travel entry?</Typography>
+          <Typography>Are you sure you want to delete this entry?</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
@@ -389,4 +291,4 @@ const CarbonFootprintCalculator = () => {
   );
 };
 
-export default CarbonFootprintCalculator; 
+export default CarbonFootprintCalculator;

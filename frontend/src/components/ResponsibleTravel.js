@@ -10,9 +10,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Paper,
-  useTheme,
-  alpha,
+  Paper
 } from '@mui/material';
 import {
   EmojiPeople,
@@ -29,8 +27,6 @@ import {
 } from '@mui/icons-material';
 
 const ResponsibleTravel = () => {
-  const theme = useTheme();
-
   const sections = [
     {
       title: 'Cultural Sensitivity',
@@ -106,110 +102,58 @@ const ResponsibleTravel = () => {
   ];
 
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         minHeight: '100vh',
         pt: 10,
         pb: 6,
-        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+        backgroundColor: '#D0F4DE',
+        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
+        backgroundSize: '25px 25px',
+        px: 2
       }}
     >
       <Container maxWidth="lg">
-        <Box 
-          sx={{
-            textAlign: 'center',
-            mb: 8,
-            animation: 'fadeIn 1s ease-out',
-            '@keyframes fadeIn': {
-              from: { opacity: 0, transform: 'translateY(20px)' },
-              to: { opacity: 1, transform: 'translateY(0)' }
-            }
-          }}
-        >
-          <Typography 
-            variant="h2" 
-            component="h1" 
-            gutterBottom 
+        <Box textAlign="center" mb={8}>
+          <Typography
+            variant="h2"
             sx={{
-              fontWeight: 700,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              color: 'transparent',
+              fontFamily: 'Lexend Mega, sans-serif',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              color: 'black',
+              backgroundColor: '#F15BB5',
+              p: 2,
+              border: '2px solid black',
+              boxShadow: '4px 6px 0 black',
+              display: 'inline-block',
               mb: 2
             }}
           >
             Responsible Travel Guide
           </Typography>
-          
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              color: 'text.secondary',
-              maxWidth: 800,
-              mx: 'auto',
-              mb: 4
-            }}
-          >
+
+          <Typography variant="h5" sx={{ maxWidth: 800, mx: 'auto', color: 'black' }}>
             Make a positive impact on the places you visit while creating meaningful travel experiences
           </Typography>
         </Box>
 
-        <Grid container spacing={4} sx={{ mb: 8 }}>
+        <Grid container spacing={4} mb={8}>
           {sections.map((section, index) => (
             <Grid item xs={12} md={4} key={index}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-                  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: `0 12px 24px ${alpha(theme.palette.primary.main, 0.2)}`
-                  }
-                }}
-              >
-                <CardContent sx={{ height: '100%' }}>
-                  <Box 
-                    display="flex" 
-                    alignItems="center" 
-                    mb={3}
-                    sx={{
-                      pb: 2,
-                      borderBottom: `2px solid ${alpha(theme.palette.primary.main, 0.1)}`
-                    }}
-                  >
-                    {React.cloneElement(section.icon, { 
-                      sx: { 
-                        fontSize: 40,
-                        color: theme.palette.primary.main,
-                        mr: 2
-                      }
-                    })}
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                      {section.title}
-                    </Typography>
+              <Card sx={{ backgroundColor: '#9B5DE5', color: 'white', border: '2px solid black', boxShadow: '4px 6px 0 black' }}>
+                <CardContent>
+                  <Box display="flex" alignItems="center" mb={2}>
+                    {React.cloneElement(section.icon, { sx: { fontSize: 40, mr: 2 } })}
+                    <Typography variant="h5" sx={{ fontFamily: 'Archivo Black' }}>{section.title}</Typography>
                   </Box>
                   <List>
                     {section.points.map((point, idx) => (
-                      <ListItem 
-                        key={idx} 
-                        sx={{ 
-                          py: 1,
-                          px: 0
-                        }}
-                      >
-                        <ListItemIcon sx={{ minWidth: 36 }}>
-                          <CheckCircleOutline sx={{ color: theme.palette.primary.main }} />
+                      <ListItem key={idx}>
+                        <ListItemIcon sx={{ color: 'white' }}>
+                          <CheckCircleOutline />
                         </ListItemIcon>
-                        <ListItemText 
-                          primary={point}
-                          primaryTypographyProps={{
-                            sx: { 
-                              fontSize: '1rem',
-                              fontWeight: 500
-                            }
-                          }}
-                        />
+                        <ListItemText primary={point} primaryTypographyProps={{ fontWeight: 500 }} />
                       </ListItem>
                     ))}
                   </List>
@@ -219,13 +163,18 @@ const ResponsibleTravel = () => {
           ))}
         </Grid>
 
-        <Typography 
-          variant="h3" 
-          sx={{ 
+        <Typography
+          variant="h3"
+          sx={{
+            fontFamily: 'Lexend Mega',
             textAlign: 'center',
             mb: 6,
-            fontWeight: 700,
-            color: theme.palette.primary.main
+            backgroundColor: '#FEE440',
+            display: 'inline-block',
+            px: 3,
+            py: 1,
+            border: '2px solid black',
+            boxShadow: '4px 6px 0 black'
           }}
         >
           Key Guidelines for Responsible Tourism
@@ -234,45 +183,12 @@ const ResponsibleTravel = () => {
         <Grid container spacing={3}>
           {guidelines.map((guideline, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <Paper 
-                elevation={0}
-                sx={{ 
-                  p: 3,
-                  height: '100%',
-                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                  backdropFilter: 'blur(8px)',
-                  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-                  borderRadius: 2,
-                  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, 0.1)}`
-                  }
-                }}
-              >
-                <Box 
-                  display="flex" 
-                  alignItems="center" 
-                  mb={2}
-                >
-                  {React.cloneElement(guideline.icon, { 
-                    sx: { 
-                      fontSize: 32,
-                      color: theme.palette.primary.main,
-                      mr: 2
-                    }
-                  })}
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    {guideline.title}
-                  </Typography>
+              <Paper sx={{ p: 3, backgroundColor: '#00BBF9', color: 'black', border: '2px solid black', boxShadow: '4px 6px 0 black', height: '100%' }}>
+                <Box display="flex" alignItems="center" mb={2}>
+                  {React.cloneElement(guideline.icon, { sx: { fontSize: 32, mr: 2 } })}
+                  <Typography variant="h6" sx={{ fontFamily: 'Bebas Kai', fontWeight: 'bold' }}>{guideline.title}</Typography>
                 </Box>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    color: 'text.secondary',
-                    lineHeight: 1.6
-                  }}
-                >
+                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                   {guideline.content}
                 </Typography>
               </Paper>
@@ -280,36 +196,20 @@ const ResponsibleTravel = () => {
           ))}
         </Grid>
 
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             mt: 8,
             p: 4,
-            borderRadius: 4,
-            background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.primary.light, 0.1)})`,
-            backdropFilter: 'blur(8px)',
+            backgroundColor: '#C1FBA4',
+            border: '2px solid black',
+            boxShadow: '4px 6px 0 black',
             textAlign: 'center'
           }}
         >
-          <Typography 
-            variant="h4" 
-            gutterBottom 
-            sx={{ 
-              fontWeight: 700,
-              color: theme.palette.primary.main
-            }}
-          >
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, fontFamily: 'Lexend Mega' }}>
             Your Role as a Responsible Traveler
           </Typography>
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              maxWidth: 800,
-              mx: 'auto',
-              fontSize: '1.1rem',
-              lineHeight: 1.8,
-              color: 'text.secondary'
-            }}
-          >
+          <Typography variant="body1" sx={{ maxWidth: 800, mx: 'auto', fontSize: '1.1rem', lineHeight: 1.8 }}>
             As travelers, we have the power to make a positive impact on the places we visit.
             By following these guidelines and being mindful of our actions, we can help preserve
             local cultures, protect the environment, and ensure that tourism benefits local communities.
@@ -320,4 +220,4 @@ const ResponsibleTravel = () => {
   );
 };
 
-export default ResponsibleTravel; 
+export default ResponsibleTravel;

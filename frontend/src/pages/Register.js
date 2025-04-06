@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
-  Paper,
   TextField,
   Button,
   Typography,
@@ -34,7 +33,7 @@ const Register = () => {
       await register(name, email, password);
       navigate('/dashboard');
     } catch (err) {
-      const backendError = await err?.response?.json?.(); // optional
+      const backendError = await err?.response?.json?.();
       setError(err.message || backendError?.message || 'Failed to create an account');
     } finally {
       setLoading(false);
@@ -42,17 +41,53 @@ const Register = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ mt: 8 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundColor: '#B4F8C8',
+        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
+        backgroundSize: '25px 25px',
+        backgroundRepeat: 'repeat',
+        backgroundAttachment: 'fixed',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: 'Lexend Mega, sans-serif'
+      }}
+    >
+      <Container maxWidth="sm">
+        <Box
+          sx={{
+            p: 4,
+            borderRadius: '1rem',
+            backgroundColor: '#F15BB5',
+            border: '2px solid black',
+            boxShadow: '6px 6px 0 black'
+          }}
+        >
+          <Typography
+            variant="h3"
+            component="h1"
+            align="center"
+            sx={{
+              fontWeight: 800,
+              mb: 3,
+              color: 'black',
+              fontFamily: 'Lexend Mega'
+            }}
+          >
             Register
           </Typography>
+
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert
+              severity="error"
+              sx={{ mb: 2, border: '2px solid black', borderRadius: '0.75rem' }}
+            >
               {error}
             </Alert>
           )}
+
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
@@ -62,6 +97,12 @@ const Register = () => {
               margin="normal"
               required
               autoComplete="name"
+              sx={{
+                backgroundColor: '#fff',
+                borderRadius: '0.75rem',
+                boxShadow: '4px 4px 0 black',
+                fontFamily: 'Lexend Mega'
+              }}
             />
             <TextField
               fullWidth
@@ -72,6 +113,12 @@ const Register = () => {
               margin="normal"
               required
               autoComplete="email"
+              sx={{
+                backgroundColor: '#fff',
+                borderRadius: '0.75rem',
+                boxShadow: '4px 4px 0 black',
+                fontFamily: 'Lexend Mega'
+              }}
             />
             <TextField
               fullWidth
@@ -82,6 +129,12 @@ const Register = () => {
               margin="normal"
               required
               autoComplete="new-password"
+              sx={{
+                backgroundColor: '#fff',
+                borderRadius: '0.75rem',
+                boxShadow: '4px 4px 0 black',
+                fontFamily: 'Lexend Mega'
+              }}
             />
             <TextField
               fullWidth
@@ -92,22 +145,39 @@ const Register = () => {
               margin="normal"
               required
               autoComplete="new-password"
+              sx={{
+                backgroundColor: '#fff',
+                borderRadius: '0.75rem',
+                boxShadow: '4px 4px 0 black',
+                fontFamily: 'Lexend Mega'
+              }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              color="primary"
-              size="large"
-              sx={{ mt: 3 }}
+              sx={{
+                mt: 3,
+                p: 1.5,
+                backgroundColor: '#FEE440',
+                color: 'black',
+                fontWeight: 'bold',
+                border: '2px solid black',
+                boxShadow: '4px 4px 0 black',
+                borderRadius: '0.75rem',
+                fontFamily: 'Lexend Mega',
+                '&:hover': {
+                  backgroundColor: '#ffe658'
+                }
+              }}
               disabled={loading}
             >
               {loading ? 'Creating Account...' : 'Register'}
             </Button>
           </form>
-        </Paper>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

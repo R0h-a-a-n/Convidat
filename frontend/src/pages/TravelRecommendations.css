@@ -1,0 +1,45 @@
+/* TravelRecommendations.css */
+body,
+html,
+#root {
+  height: 100%;
+  background-color: hsl(158, 78%, 85%);
+  background-image: radial-gradient(#aaa 1px, transparent 1px);
+  background-size: 25px 25px;
+  background-repeat: repeat;
+  background-attachment: fixed;
+  font-family: 'Lexend Mega', sans-serif;
+}
+
+/* Card Styling */
+.neo-card {
+  border-radius: 1rem;
+  border: 2px solid black;
+  box-shadow: 6px 6px 0 black;
+  background-color: #F15BB5;
+  padding: 1rem;
+  color: black;
+}
+
+/* Neo-brutalist Button */
+.neo-btn {
+  background-color: #FEE440;
+  color: black;
+  font-weight: bold;
+  border: 2px solid black;
+  box-shadow: 4px 4px 0 black;
+  border-radius: 0.75rem;
+  font-family: 'Lexend Mega', sans-serif;
+  padding: 0.75rem 2rem;
+}
+
+.neo-btn:hover {
+  background-color: #ffe658;
+}
+
+/* Alert Overrides */
+.neo-alert {
+  border: 2px solid black !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Lexend Mega', sans-serif;
+}
