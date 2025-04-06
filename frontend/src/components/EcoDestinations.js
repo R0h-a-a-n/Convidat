@@ -1,159 +1,138 @@
 import React from 'react';
 import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  Chip,
-  Divider,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
-  ListItemIcon
+  Typography,
+  Divider,
+  Box,
+  Link
 } from '@mui/material';
 import {
-  Park as ParkIcon,
-  DirectionsBike as BikeIcon,
-  LocalFlorist as FloristIcon,
-  LocalFlorist as LeafIcon,
-  Hiking as HikingIcon,
-  Water as WaterIcon
+  Park,
+  DirectionsBike,
+  Train,
+  LocalFlorist,
+  Nature,
+  EmojiNature
 } from '@mui/icons-material';
 
-const ECO_DESTINATIONS = {
+// Eco-friendly destinations data
+const cityDestinations = {
   'Mumbai': [
     {
       name: 'Sanjay Gandhi National Park',
-      type: 'Nature Reserve',
-      description: 'A protected area with rich biodiversity and nature trails',
-      ecoFeatures: ['Wildlife Conservation', 'Nature Trails', 'Educational Programs'],
-      icon: <ParkIcon />
+      description: 'One of the largest urban parks in the world, home to diverse flora and fauna',
+      type: 'park',
+      link: 'https://www.google.com/maps/place/Sanjay+Gandhi+National+Park'
     },
     {
-      name: 'Bandra-Worli Sea Link',
-      type: 'Scenic Route',
-      description: 'A beautiful coastal route perfect for cycling and walking',
-      ecoFeatures: ['Cycling Path', 'Pedestrian Walkway', 'Scenic Views'],
-      icon: <BikeIcon />
+      name: 'Maharashtra Nature Park',
+      description: 'A reclaimed land turned into an urban forest with butterfly gardens',
+      type: 'nature',
+      link: 'https://www.google.com/maps/place/Maharashtra+Nature+Park'
     },
     {
-      name: 'Hanging Gardens',
-      type: 'Botanical Garden',
-      description: 'A well-maintained garden with native plant species',
-      ecoFeatures: ['Native Plants', 'Green Space', 'Educational Tours'],
-      icon: <FloristIcon />
+      name: 'Coastal and Marine Biodiversity Centre',
+      description: 'Educational center promoting marine conservation',
+      type: 'nature',
+      link: 'https://www.google.com/maps/place/Coastal+and+Marine+Biodiversity+Centre'
     }
   ],
   'Pune': [
     {
+      name: 'Empress Botanical Garden',
+      description: 'Historic garden with rare plant species and butterfly conservatory',
+      type: 'garden',
+      link: 'https://www.google.com/maps/place/Empress+Botanical+Garden'
+    },
+    {
+      name: 'Pune-Lonavala Cycling Trail',
+      description: 'Scenic cycling route through the Western Ghats',
+      type: 'cycling',
+      link: 'https://www.google.com/maps/place/Lonavala'
+    },
+    {
       name: 'Pashan Lake',
-      type: 'Natural Reserve',
-      description: 'A serene lake with walking trails and bird watching spots',
-      ecoFeatures: ['Bird Watching', 'Nature Trails', 'Conservation Area'],
-      icon: <WaterIcon />
-    },
-    {
-      name: 'Sinhagad Fort',
-      type: 'Historic Site',
-      description: 'A historic fort with eco-friendly hiking trails',
-      ecoFeatures: ['Hiking Trails', 'Historic Preservation', 'Scenic Views'],
-      icon: <HikingIcon />
-    },
-    {
-      name: 'Katraj Snake Park',
-      type: 'Wildlife Park',
-      description: 'A conservation center for reptiles and amphibians',
-      ecoFeatures: ['Wildlife Conservation', 'Educational Programs', 'Research Center'],
-      icon: <LeafIcon />
+      description: 'Restored lake and bird sanctuary',
+      type: 'nature',
+      link: 'https://www.google.com/maps/place/Pashan+Lake'
     }
   ],
   'Chennai': [
     {
+      name: 'Adyar Eco Park',
+      description: 'Restored wetland ecosystem and bird sanctuary',
+      type: 'park',
+      link: 'https://www.google.com/maps/place/Adyar+Eco+Park'
+    },
+    {
+      name: 'Pallikaranai Marshland',
+      description: 'Protected wetland supporting diverse bird species',
+      type: 'nature',
+      link: 'https://www.google.com/maps/place/Pallikaranai+Marshland'
+    },
+    {
       name: 'Guindy National Park',
-      type: 'National Park',
-      description: 'One of the smallest national parks with rich biodiversity',
-      ecoFeatures: ['Wildlife Conservation', 'Nature Trails', 'Educational Center'],
-      icon: <ParkIcon />
-    },
-    {
-      name: 'Theosophical Society',
-      type: 'Botanical Garden',
-      description: 'A peaceful garden with ancient trees and meditation spots',
-      ecoFeatures: ['Meditation Space', 'Ancient Trees', 'Peaceful Environment'],
-      icon: <FloristIcon />
-    },
-    {
-      name: 'Marina Beach',
-      type: 'Coastal Area',
-      description: 'A long beach with eco-friendly activities and clean-up initiatives',
-      ecoFeatures: ['Beach Cleanup', 'Coastal Conservation', 'Public Awareness'],
-      icon: <WaterIcon />
+      description: 'Urban national park with native flora and fauna',
+      type: 'park',
+      link: 'https://www.google.com/maps/place/Guindy+National+Park'
     }
   ]
 };
 
+// Icon mapping for different destination types
+const typeIcons = {
+  park: <Park color="primary" />,
+  nature: <Nature color="primary" />,
+  garden: <LocalFlorist color="primary" />,
+  cycling: <DirectionsBike color="primary" />,
+  default: <EmojiNature color="primary" />
+};
+
 const EcoDestinations = ({ city }) => {
-  const destinations = ECO_DESTINATIONS[city] || [];
+  const destinations = cityDestinations[city] || [];
 
   if (destinations.length === 0) {
     return (
-      <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Typography variant="h6" color="text.secondary">
-          No eco-friendly destinations found for {city}
-        </Typography>
-      </Box>
+      <Typography variant="body1" color="text.secondary" sx={{ p: 2 }}>
+        No eco-friendly destinations found for {city}.
+      </Typography>
     );
   }
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Eco-Friendly Destinations in {city}
+    <Box>
+      <Typography variant="body1" color="text.secondary" paragraph>
+        Discover these sustainable and eco-friendly destinations in {city}:
       </Typography>
-      <Divider sx={{ mb: 3 }} />
-      <Grid container spacing={3}>
+      <List>
         {destinations.map((destination, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <Card sx={{ 
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: 4
-            }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    {destination.icon}
-                  </ListItemIcon>
-                  <Typography variant="h6" component="div">
+          <React.Fragment key={destination.name}>
+            <ListItem>
+              <ListItemIcon>
+                {typeIcons[destination.type] || typeIcons.default}
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Link
+                    href={destination.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="primary"
+                    underline="hover"
+                  >
                     {destination.name}
-                  </Typography>
-                </Box>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  {destination.type}
-                </Typography>
-                <Typography variant="body2" paragraph>
-                  {destination.description}
-                </Typography>
-                <List dense>
-                  {destination.ecoFeatures.map((feature, idx) => (
-                    <ListItem key={idx} sx={{ py: 0.5 }}>
-                      <ListItemIcon sx={{ minWidth: 30 }}>
-                        <LeafIcon fontSize="small" color="success" />
-                      </ListItemIcon>
-                      <ListItemText primary={feature} />
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
+                  </Link>
+                }
+                secondary={destination.description}
+              />
+            </ListItem>
+            {index < destinations.length - 1 && <Divider variant="inset" component="li" />}
+          </React.Fragment>
         ))}
-      </Grid>
+      </List>
     </Box>
   );
 };

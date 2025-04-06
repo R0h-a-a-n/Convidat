@@ -1,122 +1,141 @@
+// travel-service/src/services/placesService.js
+
 const axios = require('axios');
-require('dotenv').config();
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-const BASE_URL = 'https://maps.googleapis.com/maps/api/place';
+// You'll need to set up environment variables for your API keys
+const GEOCODING_API_KEY = process.env.GEOCODING_API_KEY;
+const PLACES_API_KEY = process.env.PLACES_API_KEY;
 
-class PlacesService {
-  async searchAccommodations(params) {
-    try {
-      // First, search for the location coordinates
-      const geocodeUrl = `${BASE_URL}/geocode/json`;
-      const locationQuery = `${params.city}${params.country ? `, ${params.country}` : ''}`;
-      
-      const geocodeResponse = await axios.get(geocodeUrl, {
-        params: {
-          address: locationQuery,
-          key: GOOGLE_MAPS_API_KEY
-        }
-      });
+/**
+ * Geocode a city name to get its coordinates
+ * @param {string} city - The city name to geocode
+ * @returns {Promise<Object>} The geocoding result with lat/lng
+ */
+async function geocodeCity(city) {
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(city)}&key=${GEOCODING_API_KEY}`
+    );
 
-      if (!geocodeResponse.data.results.length) {
-        throw new Error('Location not found');
-      }
-
-      const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
-
-      // Then search for accommodations near that location
-      const placesUrl = `${BASE_URL}/textsearch/json`;
-      const searchQuery = `eco friendly ${params.type || 'hotel'} in ${locationQuery}`;
-
-      const placesResponse = await axios.get(placesUrl, {
-        params: {
-          query: searchQuery,
-          location: `${lat},${lng}`,
-          radius: 5000, // 5km radius
-          type: 'lodging',
-          key: GOOGLE_MAPS_API_KEY
-        }
-      });
-
-      // Transform the response to match our application's format
-      const accommodations = placesResponse.data.results.map(place => ({
-        _id: place.place_id,
-        name: place.name,
-        location: {
-          city: params.city,
-          country: params.country,
-          coordinates: {
-            lat: place.geometry.location.lat,
-            lng: place.geometry.location.lng
-          },
-          address: place.formatted_address
-        },
-        type: params.type || 'hotel',
-        priceRange: {
-          min: place.price_level ? place.price_level * 25 : 50,
-          max: place.price_level ? place.price_level * 100 : 200
-        },
-        sustainability: {
-          ecoRating: place.rating ? (place.rating / 5) * 5 : 4,
-          certifications: ['Eco-Friendly'],
-          features: ['Energy Efficient']
-        },
-        rating: place.rating,
-        userRatingsTotal: place.user_ratings_total,
-        photos: place.photos ? place.photos.map(photo => ({
-          reference: photo.photo_reference
-        })) : []
-      }));
-
-      // Filter by price if maxPrice is specified
-      if (params.maxPrice) {
-        return accommodations.filter(acc => acc.priceRange.max <= parseInt(params.maxPrice));
-      }
-
-      return accommodations;
-    } catch (error) {
-      console.error('Error fetching places:', error);
-      throw error;
+    if (response.data.status !== 'OK' || !response.data.results.length) {
+      throw new Error(`Failed to geocode city: ${city}`);
     }
-  }
 
-  async getPlaceDetails(placeId) {
-    try {
-      const detailsUrl = `${BASE_URL}/details/json`;
-      const response = await axios.get(detailsUrl, {
-        params: {
-          place_id: placeId,
-          fields: 'name,rating,formatted_address,formatted_phone_number,website,photos,reviews,price_level,geometry',
-          key: GOOGLE_MAPS_API_KEY
-        }
-      });
-
-      const place = response.data.result;
-      
-      return {
-        _id: placeId,
-        name: place.name,
-        location: {
-          coordinates: {
-            lat: place.geometry.location.lat,
-            lng: place.geometry.location.lng
-          },
-          address: place.formatted_address
-        },
-        contact: {
-          phone: place.formatted_phone_number,
-          website: place.website
-        },
-        rating: place.rating,
-        reviews: place.reviews,
-        photos: place.photos,
-        priceLevel: place.price_level
-      };
-    } catch (error) {
-      console.error('Error fetching place details:', error);
-      throw error;
-    }
+    const location = response.data.results[0].geometry.location;
+    return {
+      location,
+      formattedAddress: response.data.results[0].formatted_address
+    };
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    throw error;
   }
 }
 
-module.exports = new PlacesService(); 
+/**
+ * Get nearby cities based on coordinates
+ * @param {number} lat - Latitude
+ * @param {number} lng - Longitude
+ * @param {string} type - Place type (e.g., 'city')
+ * @param {number} radius - Search radius in meters
+ * @param {number} limit - Maximum number of results
+ * @returns {Promise<Array>} Nearby cities
+ */
+async function getNearbyPlaces(lat, lng, type = 'locality', radius = 100000, limit = 3) {
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${PLACES_API_KEY}`
+    );
+
+    if (response.data.status !== 'OK') {
+      throw new Error(`Failed to get nearby places: ${response.data.status}`);
+    }
+
+    const cities = response.data.results
+      .filter(place => place.types.includes('locality'))
+      .slice(0, limit)
+      .map(place => ({
+        name: place.name,
+        placeId: place.place_id,
+        location: place.geometry.location
+      }));
+
+    // Fetch additional details for each city
+    const citiesWithDetails = await Promise.all(
+      cities.map(async city => {
+        try {
+          const details = await getPlaceDetails(city.placeId);
+          return {
+            ...city,
+            description: details.description
+          };
+        } catch (err) {
+          return city;
+        }
+      })
+    );
+
+    return { cities: citiesWithDetails };
+  } catch (error) {
+    console.error('Nearby places error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get detailed information about a place
+ * @param {string} placeId - Google Place ID
+ * @returns {Promise<Object>} Place details
+ */
+async function getPlaceDetails(placeId) {
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,rating,editorial_summary&key=${PLACES_API_KEY}`
+    );
+
+    if (response.data.status !== 'OK') {
+      throw new Error(`Failed to get place details: ${response.data.status}`);
+    }
+
+    const result = response.data.result;
+    return {
+      name: result.name,
+      formattedAddress: result.formatted_address,
+      rating: result.rating,
+      description: result.editorial_summary?.overview || `Explore this eco-friendly destination`
+    };
+  } catch (error) {
+    console.error('Place details error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get city description from Wikipedia or fallback to a generated description
+ * @param {string} city - City name
+ * @returns {Promise<string>} City description
+ */
+async function getCityDescription(city) {
+  try {
+    // Try to get description from Wikipedia API
+    const response = await axios.get(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(city)}`
+    );
+    
+    if (response.data.extract) {
+      return response.data.extract;
+    }
+    
+    return `Explore eco-friendly attractions and sustainable travel options in ${city}.`;
+  } catch (error) {
+    console.error('City description error:', error);
+    return `Discover sustainable tourism opportunities in ${city}.`;
+  }
+}
+
+module.exports = {
+  geocodeCity,
+  getNearbyPlaces,
+  getPlaceDetails,
+  getCityDescription
+};

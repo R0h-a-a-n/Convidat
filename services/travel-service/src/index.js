@@ -7,6 +7,7 @@ const morgan = require('morgan');
 // Import routes
 const accommodationsRouter = require('./routes/accommodations');
 const routesRouter = require('./routes/routes');
+const placesRouter = require('./routes/places'); // New import for places API
 
 // Load environment variables
 dotenv.config();
@@ -30,19 +31,24 @@ app.use(morgan('dev'));
 console.log('Environment variables status:', {
   PORT: process.env.PORT || '3006',
   MONGODB_URI: process.env.MONGODB_URI ? 'Present' : 'Missing',
-  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY ? 'Present' : 'Missing'
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY ? 'Present' : 'Missing',
+  GEOCODING_API_KEY: process.env.GEOCODING_API_KEY ? 'Present' : 'Missing',
+  PLACES_API_KEY: process.env.PLACES_API_KEY ? 'Present' : 'Missing'
 });
 
 // Routes
 app.use('/api/accommodations', accommodationsRouter);
 app.use('/api/routes', routesRouter);
+app.use('/api/places', placesRouter); // Register the new places routes
 
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({
     message: 'Travel service is running',
     mongodbStatus: process.env.MONGODB_URI ? 'Configured' : 'Not configured',
-    googleMapsStatus: process.env.GOOGLE_MAPS_API_KEY ? 'Configured' : 'Not configured'
+    googleMapsStatus: process.env.GOOGLE_MAPS_API_KEY ? 'Configured' : 'Not configured',
+    geocodingApiStatus: process.env.GEOCODING_API_KEY ? 'Configured' : 'Not configured',
+    placesApiStatus: process.env.PLACES_API_KEY ? 'Configured' : 'Not configured'
   });
 });
 
