@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const accommodationsRouter = require('./routes/accommodations');
 const routesRouter = require('./routes/routes');
 const placesRouter = require('./routes/places'); // New import for places API
+const recommendationsRouter = require('./routes/recommendations'); // New import
 
 // Load environment variables
 dotenv.config();
@@ -40,6 +41,7 @@ console.log('Environment variables status:', {
 app.use('/api/accommodations', accommodationsRouter);
 app.use('/api/routes', routesRouter);
 app.use('/api/places', placesRouter); // Register the new places routes
+app.use('/api', recommendationsRouter); // Add recommendations routes
 
 // Test route
 app.get('/api/test', (req, res) => {
