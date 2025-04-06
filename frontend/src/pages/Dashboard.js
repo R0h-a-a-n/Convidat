@@ -118,8 +118,10 @@ const Dashboard = () => {
       sx={{
         minHeight: '100vh',
         backgroundColor: '#B4F8C8',
-        backgroundImage: 'radial-gradient(#ccc 1px, transparent 1px)',
-        backgroundSize: '20px 20px',
+        backgroundImage: 'radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px)',
+        backgroundSize: '25px 25px',
+        backgroundRepeat: 'repeat',
+        backgroundAttachment: 'scroll',
         px: 2,
         py: 4
       }}

@@ -45,6 +45,7 @@ const Navbar = () => {
     py: 1,
     mx: 1,
     boxShadow: '4px 6px 0 black',
+    borderRadius: '0.75rem',
     textTransform: 'uppercase',
     '&:hover': {
       backgroundColor: '#FFD60A',
@@ -60,7 +61,7 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#00F5D4', borderBottom: '4px solid black' }}>
+    <AppBar position="static" sx={{ backgroundColor: '#BAFCA2', borderBottom: '4px solid black' }}>
       <Container maxWidth="lg">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography
@@ -72,11 +73,12 @@ const Navbar = () => {
               fontWeight: 'bold',
               color: 'black',
               textDecoration: 'none',
-              backgroundColor: '#9B5DE5',
+              backgroundColor: '#FFDB58',
               px: 2,
               py: 1,
               border: '2px solid black',
-              boxShadow: '4px 6px 0 black'
+              boxShadow: '4px 6px 0 black',
+              borderRadius: '0.75rem'
             }}
           >
             Convidat
@@ -105,7 +107,7 @@ const Navbar = () => {
             ))}
 
             {user && (
-              <Button onClick={handleLogout} sx={{ ...navItemStyle, backgroundColor: '#FF595E' }}>
+              <Button onClick={handleLogout} sx={{ ...navItemStyle, backgroundColor: '#FF69B4' }}>
                 Logout
               </Button>
             )}
@@ -149,7 +151,7 @@ const Navbar = () => {
                     handleMenuClose();
                     handleLogout();
                   }}
-                  sx={{ ...navItemStyle, my: 1, backgroundColor: '#FF595E' }}
+                  sx={{ ...navItemStyle, my: 1, backgroundColor: '#FF69B4' }}
                 >
                   Logout
                 </MenuItem>

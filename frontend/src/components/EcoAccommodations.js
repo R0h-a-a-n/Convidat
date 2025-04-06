@@ -21,7 +21,16 @@ import {
 } from '@mui/material';
 import TravelMap from './TravelMap';
 
-// Create axios instance with default config
+const neoBrutalistStyles = {
+  border: '2px solid black',
+  boxShadow: '4px 6px 0 black',
+  borderRadius: '0.75rem',
+  transition: 'transform 0.2s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-4px)',
+  },
+};
+
 const api = axios.create({
   baseURL: process.env.REACT_APP_TRAVEL_API_URL || 'http://localhost:3006',
   withCredentials: true,
@@ -31,7 +40,6 @@ const api = axios.create({
   }
 });
 
-// Add request interceptor for debugging
 api.interceptors.request.use(
   config => {
     console.log('Making request to:', config.url, 'with params:', config.params);
@@ -43,7 +51,6 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
 api.interceptors.response.use(
   response => {
     console.log('Received response:', {
@@ -95,8 +102,7 @@ const EcoAccommodations = () => {
 
       const results = response.data.data || [];
       setAccommodations(results);
-      
-      // Set map center to first result or search city if no results
+
       if (results.length > 0) {
         setMapCenter({
           lat: parseFloat(results[0].location.coordinates.lat),
@@ -146,47 +152,22 @@ const EcoAccommodations = () => {
           </Alert>
         )}
 
-        <Paper sx={{ p: 3, mb: 3 }}>
+        <Paper sx={{ p: 3, mb: 3, backgroundColor: 'white', ...neoBrutalistStyles }}>
           <form onSubmit={handleSearch}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="City"
-                  name="city"
-                  value={searchParams.city}
-                  onChange={handleInputChange}
-                  required
-                />
+                <TextField fullWidth label="City" name="city" value={searchParams.city} onChange={handleInputChange} required />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Country"
-                  name="country"
-                  value={searchParams.country}
-                  onChange={handleInputChange}
-                />
+                <TextField fullWidth label="Country" name="country" value={searchParams.country} onChange={handleInputChange} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Max Price (USD)"
-                  name="maxPrice"
-                  type="number"
-                  value={searchParams.maxPrice}
-                  onChange={handleInputChange}
-                />
+                <TextField fullWidth label="Max Price (USD)" name="maxPrice" type="number" value={searchParams.maxPrice} onChange={handleInputChange} />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Accommodation Type</InputLabel>
-                  <Select
-                    name="type"
-                    value={searchParams.type}
-                    onChange={handleInputChange}
-                    label="Accommodation Type"
-                  >
+                  <Select name="type" value={searchParams.type} onChange={handleInputChange} label="Accommodation Type">
                     <MenuItem value="">Any</MenuItem>
                     <MenuItem value="hotel">Hotel</MenuItem>
                     <MenuItem value="hostel">Hostel</MenuItem>
@@ -202,6 +183,17 @@ const EcoAccommodations = () => {
                   color="primary"
                   disabled={loading}
                   fullWidth
+                  sx={{
+                    fontWeight: 'bold',
+                    border: '2px solid black',
+                    boxShadow: '3px 4px 0 black',
+                    borderRadius: '0.75rem',
+                    backgroundColor: '#F15BB5',
+                    '&:hover': {
+                      backgroundColor: '#ff80c7',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
                 >
                   {loading ? 'Searching...' : 'Search'}
                 </Button>
@@ -213,34 +205,25 @@ const EcoAccommodations = () => {
         {accommodations.length > 0 && (
           <>
             <Box sx={{ mb: 3 }}>
-              <TravelMap
-                accommodations={accommodations}
-                center={mapCenter}
-              />
+              <TravelMap accommodations={accommodations} center={mapCenter} />
             </Box>
             <Grid container spacing={2}>
               {accommodations.map((accommodation) => (
                 <Grid item xs={12} md={6} key={accommodation._id}>
-                  <Card>
+                  <Card sx={{ backgroundColor: 'white', ...neoBrutalistStyles }}>
                     <CardContent>
                       <Typography variant="h6" gutterBottom>
                         {accommodation.name}
                       </Typography>
-                      
                       <Typography color="text.secondary" gutterBottom>
                         {accommodation.location.address}
                       </Typography>
 
                       <Box sx={{ mb: 2 }}>
                         <Typography component="span" variant="subtitle2">
-                          Eco Rating: 
+                          Eco Rating:
                         </Typography>
-                        <Rating 
-                          value={accommodation.sustainability.rating} 
-                          readOnly 
-                          precision={0.5}
-                          sx={{ ml: 1 }}
-                        />
+                        <Rating value={accommodation.sustainability.rating} readOnly precision={0.5} sx={{ ml: 1 }} />
                         <Typography variant="body2" color="text.secondary">
                           Score: {accommodation.sustainability.score}/5
                         </Typography>
@@ -263,13 +246,7 @@ const EcoAccommodations = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           {accommodation.sustainability.features.map((feature, index) => (
-                            <Chip 
-                              key={index} 
-                              label={feature} 
-                              size="small" 
-                              color="success" 
-                              variant="outlined"
-                            />
+                            <Chip key={index} label={feature} size="small" color="success" variant="outlined" />
                           ))}
                         </Box>
                       </Box>
@@ -281,13 +258,7 @@ const EcoAccommodations = () => {
                           </Typography>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                             {accommodation.sustainability.certifications.map((cert, index) => (
-                              <Chip 
-                                key={index} 
-                                label={cert} 
-                                size="small" 
-                                color="primary" 
-                                variant="outlined"
-                              />
+                              <Chip key={index} label={cert} size="small" color="primary" variant="outlined" />
                             ))}
                           </Box>
                         </Box>
@@ -304,4 +275,4 @@ const EcoAccommodations = () => {
   );
 };
 
-export default EcoAccommodations; 
+export default EcoAccommodations;

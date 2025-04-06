@@ -1,27 +1,39 @@
 /* TravelRecommendations.css */
-body,
+
+/* Base Layout and Background */
 html,
+body,
 #root {
   height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Lexend Mega', sans-serif;
   background-color: hsl(158, 78%, 85%);
   background-image: radial-gradient(#aaa 1px, transparent 1px);
   background-size: 25px 25px;
   background-repeat: repeat;
   background-attachment: fixed;
-  font-family: 'Lexend Mega', sans-serif;
+  overflow-x: hidden;
+  color: black;
 }
 
-/* Card Styling */
+/* Neo-Brutalist Cards */
 .neo-card {
   border-radius: 1rem;
   border: 2px solid black;
   box-shadow: 6px 6px 0 black;
-  background-color: #F15BB5;
-  padding: 1rem;
+  background-color: #ffffff;
+  padding: 1.5rem;
   color: black;
+  transition: transform 0.2s ease;
 }
 
-/* Neo-brutalist Button */
+.neo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 8px 0 black;
+}
+
+/* Neo-Brutalist Buttons */
 .neo-btn {
   background-color: #FEE440;
   color: black;
@@ -31,15 +43,96 @@ html,
   border-radius: 0.75rem;
   font-family: 'Lexend Mega', sans-serif;
   padding: 0.75rem 2rem;
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .neo-btn:hover {
   background-color: #ffe658;
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0 black;
 }
 
-/* Alert Overrides */
+/* Neo-Brutalist Alerts */
 .neo-alert {
   border: 2px solid black !important;
   border-radius: 0.75rem !important;
+  background-color: #ffffff !important;
+  color: black !important;
+  font-family: 'Lexend Mega', sans-serif !important;
+  box-shadow: 4px 4px 0 black;
+  padding: 1rem;
+}
+
+/* Neo Header Block */
+.neo-header {
   font-family: 'Lexend Mega', sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  border: 2px solid black;
+  box-shadow: 4px 6px 0 black;
+  border-radius: 1rem;
+  background-color: #F15BB5;
+  color: black;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Neo Section Titles */
+.neo-subheader {
+  background-color: #FEE440;
+  color: black;
+  border: 2px solid black;
+  border-radius: 0.75rem;
+  box-shadow: 4px 4px 0 black;
+  font-family: 'Lexend Mega', sans-serif;
+  padding: 0.75rem 1.25rem;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+/* Chip Styling */
+.MuiChip-root {
+  font-family: 'Lexend Mega', sans-serif !important;
+  font-size: 0.75rem !important;
+  font-weight: bold !important;
+  border: 2px solid black !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Form Fields */
+input, select, .MuiInputBase-root {
+  font-family: 'Lexend Mega', sans-serif !important;
+  font-weight: 500;
+}
+
+/* Tabs */
+.MuiTabs-root,
+.MuiTab-root {
+  font-family: 'Lexend Mega', sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* Typography Utility Classes */
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Optional Utility */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

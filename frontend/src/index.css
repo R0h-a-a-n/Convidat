@@ -33,18 +33,16 @@
     --ring: 312 90% 65%;
 
     --radius: 1rem;
-
-    html, body, #__next, #root {
-      @apply min-h-screen;
-      background-color: hsl(var(--background));
-      background-image: radial-gradient(#aaa 1px, transparent 1px);
-      background-size: 25px 25px;
-      background-repeat: repeat;
-      background-attachment: fixed;
-    }
   }
 
-  
+  html, body, #__next, #root {
+    @apply min-h-screen;
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 25px 25px;
+    background-repeat: repeat;
+    background-attachment: scroll;
+  }
 
   body {
     margin: 0;

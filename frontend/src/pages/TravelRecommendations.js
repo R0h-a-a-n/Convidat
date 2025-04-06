@@ -353,15 +353,15 @@ const TravelRecommendations = () => {
         <Typography variant="caption" display="block" gutterBottom>
           Submit Count: {submitCount}
         </Typography>
-        <Typography variant="h4" gutterBottom>
+        <Typography className="neo-header" variant="h4" gutterBottom>
           Travel Recommendations
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom>
           Tell us your preferences and we'll recommend the perfect destinations for you
         </Typography>
-
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
+  
+        {error && <Alert severity="error" className="neo-alert" sx={{ mb: 2 }}>{error}</Alert>}
+  
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
           <Tabs value={activeTab} onChange={handleTabChange} aria-label="travel tabs">
             <Tab label="Search" />
@@ -369,10 +369,10 @@ const TravelRecommendations = () => {
             <Tab label="Favorites" />
           </Tabs>
         </Box>
-
+  
         {activeTab === 0 && (
           <>
-            <Paper sx={{ p: 3, mb: 3 }}>
+            <Paper className="neo-card" sx={{ mb: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Your Preferences
               </Typography>
@@ -423,7 +423,7 @@ const TravelRecommendations = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-
+  
                 <Grid item xs={12}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography gutterBottom>Popularity vs. Eco-Friendliness Weight</Typography>
@@ -440,9 +440,7 @@ const TravelRecommendations = () => {
                     max={1}
                     step={0.05}
                     valueLabelDisplay="auto"
-                    valueLabelFormat={(value) =>
-                      `Pop: ${value.toFixed(2)}, Eco: ${(1 - value).toFixed(2)}`
-                    }
+                    valueLabelFormat={(value) => `Pop: ${value.toFixed(2)}, Eco: ${(1 - value).toFixed(2)}`}
                   />
                   <Grid container justifyContent="space-between">
                     <Typography variant="caption" color="text.secondary">
@@ -454,19 +452,14 @@ const TravelRecommendations = () => {
                   </Grid>
                 </Grid>
               </Grid>
-
+  
               <Box sx={{ mt: 2 }}>
                 <FormControlLabel
-                  control={
-                    <Switch 
-                      checked={showAdvanced}
-                      onChange={() => setShowAdvanced(!showAdvanced)}
-                    />
-                  }
+                  control={<Switch checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />}
                   label="Show Advanced Options"
                 />
               </Box>
-
+  
               {showAdvanced && (
                 <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
                   <Typography variant="subtitle2" gutterBottom>
@@ -532,11 +525,10 @@ const TravelRecommendations = () => {
                   </Grid>
                 </Box>
               )}
-
+  
               <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
                 <Button
-                  variant="contained"
-                  color="primary"
+                  className="neo-btn"
                   onClick={handleSubmit}
                   disabled={loading}
                   size="large"
@@ -545,26 +537,22 @@ const TravelRecommendations = () => {
                 </Button>
               </Box>
             </Paper>
-
+  
             {renderTopCitiesSection()}
           </>
         )}
-
+  
         {activeTab === 1 && (
           <>
-            {message && <Alert severity="info" sx={{ mb: 2 }}>{message}</Alert>}
-
+            {message && <Alert severity="info" className="neo-alert" sx={{ mb: 2 }}>{message}</Alert>}
+  
             {recommendations.length > 0 ? (
               <>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant="h6">
                     Recommendations Found: {recommendations.length}
                   </Typography>
-                  <Button 
-                    startIcon={<RefreshIcon />} 
-                    onClick={handleSubmit}
-                    disabled={loading}
-                  >
+                  <Button className="neo-btn" startIcon={<RefreshIcon />} onClick={handleSubmit} disabled={loading}>
                     Refresh
                   </Button>
                 </Box>
@@ -579,7 +567,7 @@ const TravelRecommendations = () => {
             )}
           </>
         )}
-
+  
         {activeTab === 2 && (
           <>
             <Typography variant="h6" gutterBottom>
@@ -598,7 +586,7 @@ const TravelRecommendations = () => {
         )}
       </Box>
     </Container>
-  );
+  );  
 };
 
 export default TravelRecommendations;
