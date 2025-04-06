@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -91,7 +92,8 @@ const Navbar = () => {
               { path: '/eco-stays', label: 'Eco Stays' },
               { path: '/sustainable-routes', label: 'Routes' },
               { path: '/reviews', label: 'Reviews' },
-              { path: '/responsible-travel', label: 'Travel' }
+              { path: '/responsible-travel', label: 'Travel' },
+              { path: '/destinations', label: 'Destinations' }
             ] : [
               { path: '/login', label: 'Login' },
               { path: '/register', label: 'Register' },
@@ -130,7 +132,8 @@ const Navbar = () => {
                 { path: '/eco-stays', label: 'Eco Stays' },
                 { path: '/sustainable-routes', label: 'Routes' },
                 { path: '/reviews', label: 'Reviews' },
-                { path: '/responsible-travel', label: 'Travel' }
+                { path: '/responsible-travel', label: 'Travel' },
+                { path: '/destinations', label: 'Destinations' }
               ] : [
                 { path: '/login', label: 'Login' },
                 { path: '/register', label: 'Register' },

@@ -16,6 +16,7 @@ import ResponsibleTravel from './components/ResponsibleTravel';
 import Reviews from './components/Reviews';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import Destinations from './components/Destinations';
 
 const theme = createTheme({
   palette: {
@@ -53,6 +54,7 @@ function App() {
               <Route path="/sustainable-routes" element={<PrivateRoute><SustainableRoutes /></PrivateRoute>} />
               <Route path="/reviews" element={<PrivateRoute><Reviews /></PrivateRoute>} />
               <Route path="/responsible-travel" element={<ResponsibleTravel />} />
+              <Route path="/destinations" element={<PrivateRoute><Destinations /></PrivateRoute>} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </Layout>
