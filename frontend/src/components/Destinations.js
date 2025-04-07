@@ -6,7 +6,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   TextField,
   Button,
   Chip,
@@ -17,7 +16,7 @@ import {
   Divider
 } from '@mui/material';
 import axios from 'axios';
-import { LocationOn, AccessTime, Language, Phone, Email } from '@mui/icons-material';
+import { LocationOn, AccessTime } from '@mui/icons-material';
 
 const api = axios.create({
   baseURL: 'http://localhost:3008',
@@ -27,18 +26,13 @@ const api = axios.create({
   }
 });
 
-// Add request interceptor to include token
 api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
 const Destinations = () => {
@@ -51,27 +45,16 @@ const Destinations = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!city) return;
-
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/api/destinations/search', {
-        params: { city, country }
-      });
-
+      const response = await api.get('/api/destinations/search', { params: { city, country } });
       if (response.data.success) {
         setDestinations(response.data.data);
-        if (response.data.data.length === 0) {
-          setError('No eco-friendly destinations found in this area.');
-        }
+        if (response.data.data.length === 0) setError('No eco-friendly destinations found in this area.');
       }
     } catch (err) {
-      console.error('Error fetching destinations:', err);
-      setError(
-        err.response?.data?.error 
-          ? `${err.response.data.error}${err.response.data.details ? `: ${err.response.data.details}` : ''}`
-          : 'Failed to fetch destinations'
-      );
+      setError(err.response?.data?.error || 'Failed to fetch destinations');
     } finally {
       setLoading(false);
     }
@@ -79,39 +62,55 @@ const Destinations = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h4" sx={{
+        fontWeight: 'bold',
+        fontFamily: 'Lexend Mega, sans-serif',
+        mb: 4,
+        backgroundColor: '#FEE440',
+        px: 3,
+        py: 1,
+        border: '2px solid black',
+        borderRadius: '0.75rem',
+        boxShadow: '4px 6px 0 black',
+        width: 'fit-content'
+      }}>
         Eco-Friendly Destinations
       </Typography>
 
-      <Paper sx={{ p: 3, mb: 4 }}>
+      <Paper sx={{
+        p: 3,
+        mb: 4,
+        backgroundColor: '#C2F970',
+        border: '2px solid black',
+        boxShadow: '4px 6px 0 black',
+        borderRadius: '0.75rem'
+      }}>
         <form onSubmit={handleSearch}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={5}>
-              <TextField
-                fullWidth
-                label="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-                placeholder="e.g., Chennai"
-              />
+              <TextField fullWidth label="City" value={city} onChange={(e) => setCity(e.target.value)} required />
             </Grid>
             <Grid item xs={12} md={5}>
-              <TextField
-                fullWidth
-                label="Country (Optional)"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                placeholder="e.g., India"
-              />
+              <TextField fullWidth label="Country (Optional)" value={country} onChange={(e) => setCountry(e.target.value)} />
             </Grid>
             <Grid item xs={12} md={2}>
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
                 fullWidth
                 disabled={loading}
+                sx={{
+                  backgroundColor: '#FEE440',
+                  color: 'black',
+                  fontWeight: 'bold',
+                  border: '2px solid black',
+                  boxShadow: '4px 6px 0 black',
+                  borderRadius: '0.75rem',
+                  '&:hover': {
+                    backgroundColor: '#FFD60A',
+                    boxShadow: '6px 8px 0 black'
+                  }
+                }}
               >
                 Search
               </Button>
@@ -120,84 +119,83 @@ const Destinations = () => {
         </form>
       </Paper>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       {loading ? (
-        <Box display="flex" justifyContent="center" my={4}>
-          <CircularProgress />
-        </Box>
+        <Box display="flex" justifyContent="center" my={4}><CircularProgress /></Box>
       ) : destinations.length > 0 ? (
         <Grid container spacing={3}>
           {destinations.map((destination) => (
             <Grid item xs={12} key={destination._id || destination.name}>
-              <Card>
-                <Grid container>
-                  <Grid item xs={12}>
-                    <CardContent>
-                      <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                        <Typography variant="h5" component="h2">
-                          {destination.name}
-                        </Typography>
-                        <Rating value={destination.rating} readOnly precision={0.5} />
-                      </Box>
-                      
-                      <Box display="flex" alignItems="center" my={1}>
-                        <LocationOn color="action" />
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                          {destination.city}, {destination.country}
-                        </Typography>
-                      </Box>
-
-                      <Typography variant="body1" paragraph>
-                        {destination.description}
-                      </Typography>
-
-                      <Box sx={{ mb: 2 }}>
-                        {destination.ecoFeatures.map((feature) => (
-                          <Chip
-                            key={feature}
-                            label={feature}
-                            color="primary"
-                            variant="outlined"
-                            size="small"
-                            sx={{ mr: 1, mb: 1 }}
-                          />
-                        ))}
-                      </Box>
-
-                      <Divider sx={{ my: 2 }} />
-
-                      <Grid container spacing={2}>
-                        {destination.openingHours && (
-                          <Grid item xs={12} sm={6}>
-                            <Box display="flex" alignItems="center">
-                              <AccessTime color="action" />
-                              <Typography variant="body2" sx={{ ml: 1 }}>
-                                {destination.openingHours}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        )}
-                        <Grid item xs={12} sm={6}>
-                          <Typography variant="body2">
-                            {destination.admissionFee}
-                          </Typography>
-                        </Grid>
+              <Card sx={{
+                backgroundColor: '#B9FBC0',
+                border: '2px solid black',
+                boxShadow: '4px 6px 0 black',
+                borderRadius: '0.75rem'
+              }}>
+                <CardContent>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Typography variant="h5" fontWeight="bold" fontFamily="Lexend Mega, sans-serif">
+                      {destination.name}
+                    </Typography>
+                    <Rating value={destination.rating} readOnly precision={0.5} />
+                  </Box>
+                  <Box display="flex" alignItems="center" my={1}>
+                    <LocationOn sx={{ color: 'black' }} />
+                    <Typography variant="body2" sx={{ ml: 1 }}>
+                      {destination.city}, {destination.country}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" paragraph>
+                    {destination.description}
+                  </Typography>
+                  <Box sx={{ mb: 2 }}>
+                    {destination.ecoFeatures.map((feature) => (
+                      <Chip
+                        key={feature}
+                        label={feature}
+                        color="primary"
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          mr: 1,
+                          mb: 1,
+                          border: '2px solid black',
+                          fontWeight: 'bold',
+                          fontFamily: 'Lexend Mega, sans-serif'
+                        }}
+                      />
+                    ))}
+                  </Box>
+                  <Divider sx={{ my: 2, borderColor: 'black' }} />
+                  <Grid container spacing={2}>
+                    {destination.openingHours && (
+                      <Grid item xs={12} sm={6}>
+                        <Box display="flex" alignItems="center">
+                          <AccessTime sx={{ color: 'black' }} />
+                          <Typography variant="body2" sx={{ ml: 1 }}>{destination.openingHours}</Typography>
+                        </Box>
                       </Grid>
-                    </CardContent>
+                    )}
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body2">{destination.admissionFee}</Typography>
+                    </Grid>
                   </Grid>
-                </Grid>
+                </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
       ) : (
-        <Paper sx={{ p: 3, textAlign: 'center' }}>
-          <Typography variant="body1" color="text.secondary">
+        <Paper sx={{
+          p: 3,
+          textAlign: 'center',
+          backgroundColor: '#FFADAD',
+          border: '2px solid black',
+          boxShadow: '4px 6px 0 black',
+          borderRadius: '0.75rem'
+        }}>
+          <Typography variant="body1" color="text.primary">
             No destinations found. Try searching for a city.
           </Typography>
         </Paper>
@@ -206,4 +204,4 @@ const Destinations = () => {
   );
 };
 
-export default Destinations; 
+export default Destinations;
