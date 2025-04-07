@@ -70,6 +70,7 @@ const Navbar = () => {
     { path: '/destinations', label: 'Destinations' },
     { path: '/eco-stays', label: 'Eco-Stays' },
     { path: '/sustainable-routes', label: 'Routes' },
+    { path: '/trips', label: 'Trips' },
     { path: '/responsible-travel', label: 'Guide' },
     { path: '/reviews', label: 'Reviews' }
   ];
