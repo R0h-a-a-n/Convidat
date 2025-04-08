@@ -21,7 +21,7 @@ export const getActivities = async (req, res) => {
 // Create a new activity
 export const createActivity = async (req, res) => {
   try {
-    const { name, description, location, startTime, endTime, cost, category } = req.body;
+    const { name, description, location, startTime, endTime, cost, category, day } = req.body;
     
     const activity = new Activity({
       tripId: req.params.tripId,
@@ -31,7 +31,8 @@ export const createActivity = async (req, res) => {
       startTime,
       endTime,
       cost: parseFloat(cost) || 0,
-      category
+      category,
+      day,
     });
 
     await activity.save();
@@ -43,7 +44,6 @@ export const createActivity = async (req, res) => {
     }
     
     // Find or create the day in the itinerary
-    const day = 1; // Default to day 1 if not specified
     let dayEntry = trip.itinerary.find(entry => entry.day === day);
     if (!dayEntry) {
       dayEntry = { day, activities: [] };

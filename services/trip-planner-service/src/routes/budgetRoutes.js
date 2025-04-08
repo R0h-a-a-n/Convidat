@@ -8,12 +8,12 @@ import {
   getExchangeRate,
   getBudgetSummary,
 } from '../controllers/budgetController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // Apply authentication middleware to all routes
-router.use(protect);
+router.use(authenticateToken);
 
 // Budget routes
 router.route('/')

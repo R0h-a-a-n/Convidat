@@ -28,7 +28,7 @@ const TripActivities = ({ tripId }) => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -36,7 +36,11 @@ const TripActivities = ({ tripId }) => {
     startTime: '',
     endTime: '',
     cost: '',
-    category: 'sightseeing'
+    category: 'sightseeing',
+    ecoRating: 3,
+    bookingRequired: false,
+    notes: '',
+    day: 1
   });
 
   const categories = [
@@ -86,8 +90,24 @@ const TripActivities = ({ tripId }) => {
     }
   };
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setFormData({
+      name: '',
+      description: '',
+      location: '',
+      startTime: '',
+      endTime: '',
+      cost: '',
+      category: 'sightseeing',
+      ecoRating: 3,
+      bookingRequired: false,
+      notes: '',
+      day: 1
+    });
+    setError('');
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -115,29 +135,44 @@ const TripActivities = ({ tripId }) => {
     }));
   };
 
-  const handleAddActivity = async (e) => {
-    e.preventDefault();
+  const formatTimeInput = (time) => {
+    if (!time) return '';
+    // Remove any non-digit characters
+    const digits = time.replace(/\D/g, '');
+    // Format as HH:mm
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
+  };
+
+  const handleAddActivity = async () => {
     try {
       // Validate required fields
-      if (!formData.name || !formData.description || !formData.location || 
-          !formData.startTime || !formData.endTime || !formData.category) {
+      if (!formData.name || !formData.location || !formData.startTime || !formData.endTime) {
         setError('Please fill in all required fields');
         return;
       }
 
-      console.log('Adding activity for tripId:', tripId);
-      console.log('Activity data:', formData);
-
-      const activityData = {
+      // Format the data
+      const formattedData = {
         ...formData,
-        cost: parseFloat(formData.cost) || 0
+        startTime: formatTimeInput(formData.startTime),
+        endTime: formatTimeInput(formData.endTime),
+        cost: parseFloat(formData.cost) || 0,
+        ecoRating: parseInt(formData.ecoRating) || 3,
+        day: parseInt(formData.day) || 1
       };
 
-      const response = await api.post(`/trips/${tripId}/activities`, activityData);
-      console.log('Add activity response:', response.data);
+      console.log('Adding activity with data:', formattedData);
+
+      const response = await api.post(`/trips/${tripId}/activities`, formattedData);
       
-      handleClose();
-      fetchActivities();
+      if (response.data.success) {
+        // Update the activities list with the new activity
+        setActivities(prevActivities => [...prevActivities, response.data.data]);
+        handleCloseDialog();
+      } else {
+        setError(response.data.error || 'Failed to add activity');
+      }
     } catch (err) {
       console.error('Error adding activity:', err);
       setError(err.response?.data?.error || 'Failed to add activity');
@@ -160,7 +195,7 @@ const TripActivities = ({ tripId }) => {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Activities</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpen}>
+        <Button variant="contained" color="primary" onClick={handleOpenDialog}>
           Add Activity
         </Button>
       </Box>
@@ -200,7 +235,7 @@ const TripActivities = ({ tripId }) => {
         ))}
       </List>
 
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Add New Activity</DialogTitle>
         <DialogContent>
           <TextField
@@ -278,7 +313,7 @@ const TripActivities = ({ tripId }) => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={handleAddActivity} variant="contained" color="primary">
             Add
           </Button>

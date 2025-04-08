@@ -1,46 +1,49 @@
 import jwt from 'jsonwebtoken';
-import { promisify } from 'util';
+import dotenv from 'dotenv';
 
-export const protect = async (req, res, next) => {
+dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+export const authenticateToken  = async (req, res, next) => {
   try {
-    let token;
-
-    // Check if token exists in headers
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
-    }
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN format
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route',
+        error: 'Access denied. No token provided.'
       });
     }
 
-    try {
-      // Verify token
-      const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    if (!JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        error: 'JWT secret is not configured'
+      });
+    }
 
-      // Add user to request object
-      req.user = {
-        _id: decoded.userId,
-        email: decoded.email,
-      };
-
-      next();
-    } catch (error) {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { _id: decoded.userId };
+    next();
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        error: 'Not authorized to access this route',
+        error: 'Invalid token'
       });
     }
-  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        error: 'Token expired'
+      });
+    }
     return res.status(500).json({
       success: false,
-      error: 'Server error in authentication',
+      error: 'Failed to authenticate token',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 }; 

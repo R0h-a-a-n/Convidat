@@ -3,10 +3,11 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import tripRoutes from './routes/tripRoutes.js';
-import budgetRoutes from './routes/budgetRoutes.js';
-import itineraryRoutes from './routes/itineraryRoutes.js';
-import packingRoutes from './routes/packingRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
+import packingRoutes from './routes/packingRoutes.js';
+import budgetRoutes from './routes/budgetRoutes.js';
+import './models/Destinations.js';
+
 
 // Load environment variables
 dotenv.config();
@@ -14,23 +15,22 @@ dotenv.config();
 const app = express();
 
 // Configure CORS with specific options
+const allowedOrigins = ['http://localhost:3000'];
+
 app.use(cors({
-  origin: '*', // Allow all origins during development
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like curl or Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  credentials: true,
-  maxAge: 600
 }));
 
+
 // Add headers to allow CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
 
 app.use(express.json());
 
@@ -42,10 +42,9 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/trips', tripRoutes);
-app.use('/api/trips', activityRoutes);
-app.use('/api/budgets', budgetRoutes);
-app.use('/api', itineraryRoutes);
+app.use('/api/activities', activityRoutes);
 app.use('/api/packing', packingRoutes);
+app.use('/api/budgets', budgetRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

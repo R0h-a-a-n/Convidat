@@ -1,33 +1,57 @@
 import express from 'express';
+import { authenticateToken} from '../middleware/authMiddleware.js';
 import {
   createTrip,
   getTrips,
   getTrip,
   updateTrip,
   deleteTrip,
-  addActivityToItinerary,
-  removeActivityFromItinerary,
+  getTripActivities,
+  createActivity,
+  updateActivity,
+  deleteActivity,
+  getTripPackingList,
+  addPackingItem,
+  updatePackingItem,
+  deletePackingItem,
+  getTripBudget,
+  createBudget,
+  updateBudget,
+  addExpense,
+  updateExpense,
+  deleteExpense
 } from '../controllers/tripController.js';
-import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Apply authentication middleware to all routes
-router.use(protect);
+// Apply auth middleware to all routes
+router.use(authenticateToken);
 
 // Trip routes
-router.route('/')
-  .post(createTrip)
-  .get(getTrips);
+router.post('/', createTrip);
+router.get('/', getTrips);
+router.get('/:id', getTrip);
+router.put('/:id', updateTrip);
+router.delete('/:id', deleteTrip);
 
-router.route('/:id')
-  .get(getTrip)
-  .put(updateTrip)
-  .delete(deleteTrip);
+// Activity routes
+router.get('/:tripId/activities', getTripActivities);
+router.post('/:tripId/activities', createActivity);
+router.put('/:tripId/activities/:activityId', updateActivity);
+router.delete('/:tripId/activities/:activityId', deleteActivity);
 
-// Itinerary routes
-router.route('/:id/itinerary')
-  .post(addActivityToItinerary)
-  .delete(removeActivityFromItinerary);
+// Packing list routes
+router.get('/:tripId/packing', getTripPackingList);
+router.post('/:tripId/packing', addPackingItem);
+router.put('/:tripId/packing/:itemId', updatePackingItem);
+router.delete('/:tripId/packing/:itemId', deletePackingItem);
+
+// Budget routes
+router.get('/:tripId/budget', getTripBudget);
+router.post('/:tripId/budget', createBudget);
+router.put('/:tripId/budget', updateBudget);
+router.post('/:tripId/budget/expenses', addExpense);
+router.put('/:tripId/budget/expenses/:expenseId', updateExpense);
+router.delete('/:tripId/budget/expenses/:expenseId', deleteExpense);
 
 export default router; 

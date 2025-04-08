@@ -22,6 +22,7 @@ const TripForm = ({ trip, onSave, onCancel }) => {
     status: 'planning',
     isPublic: false,
     tags: [],
+    destinations: [],
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ const TripForm = ({ trip, onSave, onCancel }) => {
         status: trip.status,
         isPublic: trip.isPublic,
         tags: trip.tags || [],
+        destinations: trip.destinations?.map(d => d._id || d) || []
       });
     }
   }, [trip]);
@@ -139,6 +141,26 @@ const TripForm = ({ trip, onSave, onCancel }) => {
             }}
           />
         </Grid>
+
+        <Grid item xs={12}>
+  <TextField
+    fullWidth
+    label="Destinations (comma-separated ObjectIds or leave empty)"
+    name="destinations"
+    value={formData.destinations?.join(', ') || ''}
+    onChange={(e) => {
+      const destinations = e.target.value
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean); // remove empty strings
+      setFormData((prev) => ({
+        ...prev,
+        destinations,
+      }));
+    }}
+  />
+</Grid>
+
 
         <Grid item xs={12}>
           <Box display="flex" justifyContent="flex-end" gap={2}>

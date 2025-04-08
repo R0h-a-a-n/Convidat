@@ -85,27 +85,135 @@ const TripBudget = ({ tripId }) => {
       let url = `http://localhost:3010/api/budgets/${tripId}`;
       let method = budget ? 'put' : 'post';
       
-      console.log(`${method.toUpperCase()} budget with data:`, budgetFormData);
-      
+      // Ensure totalAmount is a valid number
+      const totalAmount = parseFloat(budgetFormData.totalAmount);
+      if (isNaN(totalAmount)) {
+        setError('Please enter a valid total amount');
+        return;
+      }
+
+      console.log('Saving budget with data:', {
+        totalAmount,
+        currency: budgetFormData.currency,
+        categories: budgetFormData.categories
+      });
+
       const response = await axios({
         method,
         url,
-        data: budgetFormData,
+        data: {
+          totalBudget: totalAmount,
+          currency: budgetFormData.currency,
+          categories: budgetFormData.categories.map(cat => ({
+            name: cat.name,
+            allocated: parseFloat(cat.allocated) || 0
+          }))
+        },
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         }
       });
       
-      console.log('Budget response:', response.data);
-      setBudget(response.data.data);
-      setOpenBudgetDialog(false);
-      fetchBudgetSummary();
-      fetchExchangeRate();
+      console.log('Server response:', response.data);
+
+      if (response.data.success && response.data.data) {
+        // Update local state with the new budget data
+        const newBudget = {
+          totalAmount: totalAmount,
+          currency: budgetFormData.currency,
+          categories: budgetFormData.categories
+        };
+        
+        setBudget(newBudget);
+        
+        // Update the form data to match the new budget
+        setBudgetFormData({
+          totalAmount: totalAmount.toString(),
+          currency: budgetFormData.currency,
+          categories: budgetFormData.categories
+        });
+        
+        // Close dialog
+        setOpenBudgetDialog(false);
+        // Clear any errors
+        setError('');
+        
+        // Fetch updated data
+        try {
+          const [budgetRes, summaryRes, exchangeRes] = await Promise.all([
+            axios.get(`http://localhost:3010/api/budgets/${tripId}`, {
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            }),
+            axios.get(`http://localhost:3010/api/budgets/${tripId}/summary`, {
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            }),
+            axios.get(`http://localhost:3010/api/budgets/${tripId}/exchange-rate`, {
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            })
+          ]);
+
+          console.log('Updated budget data:', budgetRes.data);
+          console.log('Updated summary data:', summaryRes.data);
+          console.log('Updated exchange rate data:', exchangeRes.data);
+
+          if (budgetRes.data.success && budgetRes.data.data) {
+            setBudget({
+              ...budgetRes.data.data,
+              categories: budgetRes.data.data.categories || [],
+              totalAmount: budgetRes.data.data.totalBudget,
+              currency: budgetRes.data.data.currency
+            });
+          }
+          if (summaryRes.data.success && summaryRes.data.data) {
+            setSummary(summaryRes.data.data);
+          }
+          if (exchangeRes.data.success && exchangeRes.data.data) {
+            setExchangeRate(exchangeRes.data.data);
+          }
+          
+        } catch (fetchErr) {
+          console.error('Error fetching updated data:', fetchErr);
+          setError('Budget updated but failed to fetch latest data');
+        }
+      } else {
+        throw new Error(response.data.error || 'Failed to update budget');
+      }
     } catch (err) {
       console.error('Error managing budget:', err);
-      setError(err.response?.data?.error || 'Failed to manage budget');
+      setError(err.message || 'Failed to manage budget');
     }
+  };
+
+  const handleEditBudget = () => {
+    if (budget) {
+      setBudgetFormData({
+        totalAmount: budget.totalAmount?.toString() || '',
+        currency: budget.currency || 'USD',
+        categories: budget.categories || [
+          { name: 'Accommodation', allocated: 0 },
+          { name: 'Transportation', allocated: 0 },
+          { name: 'Food', allocated: 0 },
+          { name: 'Activities', allocated: 0 },
+          { name: 'Shopping', allocated: 0 },
+          { name: 'Other', allocated: 0 },
+        ]
+      });
+    } else {
+      setBudgetFormData({
+        totalAmount: '',
+        currency: 'USD',
+        categories: [
+          { name: 'Accommodation', allocated: 0 },
+          { name: 'Transportation', allocated: 0 },
+          { name: 'Food', allocated: 0 },
+          { name: 'Activities', allocated: 0 },
+          { name: 'Shopping', allocated: 0 },
+          { name: 'Other', allocated: 0 },
+        ]
+      });
+    }
+    setOpenBudgetDialog(true);
   };
 
   const fetchBudgetSummary = async () => {
@@ -212,14 +320,18 @@ const TripBudget = ({ tripId }) => {
         <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
           <DialogTitle>Create Trip Budget</DialogTitle>
           <DialogContent>
-            <TextField
-              margin="dense"
-              label="Total Budget Amount"
-              type="number"
-              fullWidth
-              value={budgetFormData.totalAmount}
-              onChange={(e) => setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value })}
-            />
+          <TextField
+  margin="dense"
+  label="Total Budget Amount"
+  type="number"
+  fullWidth
+  value={budgetFormData.totalAmount}
+  onChange={(e) => {
+    console.log('📝 [DEBUG] totalAmount input changed:', e.target.value);
+    setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value });
+  }}
+/>
+
             <FormControl fullWidth margin="dense">
               <InputLabel>Currency</InputLabel>
               <Select
@@ -276,14 +388,7 @@ const TripBudget = ({ tripId }) => {
               <Button 
                 variant="outlined" 
                 size="small"
-                onClick={() => {
-                  setBudgetFormData({
-                    ...budgetFormData,
-                    totalAmount: summary.totalBudget,
-                    currency: budget.currency
-                  });
-                  setOpenBudgetDialog(true);
-                }}
+                onClick={handleEditBudget}
               >
                 Edit Total Budget
               </Button>
@@ -475,6 +580,40 @@ const TripBudget = ({ tripId }) => {
             </Grid>
           </Box>
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
+        <DialogTitle>{budget ? 'Edit Trip Budget' : 'Create Trip Budget'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Total Budget Amount"
+            type="number"
+            fullWidth
+            value={budgetFormData.totalAmount}
+            onChange={(e) => setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value })}
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Currency</InputLabel>
+            <Select
+              value={budgetFormData.currency}
+              onChange={(e) => setBudgetFormData({ ...budgetFormData, currency: e.target.value })}
+            >
+              <MenuItem value="USD">USD</MenuItem>
+              <MenuItem value="EUR">EUR</MenuItem>
+              <MenuItem value="GBP">GBP</MenuItem>
+              <MenuItem value="JPY">JPY</MenuItem>
+              <MenuItem value="AUD">AUD</MenuItem>
+              <MenuItem value="CAD">CAD</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenBudgetDialog(false)}>Cancel</Button>
+          <Button onClick={handleCreateBudget} variant="contained" color="primary">
+            {budget ? 'Update' : 'Create'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

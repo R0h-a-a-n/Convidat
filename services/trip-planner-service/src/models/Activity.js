@@ -6,6 +6,11 @@ const activitySchema = new mongoose.Schema({
     ref: 'Trip',
     required: true
   },
+  day: {
+    type: Number,
+    required: [true, 'Please provide the day number for the activity'],
+    min: 1
+  },
   name: {
     type: String,
     required: [true, 'Please provide a name for the activity']
@@ -22,7 +27,7 @@ const activitySchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a start time for the activity'],
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(v);
       },
       message: props => `${props.value} is not a valid time format! Use HH:mm format.`
@@ -32,7 +37,7 @@ const activitySchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide an end time for the activity'],
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(v);
       },
       message: props => `${props.value} is not a valid time format! Use HH:mm format.`
@@ -67,7 +72,7 @@ const activitySchema = new mongoose.Schema({
     trim: true,
   },
   attachments: [{
-    type: String, // URLs to images or documents
+    type: String,
   }],
   createdAt: {
     type: Date,
@@ -78,6 +83,7 @@ const activitySchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 
 // Update the updatedAt field before saving
 activitySchema.pre('save', function(next) {

@@ -1,44 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Box,
-  Tabs,
-  Tab,
-  Paper,
-  Button,
-  Grid,
-  CircularProgress,
-  Alert
-} from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { Box, Typography, Tabs, Tab, Paper, CircularProgress, Alert } from '@mui/material';
 import axios from 'axios';
-import TripItinerary from './TripItinerary';
 import TripBudget from './TripBudget';
 import TripPackingList from './TripPackingList';
 import TripActivities from './TripActivities';
 
+const TabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`trip-tabpanel-${index}`}
+      aria-labelledby={`trip-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+};
+
 const TripDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
   const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     const fetchTripDetails = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:3010/api/trips/${id}`, {
+        const tripRes = await axios.get(`http://localhost:3010/api/trips/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
-        setTrip(response.data.data);
-        setLoading(false);
+
+        setTrip(tripRes.data.data);
+        setError(null);
       } catch (err) {
-        setError('Failed to fetch trip details');
+        console.error("Error fetching trip:", err);
+        setError("Failed to fetch trip details.");
+      } finally {
         setLoading(false);
       }
     };
@@ -52,7 +60,7 @@ const TripDetails = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
         <CircularProgress />
       </Box>
     );
@@ -60,27 +68,23 @@ const TripDetails = () => {
 
   if (error) {
     return (
-      <Container>
-        <Alert severity="error" sx={{ mt: 2 }}>
-          {error}
-        </Alert>
-      </Container>
+      <Box p={3}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
     );
   }
 
   if (!trip) {
     return (
-      <Container>
-        <Alert severity="warning" sx={{ mt: 2 }}>
-          Trip not found
-        </Alert>
-      </Container>
+      <Box p={3}>
+        <Alert severity="info">Trip not found</Alert>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ mb: 4 }}>
+    <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+      <Box mb={3}>
         <Typography variant="h4" gutterBottom>
           {trip.title}
         </Typography>
@@ -92,29 +96,27 @@ const TripDetails = () => {
         </Typography>
       </Box>
 
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
-          variant="fullWidth"
-        >
-          <Tab label="Itinerary" />
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="trip details tabs">
           <Tab label="Budget" />
           <Tab label="Packing List" />
           <Tab label="Activities" />
         </Tabs>
-      </Paper>
-
-      <Box sx={{ mt: 2 }}>
-        {tabValue === 0 && <TripItinerary tripId={id} />}
-        {tabValue === 1 && <TripBudget tripId={id} />}
-        {tabValue === 2 && <TripPackingList tripId={id} />}
-        {tabValue === 3 && <TripActivities tripId={id} />}
       </Box>
-    </Container>
+
+      <TabPanel value={tabValue} index={0}>
+        <TripBudget tripId={id} />
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={1}>
+        <TripPackingList tripId={id} />
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={2}>
+        <TripActivities tripId={id} />
+      </TabPanel>
+    </Paper>
   );
 };
 
-export default TripDetails; 
+export default TripDetails;

@@ -71,29 +71,50 @@ const TripList = () => {
 
   const handleSaveTrip = async (tripData) => {
     try {
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+        setError('Please log in first');
+        return;
+      }
+  
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+  
+      // Temporary workaround: ensure destinations is an array of ObjectIds (or empty)
+      if (!Array.isArray(tripData.destinations) || tripData.destinations.some(d => typeof d !== 'string')) {
+        tripData.destinations = []; // <- empty array as fallback
+      }      
+      console.log('[FINAL tripData]', tripData);
+
+  
       if (selectedTrip) {
         await axios.put(
           `http://localhost:3010/api/trips/${selectedTrip._id}`,
           tripData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          }
+          config
         );
       } else {
-        await axios.post('http://localhost:3010/api/trips', tripData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        await axios.post(
+          'http://localhost:3010/api/trips',
+          tripData,
+          config
+        );
       }
+  
       setOpenDialog(false);
       fetchTrips();
     } catch (err) {
-      setError('Failed to save trip');
+      console.error('Failed to save trip:', err);
+      setError(err.response?.data?.error || 'Failed to save trip');
     }
   };
+  
+  
 
   if (loading) {
     return (

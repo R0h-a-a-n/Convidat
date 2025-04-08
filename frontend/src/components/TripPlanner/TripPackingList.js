@@ -100,7 +100,6 @@ const TripPackingList = ({ tripId }) => {
 
   const handleToggleItem = async (category, itemId, packed) => {
     try {
-      console.log('Updating item:', { category, itemId, packed });
       const token = localStorage.getItem('token');
       const response = await axios.put(
         `http://localhost:3010/api/packing/${tripId}/items/${itemId}`,
@@ -116,9 +115,19 @@ const TripPackingList = ({ tripId }) => {
         }
       );
 
-      console.log('Update response:', response.data);
       if (response.data.success) {
-        setPackingList(response.data.data);
+        // Update the local state immediately for better UX
+        setPackingList(prevList => {
+          const newList = { ...prevList };
+          const categoryIndex = newList.categories.findIndex(c => c.name === category);
+          if (categoryIndex !== -1) {
+            const itemIndex = newList.categories[categoryIndex].items.findIndex(i => i._id === itemId);
+            if (itemIndex !== -1) {
+              newList.categories[categoryIndex].items[itemIndex].packed = !packed;
+            }
+          }
+          return newList;
+        });
       } else {
         setError('Failed to update item: ' + (response.data.error || 'Unknown error'));
       }
@@ -202,7 +211,13 @@ const TripPackingList = ({ tripId }) => {
           </Typography>
           <List>
             {category.items.map((item) => (
-              <ListItem key={item._id}>
+              <ListItem
+                key={item._id}
+                sx={{
+                  backgroundColor: item.packed ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
+                  transition: 'background-color 0.3s ease'
+                }}
+              >
                 <ListItemText
                   primary={item.name}
                   sx={{

@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Trip from '../models/Trip.js';
 import Budget from '../models/Budget.js';
 import PackingList from '../models/PackingList.js';
@@ -9,18 +10,24 @@ export const createTrip = async (req, res) => {
     const { title, description, startDate, endDate, destinations, tags } = req.body;
     const userId = req.user._id;
 
-    // Create the trip with string destinations
+    let sanitizedDestinations = [];
+    if (Array.isArray(destinations)) {
+      sanitizedDestinations = destinations
+        .filter(id => mongoose.Types.ObjectId.isValid(id))
+        .map(id => mongoose.Types.ObjectId(id));
+    }
+
+    
     const trip = new Trip({
       userId,
       title,
       description,
       startDate,
       endDate,
-      destinations: destinations || [], // Allow string destinations
+      destinations: sanitizedDestinations,
       tags,
     });
 
-    // Create associated budget
     const budget = new Budget({
       tripId: trip._id,
       totalBudget: 0,
@@ -35,7 +42,6 @@ export const createTrip = async (req, res) => {
       ],
     });
 
-    // Create associated packing list
     const packingList = new PackingList({
       tripId: trip._id,
       categories: [
@@ -48,14 +54,12 @@ export const createTrip = async (req, res) => {
       ],
     });
 
-    // Save all documents
     await Promise.all([
       trip.save(),
       budget.save(),
-      packingList.save(),
+      packingList.save()
     ]);
 
-    // Update trip with references
     trip.budget = budget._id;
     trip.packingList = packingList._id;
     await trip.save();
@@ -109,11 +113,7 @@ export const getTrip = async (req, res) => {
     const trip = await Trip.findById(req.params.id)
       .populate('destinations')
       .populate('budget')
-      .populate('packingList')
-      .populate({
-        path: 'itinerary.activities',
-        model: 'Activity',
-      });
+      .populate('packingList');
 
     if (!trip) {
       return res.status(404).json({
@@ -181,7 +181,7 @@ export const deleteTrip = async (req, res) => {
     await Promise.all([
       Budget.deleteOne({ tripId: trip._id }),
       PackingList.deleteOne({ tripId: trip._id }),
-      Activity.deleteMany({ _id: { $in: trip.itinerary.flatMap(day => day.activities) } }),
+      Activity.deleteMany({ tripId: trip._id })
     ]);
 
     await trip.remove();
@@ -265,6 +265,418 @@ export const removeActivityFromItinerary = async (req, res) => {
     res.status(400).json({
       success: false,
       error: error.message,
+    });
+  }
+};
+
+// Activity controllers
+export const getTripActivities = async (req, res) => {
+  try {
+    const activities = await Activity.find({ tripId: req.params.tripId });
+    res.status(200).json({
+      success: true,
+      data: activities
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const createActivity = async (req, res) => {
+  try {
+    const activity = new Activity({
+      ...req.body,
+      tripId: req.params.tripId
+    });
+    await activity.save();
+    res.status(201).json({
+      success: true,
+      data: activity
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const updateActivity = async (req, res) => {
+  try {
+    const activity = await Activity.findOneAndUpdate(
+      { _id: req.params.activityId, tripId: req.params.tripId },
+      req.body,
+      { new: true }
+    );
+    if (!activity) {
+      return res.status(404).json({
+        success: false,
+        error: 'Activity not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: activity
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const deleteActivity = async (req, res) => {
+  try {
+    const activity = await Activity.findOneAndDelete({
+      _id: req.params.activityId,
+      tripId: req.params.tripId
+    });
+    if (!activity) {
+      return res.status(404).json({
+        success: false,
+        error: 'Activity not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: {}
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// Packing list controllers
+export const getTripPackingList = async (req, res) => {
+  try {
+    const packingList = await PackingList.findOne({ tripId: req.params.tripId });
+    if (!packingList) {
+      return res.status(404).json({
+        success: false,
+        error: 'Packing list not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: packingList
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const addPackingItem = async (req, res) => {
+  try {
+    const packingList = await PackingList.findOne({ tripId: req.params.tripId });
+    if (!packingList) {
+      return res.status(404).json({
+        success: false,
+        error: 'Packing list not found'
+      });
+    }
+
+    const { category, item } = req.body;
+    const categoryIndex = packingList.categories.findIndex(c => c.name === category);
+    
+    if (categoryIndex === -1) {
+      packingList.categories.push({ name: category, items: [item] });
+    } else {
+      packingList.categories[categoryIndex].items.push(item);
+    }
+
+    await packingList.save();
+    res.status(200).json({
+      success: true,
+      data: packingList
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const updatePackingItem = async (req, res) => {
+  try {
+    const packingList = await PackingList.findOne({ tripId: req.params.tripId });
+    if (!packingList) {
+      return res.status(404).json({
+        success: false,
+        error: 'Packing list not found'
+      });
+    }
+
+    const { category, itemIndex, packed } = req.body;
+    const categoryIndex = packingList.categories.findIndex(c => c.name === category);
+    
+    if (categoryIndex === -1 || !packingList.categories[categoryIndex].items[itemIndex]) {
+      return res.status(404).json({
+        success: false,
+        error: 'Item not found'
+      });
+    }
+
+    packingList.categories[categoryIndex].items[itemIndex].packed = packed;
+    await packingList.save();
+    res.status(200).json({
+      success: true,
+      data: packingList
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const deletePackingItem = async (req, res) => {
+  try {
+    const packingList = await PackingList.findOne({ tripId: req.params.tripId });
+    if (!packingList) {
+      return res.status(404).json({
+        success: false,
+        error: 'Packing list not found'
+      });
+    }
+
+    const { category, itemIndex } = req.body;
+    const categoryIndex = packingList.categories.findIndex(c => c.name === category);
+    
+    if (categoryIndex === -1 || !packingList.categories[categoryIndex].items[itemIndex]) {
+      return res.status(404).json({
+        success: false,
+        error: 'Item not found'
+      });
+    }
+
+    packingList.categories[categoryIndex].items.splice(itemIndex, 1);
+    await packingList.save();
+    res.status(200).json({
+      success: true,
+      data: packingList
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// Budget controllers
+export const getTripBudget = async (req, res) => {
+  try {
+    const budget = await Budget.findOne({ tripId: req.params.tripId });
+    if (!budget) {
+      return res.status(404).json({
+        success: false,
+        error: 'Budget not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: budget
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const createBudget = async (req, res) => {
+  try {
+    const budget = new Budget({
+      ...req.body,
+      tripId: req.params.tripId
+    });
+    await budget.save();
+    res.status(201).json({
+      success: true,
+      data: budget
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const updateBudget = async (req, res) => {
+  try {
+    const budget = await Budget.findOneAndUpdate(
+      { tripId: req.params.tripId },
+      req.body,
+      { new: true }
+    );
+    if (!budget) {
+      return res.status(404).json({
+        success: false,
+        error: 'Budget not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: budget
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const addExpense = async (req, res) => {
+  try {
+    const budget = await Budget.findOne({ tripId: req.params.tripId });
+    if (!budget) {
+      return res.status(404).json({
+        success: false,
+        error: 'Budget not found'
+      });
+    }
+
+    const { category, amount, description } = req.body;
+    const categoryIndex = budget.categories.findIndex(c => c.name === category);
+    
+    if (categoryIndex === -1) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid category'
+      });
+    }
+
+    budget.categories[categoryIndex].items.push({
+      amount,
+      description,
+      date: new Date()
+    });
+    budget.categories[categoryIndex].spent += amount;
+
+    await budget.save();
+    res.status(200).json({
+      success: true,
+      data: budget
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const updateExpense = async (req, res) => {
+  try {
+    const budget = await Budget.findOne({ tripId: req.params.tripId });
+    if (!budget) {
+      return res.status(404).json({
+        success: false,
+        error: 'Budget not found'
+      });
+    }
+
+    const { category, expenseId, amount, description } = req.body;
+    const categoryIndex = budget.categories.findIndex(c => c.name === category);
+    
+    if (categoryIndex === -1) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid category'
+      });
+    }
+
+    const expenseIndex = budget.categories[categoryIndex].items.findIndex(
+      item => item._id.toString() === expenseId
+    );
+
+    if (expenseIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Expense not found'
+      });
+    }
+
+    const oldAmount = budget.categories[categoryIndex].items[expenseIndex].amount;
+    budget.categories[categoryIndex].items[expenseIndex] = {
+      amount,
+      description,
+      date: new Date()
+    };
+    budget.categories[categoryIndex].spent += (amount - oldAmount);
+
+    await budget.save();
+    res.status(200).json({
+      success: true,
+      data: budget
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+export const deleteExpense = async (req, res) => {
+  try {
+    const budget = await Budget.findOne({ tripId: req.params.tripId });
+    if (!budget) {
+      return res.status(404).json({
+        success: false,
+        error: 'Budget not found'
+      });
+    }
+
+    const { category, expenseId } = req.body;
+    const categoryIndex = budget.categories.findIndex(c => c.name === category);
+    
+    if (categoryIndex === -1) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid category'
+      });
+    }
+
+    const expenseIndex = budget.categories[categoryIndex].items.findIndex(
+      item => item._id.toString() === expenseId
+    );
+
+    if (expenseIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: 'Expense not found'
+      });
+    }
+
+    const amount = budget.categories[categoryIndex].items[expenseIndex].amount;
+    budget.categories[categoryIndex].items.splice(expenseIndex, 1);
+    budget.categories[categoryIndex].spent -= amount;
+
+    await budget.save();
+    res.status(200).json({
+      success: true,
+      data: budget
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
     });
   }
 }; 
