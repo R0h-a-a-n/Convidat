@@ -8,14 +8,31 @@ import {
   ListItemSecondaryAction,
   IconButton,
   TextField,
-  Button,
-  Paper,
-  Grid,
   CircularProgress,
-  Alert
+  Alert,
+  Grid,
+  MenuItem
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Check as CheckIcon } from '@mui/icons-material';
 import axios from 'axios';
+import './TripBudget.css';
+import BrutalButton from './Brutalbutton'; // or './BrutalButton'
+
+
+const BrutalCard = ({ children }) => (
+  <Box
+    sx={{
+      border: '2px solid black',
+      boxShadow: '4px 6px 0 black',
+      borderRadius: '1rem',
+      backgroundColor: '#FEE440',
+      p: 2,
+      mb: 3
+    }}
+  >
+    {children}
+  </Box>
+);
 
 const TripPackingList = ({ tripId }) => {
   const [packingList, setPackingList] = useState(null);
@@ -32,13 +49,11 @@ const TripPackingList = ({ tripId }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`http://localhost:3010/api/packing/${tripId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setPackingList(response.data.data);
       setLoading(false);
-    } catch (err) {
+    } catch {
       setError('Failed to fetch packing list');
       setLoading(false);
     }
@@ -46,54 +61,33 @@ const TripPackingList = ({ tripId }) => {
 
   const handleAddItem = async () => {
     if (!newItem.trim() || !selectedCategory) return;
-
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
         `http://localhost:3010/api/packing/${tripId}/items`,
-        {
-          category: selectedCategory,
-          name: newItem.trim()
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        { category: selectedCategory, name: newItem.trim() },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setPackingList(response.data.data);
       setNewItem('');
-    } catch (err) {
+    } catch {
       setError('Failed to add item');
     }
   };
 
   const handleDeleteItem = async (category, itemId) => {
     try {
-      console.log('Deleting item:', { category, itemId });
       const token = localStorage.getItem('token');
-      const response = await axios.delete(
-        `http://localhost:3010/api/packing/${tripId}/items/${itemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          data: {
-            category: category
-          }
-        }
-      );
-
-      console.log('Delete response:', response.data);
+      const response = await axios.delete(`http://localhost:3010/api/packing/${tripId}/items/${itemId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { category }
+      });
       if (response.data.success) {
         setPackingList(response.data.data);
       } else {
-        setError('Failed to delete item: ' + (response.data.error || 'Unknown error'));
+        setError('Failed to delete item');
       }
     } catch (err) {
-      console.error('Error deleting item:', err);
       setError(err.response?.data?.error || 'Failed to delete item');
     }
   };
@@ -101,65 +95,41 @@ const TripPackingList = ({ tripId }) => {
   const handleToggleItem = async (category, itemId, packed) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `http://localhost:3010/api/packing/${tripId}/items/${itemId}`,
-        {
-          packed: !packed,
-          category: category
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
+      const response = await axios.put(`http://localhost:3010/api/packing/${tripId}/items/${itemId}`, {
+        packed: !packed,
+        category
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
-        // Update the local state immediately for better UX
-        setPackingList(prevList => {
-          const newList = { ...prevList };
-          const categoryIndex = newList.categories.findIndex(c => c.name === category);
-          if (categoryIndex !== -1) {
-            const itemIndex = newList.categories[categoryIndex].items.findIndex(i => i._id === itemId);
-            if (itemIndex !== -1) {
-              newList.categories[categoryIndex].items[itemIndex].packed = !packed;
-            }
-          }
-          return newList;
+        setPackingList(prev => {
+          const updated = { ...prev };
+          const cat = updated.categories.find(c => c.name === category);
+          const item = cat?.items.find(i => i._id === itemId);
+          if (item) item.packed = !packed;
+          return updated;
         });
       } else {
-        setError('Failed to update item: ' + (response.data.error || 'Unknown error'));
+        setError('Failed to update item');
       }
     } catch (err) {
-      console.error('Error updating item:', err);
       setError(err.response?.data?.error || 'Failed to update item');
     }
   };
 
   if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <CircularProgress />
-      </Box>
-    );
+    return <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px"><CircularProgress /></Box>;
   }
 
   if (error) {
-    return (
-      <Alert severity="error" sx={{ mb: 2 }}>
-        {error}
-      </Alert>
-    );
+    return <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>;
   }
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Packing List
-      </Typography>
+      <Typography variant="h5" sx={{ fontFamily: 'Lexend Mega, sans-serif', mb: 2 }}>Packing List</Typography>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
+      <BrutalCard>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={5}>
             <TextField
@@ -178,75 +148,57 @@ const TripPackingList = ({ tripId }) => {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               size="small"
-              SelectProps={{
-                native: true
-              }}
             >
-              <option value="">Select Category</option>
+              <MenuItem value="">Select Category</MenuItem>
               {packingList?.categories.map((category) => (
-                <option key={category.name} value={category.name}>
-                  {category.name}
-                </option>
+                <MenuItem key={category.name} value={category.name}>{category.name}</MenuItem>
               ))}
             </TextField>
           </Grid>
           <Grid item xs={12} sm={2}>
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddItem}
-              disabled={!newItem.trim() || !selectedCategory}
-            >
-              Add
-            </Button>
+            <BrutalButton onClick={handleAddItem} disabled={!newItem.trim() || !selectedCategory}>
+              <AddIcon /> Add
+            </BrutalButton>
           </Grid>
         </Grid>
-      </Paper>
+      </BrutalCard>
 
       {packingList?.categories.map((category) => (
-        <Paper key={category.name} sx={{ mb: 2 }}>
-          <Typography variant="subtitle1" sx={{ p: 2, borderBottom: '1px solid #eee' }}>
-            {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
-          </Typography>
+        <BrutalCard key={category.name}>
+          <Typography variant="h6" sx={{ fontFamily: 'Archivo Black', mb: 1 }}>{category.name}</Typography>
           <List>
             {category.items.map((item) => (
               <ListItem
                 key={item._id}
                 sx={{
-                  backgroundColor: item.packed ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
-                  transition: 'background-color 0.3s ease'
+                  backgroundColor: item.packed ? '#B4F8C8' : 'transparent',
+                  border: '1px dashed black',
+                  borderRadius: '0.5rem',
+                  mb: 1
                 }}
               >
                 <ListItemText
                   primary={item.name}
                   sx={{
                     textDecoration: item.packed ? 'line-through' : 'none',
-                    color: item.packed ? 'text.secondary' : 'text.primary'
+                    color: item.packed ? 'gray' : 'black'
                   }}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleToggleItem(category.name, item._id, item.packed)}
-                    sx={{ mr: 1 }}
-                  >
+                  <IconButton onClick={() => handleToggleItem(category.name, item._id, item.packed)}>
                     <CheckIcon color={item.packed ? 'success' : 'action'} />
                   </IconButton>
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleDeleteItem(category.name, item._id)}
-                  >
+                  <IconButton onClick={() => handleDeleteItem(category.name, item._id)}>
                     <DeleteIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
           </List>
-        </Paper>
+        </BrutalCard>
       ))}
     </Box>
   );
 };
 
-export default TripPackingList; 
+export default TripPackingList;

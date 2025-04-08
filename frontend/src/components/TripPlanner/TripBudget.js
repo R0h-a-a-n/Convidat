@@ -23,6 +23,43 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import axios from 'axios';
+import './TripBudget.css';
+
+const BrutalButton = ({ children, ...props }) => (
+  <Button
+    {...props}
+    sx={{
+      backgroundColor: '#00F5D4',
+      border: '2px solid black',
+      boxShadow: '4px 6px 0 black',
+      borderRadius: '0.75rem',
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      fontFamily: 'Lexend Mega, sans-serif',
+      '&:hover': {
+        backgroundColor: '#00D5B4'
+      },
+      ...props.sx
+    }}
+  >
+    {children}
+  </Button>
+);
+
+const BrutalCard = ({ children, sx = {} }) => (
+  <Box
+    sx={{
+      border: '2px solid black',
+      boxShadow: '4px 6px 0 black',
+      borderRadius: '1rem',
+      backgroundColor: '#FEE440',
+      p: 2,
+      ...sx
+    }}
+  >
+    {children}
+  </Box>
+);
 
 const TripBudget = ({ tripId }) => {
   const [budget, setBudget] = useState(null);
@@ -302,321 +339,213 @@ const TripBudget = ({ tripId }) => {
     return <LinearProgress />;
   }
 
-  if (!budget) {
-    return (
-      <Box>
-        <Alert severity="info" sx={{ mb: 2 }}>
-          No budget information available. Create a budget to start tracking expenses.
-        </Alert>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenBudgetDialog(true)}
-        >
-          Create Budget
-        </Button>
+  return (
+    <Box className="trip-budget-wrapper">
+  <Box className="trip-budget-container">
+    <Typography className="trip-budget-header">Trip Budget</Typography>
+    <BrutalButton startIcon={<AddIcon />} onClick={handleAddExpense}>
+      Add Expense
+    </BrutalButton>
+  </Box>
 
-        <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
-          <DialogTitle>Create Trip Budget</DialogTitle>
-          <DialogContent>
-          <TextField
-  margin="dense"
-  label="Total Budget Amount"
-  type="number"
-  fullWidth
-  value={budgetFormData.totalAmount}
-  onChange={(e) => {
-    console.log('📝 [DEBUG] totalAmount input changed:', e.target.value);
-    setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value });
-  }}
-/>
+  {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-            <FormControl fullWidth margin="dense">
-              <InputLabel>Currency</InputLabel>
+  {summary && (
+    <BrutalCard sx={{ mb: 4 }}>
+      <CardContent>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h6">Budget Summary</Typography>
+          <BrutalButton variant="outlined" size="small" onClick={handleEditBudget}>
+            Edit Total Budget
+          </BrutalButton>
+        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="subtitle2">Total Budget</Typography>
+            <Typography variant="h6">{budget.currency} {summary.totalBudget.toFixed(2)}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="subtitle2">Total Spent</Typography>
+            <Typography variant="h6">{budget.currency} {summary.totalSpent.toFixed(2)}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="subtitle2">Remaining</Typography>
+            <Typography variant="h6">{budget.currency} {summary.remaining.toFixed(2)}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="subtitle2">Exchange Rate</Typography>
+            <Typography variant="h6">1 {budget.currency} = {exchangeRate?.rate.toFixed(4)} USD</Typography>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </BrutalCard>
+  )}
+
+  <Grid container spacing={3} sx={{ background: '#B4F8C8', m: 0 }}>
+    {summary?.categories.map((cat) => (
+      <Grid item xs={12} md={6} key={cat.name}>
+        <BrutalCard>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontFamily: 'Archivo Black' }}>{cat.name}</Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Allocated: {budget.currency} {cat.allocated.toFixed(2)} | Spent: {budget.currency} {cat.spent.toFixed(2)}
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={Math.min((cat.spent / cat.allocated) * 100, 100)}
+              color={cat.spent > cat.allocated ? 'error' : 'primary'}
+              sx={{ height: 8, borderRadius: 4 }}
+            />
+            <TextField
+              fullWidth
+              label="Update Allocation"
+              type="number"
+              value={cat.allocated}
+              onChange={(e) => handleUpdateAllocation(cat.name, e.target.value)}
+              size="small"
+              sx={{ mt: 2 }}
+            />
+          </CardContent>
+        </BrutalCard>
+      </Grid>
+    ))}
+  </Grid>
+
+  <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+    <DialogTitle>Add Expense</DialogTitle>
+    <DialogContent>
+      <Box component="form" sx={{ mt: 2 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
               <Select
-                value={budgetFormData.currency}
-                onChange={(e) => setBudgetFormData({ ...budgetFormData, currency: e.target.value })}
+                value={formData.category}
+                onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                label="Category"
               >
-                <MenuItem value="USD">USD</MenuItem>
-                <MenuItem value="EUR">EUR</MenuItem>
-                <MenuItem value="GBP">GBP</MenuItem>
-                <MenuItem value="JPY">JPY</MenuItem>
-                <MenuItem value="AUD">AUD</MenuItem>
-                <MenuItem value="CAD">CAD</MenuItem>
+                {budget.categories.map((category) => (
+                  <MenuItem key={category.name} value={category.name}>
+                    {category.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenBudgetDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateBudget} variant="contained" color="primary">
-              Create
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    );
-  }
-
-  return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5">Trip Budget</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={handleAddExpense}
-        >
-          Add Expense
-        </Button>
-      </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
-      {summary && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6" gutterBottom>
-                Budget Summary
-              </Typography>
-              <Button 
-                variant="outlined" 
-                size="small"
-                onClick={handleEditBudget}
-              >
-                Edit Total Budget
-              </Button>
-            </Box>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={3}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Total Budget
-                </Typography>
-                <Typography variant="h6">
-                  {budget.currency} {summary.totalBudget.toFixed(2)}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Total Spent
-                </Typography>
-                <Typography variant="h6">
-                  {budget.currency} {summary.totalSpent.toFixed(2)}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Remaining
-                </Typography>
-                <Typography variant="h6" color={summary.remaining < 0 ? 'error' : 'inherit'}>
-                  {budget.currency} {summary.remaining.toFixed(2)}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Exchange Rate
-                </Typography>
-                <Typography variant="h6">
-                  1 {budget.currency} = {exchangeRate?.rate.toFixed(4) || '?'} USD
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      )}
-
-      <Grid container spacing={3}>
-        {summary?.categories.map((category) => (
-          <Grid item xs={12} md={6} key={category.name}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
-                </Typography>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={12}>
-                    <Box display="flex" justifyContent="space-between" mb={1}>
-                      <Typography variant="body2">
-                        Allocated: {budget.currency} {category.allocated.toFixed(2)}
-                      </Typography>
-                      <Typography variant="body2">
-                        Spent: {budget.currency} {category.spent.toFixed(2)}
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min((category.spent / category.allocated) * 100, 100)}
-                      color={category.spent > category.allocated ? 'error' : 'primary'}
-                      sx={{ height: 8, borderRadius: 4 }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Update Allocation"
-                      type="number"
-                      value={category.allocated}
-                      onChange={(e) => handleUpdateAllocation(category.name, e.target.value)}
-                      size="small"
-                    />
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
           </Grid>
-        ))}
-      </Grid>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Add Expense</DialogTitle>
-        <DialogContent>
-          <Box component="form" sx={{ mt: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    value={formData.category}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, category: e.target.value }))
-                    }
-                    label="Category"
-                  >
-                    {budget.categories.map((category) => (
-                      <MenuItem key={category.name} value={category.name}>
-                        {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Description"
+              value={formData.description}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              required
+            />
+          </Grid>
 
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, description: e.target.value }))
-                  }
-                  required
-                />
-              </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Amount"
+              type="number"
+              value={formData.amount}
+              onChange={(e) => setFormData((prev) => ({ ...prev, amount: parseFloat(e.target.value) }))}
+              required
+            />
+          </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, amount: parseFloat(e.target.value) }))
-                  }
-                  required
-                />
-              </Grid>
+          <Grid item xs={12} sm={6}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Date"
+                value={formData.date}
+                onChange={(date) => setFormData((prev) => ({ ...prev, date }))}
+                renderInput={(params) => <TextField {...params} fullWidth />}
+              />
+            </LocalizationProvider>
+          </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="Date"
-                    value={formData.date}
-                    onChange={(date) =>
-                      setFormData((prev) => ({ ...prev, date }))
-                    }
-                    renderInput={(params) => <TextField {...params} fullWidth />}
-                  />
-                </LocalizationProvider>
-              </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Payment Method</InputLabel>
+              <Select
+                value={formData.paymentMethod}
+                onChange={(e) => setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))}
+                label="Payment Method"
+              >
+                <MenuItem value="cash">Cash</MenuItem>
+                <MenuItem value="credit_card">Credit Card</MenuItem>
+                <MenuItem value="debit_card">Debit Card</MenuItem>
+                <MenuItem value="mobile_payment">Mobile Payment</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Payment Method</InputLabel>
-                  <Select
-                    value={formData.paymentMethod}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))
-                    }
-                    label="Payment Method"
-                  >
-                    <MenuItem value="cash">Cash</MenuItem>
-                    <MenuItem value="credit_card">Credit Card</MenuItem>
-                    <MenuItem value="debit_card">Debit Card</MenuItem>
-                    <MenuItem value="mobile_payment">Mobile Payment</MenuItem>
-                    <MenuItem value="other">Other</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Notes"
+              value={formData.notes}
+              onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
+              multiline
+              rows={2}
+            />
+          </Grid>
 
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Notes"
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, notes: e.target.value }))
-                  }
-                  multiline
-                  rows={2}
-                />
-              </Grid>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="flex-end" gap={2}>
+              <BrutalButton variant="outlined" onClick={() => setOpenDialog(false)}>
+                Cancel
+              </BrutalButton>
+              <BrutalButton variant="contained" onClick={handleSaveExpense}>
+                Add Expense
+              </BrutalButton>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    </DialogContent>
+  </Dialog>
 
-              <Grid item xs={12}>
-                <Box display="flex" justifyContent="flex-end" gap={2}>
-                  <Button variant="outlined" onClick={() => setOpenDialog(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="contained" color="primary" onClick={handleSaveExpense}>
-                    Add Expense
-                  </Button>
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
-      </Dialog>
+  <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
+    <DialogTitle>{budget ? 'Edit Trip Budget' : 'Create Trip Budget'}</DialogTitle>
+    <DialogContent>
+      <TextField
+        margin="dense"
+        label="Total Budget Amount"
+        type="number"
+        fullWidth
+        value={budgetFormData.totalAmount}
+        onChange={(e) => setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value })}
+      />
+      <FormControl fullWidth margin="dense">
+        <InputLabel>Currency</InputLabel>
+        <Select
+          value={budgetFormData.currency}
+          onChange={(e) => setBudgetFormData({ ...budgetFormData, currency: e.target.value })}
+        >
+          <MenuItem value="USD">USD</MenuItem>
+          <MenuItem value="EUR">EUR</MenuItem>
+          <MenuItem value="GBP">GBP</MenuItem>
+          <MenuItem value="JPY">JPY</MenuItem>
+          <MenuItem value="AUD">AUD</MenuItem>
+          <MenuItem value="CAD">CAD</MenuItem>
+        </Select>
+      </FormControl>
+    </DialogContent>
+    <DialogActions>
+      <BrutalButton onClick={() => setOpenBudgetDialog(false)} variant="outlined">
+        Cancel
+      </BrutalButton>
+      <BrutalButton onClick={handleCreateBudget}>
+        {budget ? 'Update' : 'Create'}
+      </BrutalButton>
+    </DialogActions>
+  </Dialog>
+</Box>
 
-      <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
-        <DialogTitle>{budget ? 'Edit Trip Budget' : 'Create Trip Budget'}</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            label="Total Budget Amount"
-            type="number"
-            fullWidth
-            value={budgetFormData.totalAmount}
-            onChange={(e) => setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value })}
-          />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Currency</InputLabel>
-            <Select
-              value={budgetFormData.currency}
-              onChange={(e) => setBudgetFormData({ ...budgetFormData, currency: e.target.value })}
-            >
-              <MenuItem value="USD">USD</MenuItem>
-              <MenuItem value="EUR">EUR</MenuItem>
-              <MenuItem value="GBP">GBP</MenuItem>
-              <MenuItem value="JPY">JPY</MenuItem>
-              <MenuItem value="AUD">AUD</MenuItem>
-              <MenuItem value="CAD">CAD</MenuItem>
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenBudgetDialog(false)}>Cancel</Button>
-          <Button onClick={handleCreateBudget} variant="contained" color="primary">
-            {budget ? 'Update' : 'Create'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
   );
 };
 
-export default TripBudget; 
+export default TripBudget;

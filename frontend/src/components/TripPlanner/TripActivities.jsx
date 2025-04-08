@@ -20,8 +20,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { format } from 'date-fns';
-
-
+import BrutalButton from './Brutalbutton';
 
 const TripActivities = ({ tripId }) => {
     console.log("tripId from props:", tripId);
@@ -194,39 +193,31 @@ const TripActivities = ({ tripId }) => {
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h6">Activities</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpenDialog}>
-          Add Activity
-        </Button>
+        <Typography variant="h6" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>Activities</Typography>
+        <BrutalButton onClick={handleOpenDialog}>Add Activity</BrutalButton>
       </Box>
 
       <List>
         {activities.map((activity) => (
           <ListItem
             key={activity._id}
+            sx={{ borderBottom: '2px solid black', backgroundColor: '#FEE440', borderRadius: '0.75rem', mb: 1, boxShadow: '4px 6px 0 black' }}
             secondaryAction={
-              <Button
-                color="error"
-                onClick={() => handleDeleteActivity(activity._id)}
-              >
+              <BrutalButton color="error" onClick={() => handleDeleteActivity(activity._id)}>
                 Delete
-              </Button>
+              </BrutalButton>
             }
           >
             <ListItemText
-              primary={activity.name}
+              primary={<Typography fontWeight="bold">{activity.name}</Typography>}
               secondary={
                 <>
                   <Typography component="span" variant="body2" color="text.primary">
                     {activity.description}
-                  </Typography>
-                  <br />
-                  Location: {activity.location}
-                  <br />
-                  Time: {activity.startTime} - {activity.endTime}
-                  <br />
-                  Cost: ${activity.cost}
-                  <br />
+                  </Typography><br />
+                  Location: {activity.location}<br />
+                  Time: {activity.startTime} - {activity.endTime}<br />
+                  Cost: ${activity.cost}<br />
                   Category: {activity.category}
                 </>
               }
@@ -235,93 +226,31 @@ const TripActivities = ({ tripId }) => {
         ))}
       </List>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>Add New Activity</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="name"
-            label="Activity Name"
-            fullWidth
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-          />
-          <TextField
-            margin="dense"
-            name="description"
-            label="Description"
-            fullWidth
-            value={formData.description}
-            onChange={handleInputChange}
-            required
-          />
-          <TextField
-            margin="dense"
-            name="location"
-            label="Location"
-            fullWidth
-            value={formData.location}
-            onChange={handleInputChange}
-            required
-          />
-          <TextField
-            margin="dense"
-            name="startTime"
-            label="Start Time (HHMM)"
-            fullWidth
-            value={formData.startTime}
-            onChange={handleTimeChange}
-            placeholder="e.g., 0944"
-            required
-          />
-          <TextField
-            margin="dense"
-            name="endTime"
-            label="End Time (HHMM)"
-            fullWidth
-            value={formData.endTime}
-            onChange={handleTimeChange}
-            placeholder="e.g., 1747"
-            required
-          />
-          <TextField
-            margin="dense"
-            name="cost"
-            label="Cost"
-            type="number"
-            fullWidth
-            value={formData.cost}
-            onChange={handleInputChange}
-          />
+          <TextField autoFocus margin="dense" name="name" label="Activity Name" fullWidth value={formData.name} onChange={handleInputChange} required />
+          <TextField margin="dense" name="description" label="Description" fullWidth value={formData.description} onChange={handleInputChange} required />
+          <TextField margin="dense" name="location" label="Location" fullWidth value={formData.location} onChange={handleInputChange} required />
+          <TextField margin="dense" name="startTime" label="Start Time (HHMM)" fullWidth value={formData.startTime} onChange={handleTimeChange} placeholder="e.g., 0944" required />
+          <TextField margin="dense" name="endTime" label="End Time (HHMM)" fullWidth value={formData.endTime} onChange={handleTimeChange} placeholder="e.g., 1747" required />
+          <TextField margin="dense" name="cost" label="Cost" type="number" fullWidth value={formData.cost} onChange={handleInputChange} />
           <FormControl fullWidth margin="dense" required>
             <InputLabel id="category-label">Category</InputLabel>
-            <Select
-              labelId="category-label"
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              label="Category"
-            >
+            <Select labelId="category-label" name="category" value={formData.category} onChange={handleInputChange} label="Category">
               {categories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </MenuItem>
+                <MenuItem key={category} value={category}>{category.charAt(0).toUpperCase() + category.slice(1)}</MenuItem>
               ))}
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleAddActivity} variant="contained" color="primary">
-            Add
-          </Button>
+          <BrutalButton onClick={handleCloseDialog}>Cancel</BrutalButton>
+          <BrutalButton onClick={handleAddActivity}>Add</BrutalButton>
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
 
-
-export default TripActivities; 
+export default TripActivities;

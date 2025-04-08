@@ -1,0 +1,64 @@
+.trip-budget-container {
+    background-color: #B4F8C8;
+    background-image: radial-gradient(#aaa 1px, transparent 1px);
+    background-size: 25px 25px;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 2px solid black;
+    box-shadow: 6px 8px 0 black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .trip-budget-header {
+    font-family: 'Lexend Mega', sans-serif;
+    font-size: 1.75rem;
+    font-weight: bold;
+    background-color: #F15BB5;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: 2px solid black;
+    box-shadow: 4px 6px 0 black;
+    color: black;
+  }
+  
+  .add-expense-button {
+    background-color: #00F5D4;
+    border: 2px solid black;
+    box-shadow: 4px 6px 0 black;
+    font-family: 'Lexend Mega', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .add-expense-button:hover {
+    background-color: #00D5B4;
+    cursor: pointer;
+  }
+  
+  .brutal-card {
+    border: 2px solid black;
+    border-radius: 1rem;
+    box-shadow: 4px 6px 0 black;
+    background-color: #FEE440;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .budget-category {
+    font-family: 'Archivo Black', sans-serif;
+  }
+  
+  .progress-bar {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
