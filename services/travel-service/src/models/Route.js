@@ -33,10 +33,6 @@ const routeSchema = new mongoose.Schema({
         type: String,
         default: 'USD'
       }
-    },
-    schedule: {
-      departure: Date,
-      arrival: Date
     }
   }],
   totalDuration: Number, // in minutes

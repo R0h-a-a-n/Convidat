@@ -419,17 +419,24 @@ const TripBudget = ({ tripId }) => {
           <Grid item xs={12}>
             <FormControl fullWidth>
               <InputLabel>Category</InputLabel>
-              <Select
-                value={formData.category}
-                onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
-                label="Category"
-              >
-                {budget.categories.map((category) => (
-                  <MenuItem key={category.name} value={category.name}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
+              {budget?.categories ? (
+  <Select
+    value={formData.category}
+    onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+    label="Category"
+  >
+    {budget.categories.map((category) => (
+      <MenuItem key={category.name} value={category.name}>
+        {category.name}
+      </MenuItem>
+    ))}
+  </Select>
+) : (
+  <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
+    Budget not loaded. Please create a budget first.
+  </Typography>
+)}
+
             </FormControl>
           </Grid>
 

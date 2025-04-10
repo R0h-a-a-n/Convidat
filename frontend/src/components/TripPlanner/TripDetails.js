@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Typography, Tabs, Tab, Paper, CircularProgress, Alert } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Typography, Tabs, Tab, Paper, CircularProgress, Alert, Button } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import TripBudget from './TripBudget';
 import TripPackingList from './TripPackingList';
@@ -27,6 +28,7 @@ const TabPanel = (props) => {
 
 const TripDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,6 +60,22 @@ const TripDetails = () => {
     setTabValue(newValue);
   };
 
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
+      try {
+        await axios.delete(`http://localhost:3010/api/trips/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        navigate('/trips'); // Redirect to trips list after deletion
+      } catch (err) {
+        console.error("Error deleting trip:", err);
+        setError("Failed to delete trip.");
+      }
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -85,9 +103,19 @@ const TripDetails = () => {
   return (
     <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
       <Box mb={3}>
-        <Typography variant="h4" gutterBottom>
-          {trip.title}
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h4" gutterBottom>
+            {trip.title}
+          </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleDelete}
+          >
+            Delete Trip
+          </Button>
+        </Box>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom>
           {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
         </Typography>

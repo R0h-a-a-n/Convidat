@@ -229,15 +229,6 @@ const EcoAccommodations = () => {
                         </Typography>
                       </Box>
 
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" gutterBottom>
-                          Price Range:
-                        </Typography>
-                        <Typography variant="body1">
-                          {formatPrice(accommodation.priceRange.min)} - {formatPrice(accommodation.priceRange.max)} /night
-                        </Typography>
-                      </Box>
-
                       <Divider sx={{ my: 1.5 }} />
 
                       <Box sx={{ mb: 1.5 }}>

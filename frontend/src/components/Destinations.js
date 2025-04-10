@@ -48,10 +48,42 @@ const Destinations = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/api/destinations/search', { params: { city, country } });
+      const response = await api.get('/api/destinations/search', { 
+        params: { 
+          city, 
+          country,
+          excludeTypes: [
+            'store',
+            'restaurant',
+            'food',
+            'shop',
+            'shopping_mall',
+            'supermarket',
+            'cafe',
+            'bar',
+            'lodging',
+            'hotel',
+            'business'
+          ]
+        } 
+      });
       if (response.data.success) {
-        setDestinations(response.data.data);
-        if (response.data.data.length === 0) setError('No eco-friendly destinations found in this area.');
+        // Filter out any remaining business-like places
+        const filteredDestinations = response.data.data.filter(dest => {
+          // Only include parks, natural features, tourist attractions, etc.
+          const isNaturalOrCultural = dest.ecoFeatures.some(feature => 
+            feature.includes('Natural') || 
+            feature.includes('Cultural') || 
+            feature.includes('Wildlife') ||
+            feature.includes('Heritage') ||
+            feature.includes('Conservation')
+          );
+          return isNaturalOrCultural;
+        });
+        setDestinations(filteredDestinations);
+        if (filteredDestinations.length === 0) {
+          setError('No eco-friendly destinations found in this area.');
+        }
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to fetch destinations');
@@ -138,7 +170,6 @@ const Destinations = () => {
                     <Typography variant="h5" fontWeight="bold" fontFamily="Lexend Mega, sans-serif">
                       {destination.name}
                     </Typography>
-                    <Rating value={destination.rating} readOnly precision={0.5} />
                   </Box>
                   <Box display="flex" alignItems="center" my={1}>
                     <LocationOn sx={{ color: 'black' }} />
@@ -169,14 +200,6 @@ const Destinations = () => {
                   </Box>
                   <Divider sx={{ my: 2, borderColor: 'black' }} />
                   <Grid container spacing={2}>
-                    {destination.openingHours && (
-                      <Grid item xs={12} sm={6}>
-                        <Box display="flex" alignItems="center">
-                          <AccessTime sx={{ color: 'black' }} />
-                          <Typography variant="body2" sx={{ ml: 1 }}>{destination.openingHours}</Typography>
-                        </Box>
-                      </Grid>
-                    )}
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body2">{destination.admissionFee}</Typography>
                     </Grid>

@@ -308,7 +308,7 @@ const TravelRecommendations = () => {
           <Button 
             size="small" 
             variant="outlined" 
-            onClick={() => fetchCityDetails(rec.City)}
+            onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(`${rec.City}, ${rec.COUNTRY} travel`)}`, '_blank')}
             sx={{ mt: 1 }}
           >
             View Details

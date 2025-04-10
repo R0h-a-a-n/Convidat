@@ -253,12 +253,6 @@ const SustainableRoutes = () => {
                       <Typography variant="body1">Price: ${route.price}</Typography>
                       <Typography variant="body1">Carbon Emissions: {route.carbonEmissions} kg CO2</Typography>
 
-                      {route.departureTime && route.arrivalTime && (
-                        <Typography variant="body1">
-                          Schedule: {route.departureTime} - {route.arrivalTime}
-                        </Typography>
-                      )}
-
                       <Box sx={{ mt: 2 }}>
                         <Typography variant="subtitle1" fontWeight="bold">Journey Details:</Typography>
                         <List>

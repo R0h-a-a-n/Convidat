@@ -29,7 +29,7 @@ router.post('/search', async (req, res) => {
 
     // Find routes
     const routes = await Route.find(query)
-      .sort({ sustainabilityScore: -1, totalCost: 1 })
+      .sort({ sustainabilityScore: 1, totalCost: 1 })
       .limit(10);
 
     // Calculate eco-savings for each route
@@ -109,7 +109,7 @@ router.post('/alternatives', async (req, res) => {
       _id: { $ne: originalRoute },
       sustainabilityScore: { $gt: 60 } // Only eco-friendly alternatives
     })
-    .sort({ sustainabilityScore: -1, totalCost: 1 })
+    .sort({ sustainabilityScore: 1, totalCost: 1 })
     .limit(5);
 
     // Calculate savings compared to original route

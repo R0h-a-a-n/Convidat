@@ -177,20 +177,28 @@ export const deleteTrip = async (req, res) => {
       });
     }
 
+    // Check if the trip belongs to the current user
+    if (trip.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        error: 'Not authorized to delete this trip',
+      });
+    }
+
     // Delete associated budget and packing list
     await Promise.all([
       Budget.deleteOne({ tripId: trip._id }),
       PackingList.deleteOne({ tripId: trip._id }),
-      Activity.deleteMany({ tripId: trip._id })
+      Activity.deleteMany({ tripId: trip._id }),
+      Trip.deleteOne({ _id: trip._id }) // Using deleteOne instead of remove()
     ]);
-
-    await trip.remove();
 
     res.status(200).json({
       success: true,
       data: {},
     });
   } catch (error) {
+    console.error('Error deleting trip:', error);
     res.status(400).json({
       success: false,
       error: error.message,
