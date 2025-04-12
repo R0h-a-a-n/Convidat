@@ -42,15 +42,15 @@ export const getProfile = async (req, res) => {
     const avgEmission = carbonData.length > 0 ? totalEmissions / carbonData.length : 0;
     
     // Calculate eco score (placeholder - adjust formula as needed)
-    const ecoScore = Math.max(0, Math.min(100, 100 - (avgEmission * 5)));
+    const ecoScore = Math.max(0, Math.min(100, (100 - (avgEmission * 5)).toFixed(2)));
 
     // Get travel history from carbon footprints
     const travelHistory = carbonData.map(entry => ({
       id: entry._id,
       type: entry.travelType,
       date: entry.date,
-      carbonEmission: entry.carbonEmission,
-      distance: entry.distance,
+      carbonEmission: Number(entry.carbonEmission.toFixed(2)),
+      distance: Number(entry.distance.toFixed(2)),
       unit: entry.unit
     })).sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -72,9 +72,9 @@ export const getProfile = async (req, res) => {
           }
         },
         metrics: {
-          ecoScore,
-          totalEmissions: parseFloat(totalEmissions.toFixed(1)),
-          avgEmission: parseFloat(avgEmission.toFixed(1)),
+          ecoScore: Number(ecoScore),
+          totalEmissions: Number(totalEmissions.toFixed(2)),
+          avgEmission: Number(avgEmission.toFixed(2)),
           tripCount: carbonData.length
         },
         travelHistory

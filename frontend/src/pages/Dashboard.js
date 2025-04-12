@@ -92,7 +92,7 @@ const Dashboard = () => {
         const dailyEmissions = Object.entries(byDay)
           .map(([date, emission]) => ({
             date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            emission: Number(emission.toFixed(1))
+            emission: Number(emission.toFixed(2))
           }))
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .reverse();
@@ -113,7 +113,7 @@ const Dashboard = () => {
           .sort(([, a], [, b]) => b - a)
           .map(([name, value]) => ({
             name: name.charAt(0).toUpperCase() + name.slice(1),
-            value: Number(value.toFixed(1))
+            value: Number(value.toFixed(2))
           }));
         setEmissionsByType(sortedEmissions);
       }
@@ -151,11 +151,10 @@ const Dashboard = () => {
   const getTravelIcon = (type) => (type?.toLowerCase() === 'car' ? <DirectionsCar /> : <EmojiTransportation />);
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const calculateEcoScore = (data) => {
-    const avg = data.totalEmission / (data.count || 1);
-    if (avg < 50) return 90;
-    if (avg < 100) return 75;
-    if (avg < 200) return 60;
-    return 45;
+    const avgEmission = data.totalEmission / (data.count || 1);
+    // Using the same formula as the profile service:
+    // 100 - (avgEmission * 5), capped between 0 and 100
+    return Math.max(0, Math.min(100, (100 - (avgEmission * 5)).toFixed(2)));
   };
   const ecoScore = calculateEcoScore(carbonData);
   const getEmissionTrend = () => {
@@ -216,9 +215,9 @@ const Dashboard = () => {
         {error && <Alert severity="error" sx={{ mb: 4 }}>{error}</Alert>}
 
         <Grid container spacing={3}>
-          {[{ label: 'Eco Score', value: ecoScore, note: 'Out of 100' },
-            { label: 'Total Emission', value: `${carbonData.totalEmission.toFixed(1)} kg`, note: `Across ${carbonData.count} trips` },
-            { label: 'Avg Emission', value: `${carbonData.averageEmission.toFixed(1)} kg`, note: 'Per Trip' }].map((item, idx) => (
+          {[{ label: 'Eco Score', value: ecoScore.toFixed(2), note: 'Out of 100' },
+            { label: 'Total Emission', value: `${carbonData.totalEmission.toFixed(2)} kg`, note: `Across ${carbonData.count} trips` },
+            { label: 'Avg Emission', value: `${carbonData.averageEmission.toFixed(2)} kg`, note: 'Per Trip' }].map((item, idx) => (
               <Grid item xs={12} md={4} key={idx}>
                 <Card sx={{ 
                   border: '2px solid black', 
@@ -329,7 +328,7 @@ const Dashboard = () => {
                   ))}
                 </Pie>
                 <RechartsTooltip 
-                  formatter={(value) => `${value.toFixed(1)} kg CO₂`}
+                  formatter={(value) => `${Number(value).toFixed(2)} kg CO₂`}
                   contentStyle={{ fontWeight: 'bold' }}
                 />
               </PieChart>
@@ -381,7 +380,7 @@ const Dashboard = () => {
                     primary={<Typography variant="h6">{`${a.travelType.charAt(0).toUpperCase() + a.travelType.slice(1).toLowerCase()} Journey`}</Typography>}
                     secondary={formatDate(a.date)}
                   />
-                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{(a.carbonEmission || 0).toFixed(1)} kg CO₂</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{(a.carbonEmission || 0).toFixed(2)} kg CO₂</Typography>
                 </ListItem>
               ))}
             </List>

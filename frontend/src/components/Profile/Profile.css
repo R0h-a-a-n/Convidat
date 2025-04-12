@@ -1,0 +1,77 @@
+/* Profile.css */
+body {
+    font-family: 'Lexend Mega', 'Arial', sans-serif;
+    background-color: #C1F8CF;
+  }
+  
+  .profile-paper {
+    background: white;
+    border: 2px solid black;
+    box-shadow: 4px 4px 0 black;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-heading {
+    font-size: 2rem;
+    font-weight: 900;
+    color: black;
+  }
+  
+  .edit-btn {
+    background-color: #18702c;
+    color: white;
+    border: 2px solid black;
+    box-shadow: 2px 2px 0 black;
+    font-weight: bold;
+    border-radius: 0.5rem;
+  }
+  
+  .avatar-brutal {
+    border: 2px solid black;
+    box-shadow: 3px 3px 0 black;
+  }
+  
+  .section-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: black;
+  }
+  
+  .input-field input,
+  .input-field textarea,
+  .input-field .MuiSelect-select {
+    border: 2px solid black !important;
+    box-shadow: 2px 2px 0 black !important;
+    background: white !important;
+  }
+  
+  .stats-card {
+    border: 2px solid black;
+    box-shadow: 4px 4px 0 black;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+  
+  .stats-card h3 {
+    font-weight: bold;
+  }
+  
+  .travel-history-item {
+    border: 1px solid black;
+    border-radius: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 1rem;
+    box-shadow: 2px 2px 0 black;
+  }
+  
+  .co2-chip {
+    background-color: #000 !important;
+    color: #00FF41 !important;
+    font-weight: bold;
+    font-family: monospace;
+  }
+  

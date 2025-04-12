@@ -1,3 +1,4 @@
+import './Profile.css';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -76,6 +77,9 @@ const getTransportIcon = (type) => {
   }
 };
 
+// Format number to 2 decimal places
+const formatNumber = (num) => Number(num).toFixed(2);
+
 const Profile = () => {
   const { user: authUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -131,10 +135,10 @@ const Profile = () => {
           preferredMode: 'car',
           routeOptimization: 'fastest'
         },
-        stats: profileData.user.profile.stats || {
-          totalTrips: 0,
-          totalDistance: 0,
-          carbonFootprint: 0
+        stats: {
+          totalTrips: Number(profileData.user.profile.stats?.totalTrips || 0).toFixed(2),
+          totalDistance: Number(profileData.user.profile.stats?.totalDistance || 0).toFixed(2),
+          carbonFootprint: Number(profileData.user.profile.stats?.carbonFootprint || 0).toFixed(2)
         }
       });
       
@@ -188,9 +192,9 @@ const Profile = () => {
             routeOptimization: formData.travelPreferences?.routeOptimization || 'fastest'
           },
           stats: {
-            totalTrips: formData.stats?.totalTrips || 0,
-            totalDistance: formData.stats?.totalDistance || 0,
-            carbonFootprint: formData.stats?.carbonFootprint || 0
+            totalTrips: Number(formData.stats?.totalTrips || 0).toFixed(2),
+            totalDistance: Number(formData.stats?.totalDistance || 0).toFixed(2),
+            carbonFootprint: Number(formData.stats?.carbonFootprint || 0).toFixed(2)
           }
         }
       };
@@ -403,7 +407,7 @@ const Profile = () => {
           <GreenStatsCard>
             <CardContent>
               <Typography variant="h6">ECO SCORE</Typography>
-              <Typography variant="h3">{profileData?.metrics?.ecoScore || 0}</Typography>
+              <Typography variant="h3">{formatNumber(profileData?.metrics?.ecoScore || 0)}</Typography>
               <Typography variant="body2">Out of 100</Typography>
             </CardContent>
           </GreenStatsCard>
@@ -412,7 +416,7 @@ const Profile = () => {
           <YellowStatsCard>
             <CardContent>
               <Typography variant="h6">TOTAL EMISSION</Typography>
-              <Typography variant="h3">{profileData?.metrics?.totalEmissions || 0} kg</Typography>
+              <Typography variant="h3">{formatNumber(profileData?.metrics?.totalEmissions || 0)} kg</Typography>
               <Typography variant="body2">Across {profileData?.metrics?.tripCount || 0} trips</Typography>
             </CardContent>
           </YellowStatsCard>
@@ -421,7 +425,7 @@ const Profile = () => {
           <BlueStatsCard>
             <CardContent>
               <Typography variant="h6">AVG EMISSION</Typography>
-              <Typography variant="h3">{profileData?.metrics?.avgEmission || 0} kg</Typography>
+              <Typography variant="h3">{formatNumber(profileData?.metrics?.avgEmission || 0)} kg</Typography>
               <Typography variant="body2">Per Trip</Typography>
             </CardContent>
           </BlueStatsCard>
@@ -441,7 +445,7 @@ const Profile = () => {
                   <Box display="flex" alignItems="center">
                     {getTransportIcon(trip.type)}
                     <Box ml={1}>
-                      {trip.type} Journey - {trip.distance} {trip.unit}
+                      {trip.type} Journey - {formatNumber(trip.distance)} {trip.unit}
                     </Box>
                   </Box>
                 }
@@ -449,7 +453,7 @@ const Profile = () => {
                   <Typography component="div" variant="body2">
                     {new Date(trip.date).toLocaleDateString()}
                     <Chip 
-                      label={`${trip.carbonEmission || 0}kg CO₂`}
+                      label={`${formatNumber(trip.carbonEmission || 0)}kg CO₂`}
                       size="small"
                       color="primary"
                       sx={{ ml: 1 }}
