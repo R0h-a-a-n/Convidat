@@ -20,6 +20,8 @@ import {
   FormControlLabel,
   Switch,
   MenuItem,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +31,8 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import TrainIcon from '@mui/icons-material/Train';
 import FlightIcon from '@mui/icons-material/Flight';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import LinkIcon from '@mui/icons-material/Link';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -89,6 +93,54 @@ const getTransportIcon = (type) => {
 // Format number to 2 decimal places
 const formatNumber = (num) => Number(num).toFixed(2);
 
+const MAX_IMAGE_SIZE = 800; // Maximum width/height in pixels
+
+const compressImage = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > height) {
+          if (width > MAX_IMAGE_SIZE) {
+            height = Math.round((height * MAX_IMAGE_SIZE) / width);
+            width = MAX_IMAGE_SIZE;
+          }
+        } else {
+          if (height > MAX_IMAGE_SIZE) {
+            width = Math.round((width * MAX_IMAGE_SIZE) / height);
+            height = MAX_IMAGE_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to JPEG format with 0.8 quality
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          'image/jpeg',
+          0.8
+        );
+      };
+      img.onerror = (error) => reject(error);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 const Profile = () => {
   const { user: authUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -113,6 +165,9 @@ const Profile = () => {
       carbonFootprint: 0
     }
   });
+  const [imageUploadType, setImageUploadType] = useState('url'); // 'url' or 'file'
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = React.useRef();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -223,6 +278,39 @@ const Profile = () => {
     }
   };
 
+  const handleFileSelect = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Compress the image
+        const compressedBlob = await compressImage(file);
+        
+        // Convert compressed blob to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setSelectedFile(file);
+          setFormData(prev => ({
+            ...prev,
+            avatar: reader.result
+          }));
+          setLoading(false);
+        };
+        reader.onerror = () => {
+          setError('Failed to process image file');
+          setLoading(false);
+        };
+        reader.readAsDataURL(compressedBlob);
+      } catch (error) {
+        console.error('Error processing file:', error);
+        setError('Failed to process image file');
+        setLoading(false);
+      }
+    }
+  };
+
   if (!isAuthenticated) {
     return null;
   }
@@ -242,7 +330,7 @@ const Profile = () => {
         pt: 10,
         pb: 6,
         backgroundColor: '#c0f4e4',
-        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         px: 2
       }}
@@ -324,24 +412,120 @@ const Profile = () => {
                         }}
                       />
                       {editing && (
-                        <TextField
-                          fullWidth
-                          name="avatar"
-                          label="Avatar URL"
-                          value={formData.avatar}
-                          onChange={handleInputChange}
-                          sx={{
-                            mt: 2,
-                            '& .MuiOutlinedInput-root': {
-                              border: '2px solid black',
-                              borderRadius: '0.75rem',
-                              backgroundColor: 'white',
-                              '&:hover': {
+                        <Box sx={{ width: '100%', mt: 2 }}>
+                          <Tabs
+                            value={imageUploadType}
+                            onChange={(e, newValue) => setImageUploadType(newValue)}
+                            sx={{
+                              mb: 2,
+                              '& .MuiTabs-indicator': {
+                                backgroundColor: 'black',
+                              },
+                              '& .MuiTab-root': {
+                                color: 'black',
+                                fontFamily: 'Lexend Mega',
+                                fontSize: '0.8rem',
+                                '&.Mui-selected': {
+                                  color: 'black',
+                                  fontWeight: 'bold',
+                                },
+                              },
+                            }}
+                          >
+                            <Tab 
+                              icon={<LinkIcon />} 
+                              label="URL" 
+                              value="url"
+                              sx={{ 
                                 border: '2px solid black',
-                              }
-                            }
-                          }}
-                        />
+                                borderRadius: '0.75rem 0 0 0.75rem',
+                                backgroundColor: imageUploadType === 'url' ? '#F15BB5' : '#FEE440',
+                                '&:hover': {
+                                  backgroundColor: imageUploadType === 'url' ? '#F15BB5' : '#FFE658',
+                                }
+                              }}
+                            />
+                            <Tab 
+                              icon={<AddPhotoAlternateIcon />} 
+                              label="Upload" 
+                              value="file"
+                              sx={{ 
+                                border: '2px solid black',
+                                borderRadius: '0 0.75rem 0.75rem 0',
+                                borderLeft: 'none',
+                                backgroundColor: imageUploadType === 'file' ? '#F15BB5' : '#FEE440',
+                                '&:hover': {
+                                  backgroundColor: imageUploadType === 'file' ? '#F15BB5' : '#FFE658',
+                                }
+                              }}
+                            />
+                          </Tabs>
+
+                          {imageUploadType === 'url' ? (
+                            <TextField
+                              fullWidth
+                              name="avatar"
+                              label="Image URL"
+                              value={formData.avatar}
+                              onChange={handleInputChange}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  border: '2px solid black',
+                                  borderRadius: '0.75rem',
+                                  backgroundColor: 'white',
+                                  '&:hover': {
+                                    border: '2px solid black',
+                                  }
+                                }
+                              }}
+                            />
+                          ) : (
+                            <Box sx={{ textAlign: 'center' }}>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileSelect}
+                                style={{ display: 'none' }}
+                                ref={fileInputRef}
+                              />
+                              <Button
+                                variant="contained"
+                                onClick={() => fileInputRef.current.click()}
+                                sx={{
+                                  backgroundColor: '#00F5D4',
+                                  color: 'black',
+                                  border: '2px solid black',
+                                  boxShadow: '4px 4px 0 black',
+                                  borderRadius: '0.75rem',
+                                  fontFamily: 'Lexend Mega',
+                                  '&:hover': {
+                                    backgroundColor: '#00D5B4',
+                                    transform: 'translate(2px, 2px)',
+                                    boxShadow: '2px 2px 0 black',
+                                  }
+                                }}
+                              >
+                                {selectedFile ? 'Change Image' : 'Choose Image'}
+                              </Button>
+                              {selectedFile && (
+                                <Typography 
+                                  variant="body2" 
+                                  sx={{ 
+                                    mt: 1,
+                                    fontFamily: 'Lexend Mega',
+                                    color: 'black',
+                                    backgroundColor: 'rgba(255,255,255,0.5)',
+                                    p: 1,
+                                    borderRadius: '0.5rem',
+                                    border: '1px solid black'
+                                  }}
+                                >
+                                  {selectedFile.name}
+                                </Typography>
+                              )}
+                            </Box>
+                          )}
+                        </Box>
                       )}
                       <Typography 
                         variant="body1" 
