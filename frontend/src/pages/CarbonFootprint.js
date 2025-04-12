@@ -7,7 +7,7 @@ const CarbonFootprint = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#B9FBC0',
+        backgroundColor: '#c0f4e4',
         backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         px: 2,

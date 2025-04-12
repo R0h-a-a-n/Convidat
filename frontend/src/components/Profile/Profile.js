@@ -34,24 +34,33 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   marginTop: theme.spacing(3),
   marginBottom: theme.spacing(3),
+  border: '2px solid black',
+  boxShadow: '4px 6px 0 black',
+  borderRadius: '0.75rem',
+  backgroundColor: '#FEE440'
 }));
 
 const StatsCard = styled(Card)(({ theme }) => ({
   height: '100%',
   padding: theme.spacing(2),
-  borderRadius: theme.spacing(2),
+  border: '2px solid black',
+  boxShadow: '4px 6px 0 black',
+  borderRadius: '0.75rem',
 }));
 
 const GreenStatsCard = styled(StatsCard)({
-  backgroundColor: '#98FB98',
+  backgroundColor: '#9B5DE5',
+  color: 'white'
 });
 
 const YellowStatsCard = styled(StatsCard)({
-  backgroundColor: '#FFD700',
+  backgroundColor: '#00BBF9',
+  color: 'black'
 });
 
 const BlueStatsCard = styled(StatsCard)({
-  backgroundColor: '#87CEEB',
+  backgroundColor: '#F15BB5',
+  color: 'black'
 });
 
 const profileApi = axios.create({
@@ -227,245 +236,527 @@ const Profile = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-      
-      <form onSubmit={handleSubmit}>
-        {/* User Profile Section */}
-        <StyledPaper elevation={3}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h4">
-              {(authUser?.name || profileData?.user?.name || '').split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
-            </Typography>
-            <Button
-              variant="contained"
-              color={editing ? "secondary" : "primary"}
-              onClick={() => setEditing(!editing)}
-            >
-              {editing ? 'Cancel' : 'Edit Profile'}
-            </Button>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        pt: 10,
+        pb: 6,
+        backgroundColor: '#c0f4e4',
+        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
+        backgroundSize: '25px 25px',
+        px: 2
+      }}
+    >
+      <Container maxWidth="lg">
+        {error && <Alert severity="error" sx={{ mb: 2, border: '2px solid black', boxShadow: '4px 6px 0 black' }}>{error}</Alert>}
+        {loading ? (
+          <Box display="flex" justifyContent="center">
+            <CircularProgress />
           </Box>
-
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <Avatar
-                  src={formData.avatar}
-                  sx={{ width: 150, height: 150, mb: 2 }}
-                />
-                {editing && (
-                  <TextField
-                    fullWidth
-                    label="Avatar URL"
-                    name="avatar"
-                    value={formData.avatar}
-                    onChange={handleInputChange}
-                    margin="normal"
-                  />
-                )}
-                <Typography variant="body2" color="textSecondary">
-                  Member since {new Date(profileData?.user?.createdAt).toLocaleDateString()}
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={8}>
-              <Box>
-                <Typography variant="h6" gutterBottom>Bio</Typography>
-                {editing ? (
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    label="Bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    margin="normal"
-                  />
-                ) : (
-                  <Typography variant="body1" paragraph>
-                    {formData.bio || 'No bio added yet.'}
+        ) : (
+          <>
+            <Typography
+              variant="h2"
+              sx={{
+                fontFamily: 'Lexend Mega, sans-serif',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                color: 'black',
+                backgroundColor: '#F15BB5',
+                p: 2,
+                border: '2px solid black',
+                boxShadow: '4px 6px 0 black',
+                borderRadius: '0.75rem',
+                display: 'inline-block',
+                mb: 4,
+                textAlign: 'center'
+              }}
+            >
+              My Profile
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              {/* User Profile Section */}
+              <StyledPaper elevation={3}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+                  <Typography 
+                    variant="h3"
+                    sx={{
+                      fontFamily: 'Lexend Mega, sans-serif',
+                      color: 'black',
+                      textTransform: 'capitalize'
+                    }}
+                  >
+                    {(authUser?.name || profileData?.user?.name || '').split(' ')
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')}
                   </Typography>
-                )}
-              </Box>
+                  <Button
+                    variant="contained"
+                    onClick={() => setEditing(!editing)}
+                    sx={{
+                      backgroundColor: editing ? '#FEE440' : '#00BBF9',
+                      color: 'black',
+                      border: '2px solid black',
+                      boxShadow: '4px 6px 0 black',
+                      borderRadius: '0.75rem',
+                      '&:hover': {
+                        backgroundColor: editing ? '#FEE440' : '#00BBF9',
+                        transform: 'translate(2px, 2px)',
+                        boxShadow: '2px 4px 0 black',
+                      }
+                    }}
+                  >
+                    {editing ? 'Cancel' : 'Edit Profile'}
+                  </Button>
+                </Box>
 
-              <Box mt={3}>
-                <Typography variant="h6" gutterBottom>Location</Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    {editing ? (
-                      <TextField
-                        fullWidth
-                        label="City"
-                        name="location.city"
-                        value={formData.location.city}
-                        onChange={handleInputChange}
-                        margin="normal"
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={4}>
+                    <Box display="flex" flexDirection="column" alignItems="center">
+                      <Avatar
+                        src={formData.avatar}
+                        sx={{
+                          width: 200,
+                          height: 200,
+                          mb: 3,
+                          border: '2px solid black',
+                          boxShadow: '4px 6px 0 black'
+                        }}
                       />
-                    ) : (
-                      <Typography variant="body1">
-                        City: {formData.location.city || 'Not specified'}
-                      </Typography>
-                    )}
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    {editing ? (
-                      <TextField
-                        fullWidth
-                        label="Country"
-                        name="location.country"
-                        value={formData.location.country}
-                        onChange={handleInputChange}
-                        margin="normal"
-                      />
-                    ) : (
-                      <Typography variant="body1">
-                        Country: {formData.location.country || 'Not specified'}
-                      </Typography>
-                    )}
-                  </Grid>
-                </Grid>
-              </Box>
-
-              <Box mt={3}>
-                <Typography variant="h6" gutterBottom>Travel Preferences</Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    {editing ? (
-                      <TextField
-                        select
-                        fullWidth
-                        label="Preferred Mode"
-                        name="travelPreferences.preferredMode"
-                        value={formData.travelPreferences.preferredMode}
-                        onChange={handleInputChange}
-                        margin="normal"
+                      {editing && (
+                        <TextField
+                          fullWidth
+                          name="avatar"
+                          label="Avatar URL"
+                          value={formData.avatar}
+                          onChange={handleInputChange}
+                          sx={{
+                            mt: 2,
+                            '& .MuiOutlinedInput-root': {
+                              border: '2px solid black',
+                              borderRadius: '0.75rem',
+                              backgroundColor: 'white',
+                              '&:hover': {
+                                border: '2px solid black',
+                              }
+                            }
+                          }}
+                        />
+                      )}
+                      <Typography 
+                        variant="body1" 
+                        sx={{ 
+                          mt: 2,
+                          fontFamily: 'Archivo Black',
+                          backgroundColor: 'rgba(0,0,0,0.1)',
+                          p: 1,
+                          borderRadius: '0.5rem',
+                          border: '2px solid black',
+                          textAlign: 'center'
+                        }}
                       >
-                        <MenuItem value="car">Car</MenuItem>
-                        <MenuItem value="bus">Bus</MenuItem>
-                        <MenuItem value="train">Train</MenuItem>
-                        <MenuItem value="flight">Flight</MenuItem>
-                      </TextField>
-                    ) : (
-                      <Typography variant="body1">
-                        Preferred Mode: {formData.travelPreferences.preferredMode.charAt(0).toUpperCase() + 
-                        formData.travelPreferences.preferredMode.slice(1)}
+                        Member since {new Date(profileData?.user?.createdAt).toLocaleDateString()}
                       </Typography>
-                    )}
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    {editing ? (
-                      <TextField
-                        select
-                        fullWidth
-                        label="Route Optimization"
-                        name="travelPreferences.routeOptimization"
-                        value={formData.travelPreferences.routeOptimization}
-                        onChange={handleInputChange}
-                        margin="normal"
-                      >
-                        <MenuItem value="fastest">Fastest</MenuItem>
-                        <MenuItem value="eco">Eco-Friendly</MenuItem>
-                        <MenuItem value="balanced">Balanced</MenuItem>
-                      </TextField>
-                    ) : (
-                      <Typography variant="body1">
-                        Route Optimization: {formData.travelPreferences.routeOptimization.charAt(0).toUpperCase() + 
-                        formData.travelPreferences.routeOptimization.slice(1)}
-                      </Typography>
-                    )}
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-          </Grid>
-
-          {editing && (
-            <Box mt={3} display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-              >
-                Save Changes
-              </Button>
-            </Box>
-          )}
-        </StyledPaper>
-      </form>
-
-      {/* Stats Section */}
-      <Grid container spacing={3} sx={{ mt: 2 }}>
-        <Grid item xs={12} sm={4}>
-          <GreenStatsCard>
-            <CardContent>
-              <Typography variant="h6">ECO SCORE</Typography>
-              <Typography variant="h3">{formatNumber(profileData?.metrics?.ecoScore || 0)}</Typography>
-              <Typography variant="body2">Out of 100</Typography>
-            </CardContent>
-          </GreenStatsCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <YellowStatsCard>
-            <CardContent>
-              <Typography variant="h6">TOTAL EMISSION</Typography>
-              <Typography variant="h3">{formatNumber(profileData?.metrics?.totalEmissions || 0)} kg</Typography>
-              <Typography variant="body2">Across {profileData?.metrics?.tripCount || 0} trips</Typography>
-            </CardContent>
-          </YellowStatsCard>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <BlueStatsCard>
-            <CardContent>
-              <Typography variant="h6">AVG EMISSION</Typography>
-              <Typography variant="h3">{formatNumber(profileData?.metrics?.avgEmission || 0)} kg</Typography>
-              <Typography variant="body2">Per Trip</Typography>
-            </CardContent>
-          </BlueStatsCard>
-        </Grid>
-      </Grid>
-
-      {/* Travel History */}
-      <StyledPaper sx={{ mt: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Travel History
-        </Typography>
-        <List>
-          {profileData?.travelHistory?.map((trip) => (
-            <ListItem key={trip.id}>
-              <ListItemText
-                primary={
-                  <Box display="flex" alignItems="center">
-                    {getTransportIcon(trip.type)}
-                    <Box ml={1}>
-                      {trip.type} Journey - {formatNumber(trip.distance)} {trip.unit}
                     </Box>
-                  </Box>
-                }
-                secondary={
-                  <Typography component="div" variant="body2">
-                    {new Date(trip.date).toLocaleDateString()}
-                    <Chip 
-                      label={`${formatNumber(trip.carbonEmission || 0)}kg CO₂`}
-                      size="small"
-                      color="primary"
-                      sx={{ ml: 1 }}
+                  </Grid>
+
+                  <Grid item xs={12} md={8}>
+                    <Box mb={4}>
+                      <Typography 
+                        variant="h5" 
+                        sx={{ 
+                          fontFamily: 'Archivo Black',
+                          mb: 2,
+                          backgroundColor: '#F15BB5',
+                          p: 1,
+                          borderRadius: '0.5rem',
+                          border: '2px solid black',
+                          display: 'inline-block'
+                        }}
+                      >
+                        Bio
+                      </Typography>
+                      {editing ? (
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={4}
+                          label="Bio"
+                          name="bio"
+                          value={formData.bio}
+                          onChange={handleInputChange}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              border: '2px solid black',
+                              borderRadius: '0.75rem',
+                              backgroundColor: 'white',
+                              '&:hover': {
+                                border: '2px solid black',
+                              }
+                            }
+                          }}
+                        />
+                      ) : (
+                        <Typography 
+                          variant="body1" 
+                          sx={{
+                            p: 2,
+                            backgroundColor: 'rgba(255,255,255,0.5)',
+                            borderRadius: '0.75rem',
+                            border: '2px solid black',
+                            boxShadow: '2px 3px 0 black'
+                          }}
+                        >
+                          {formData.bio || 'No bio added yet.'}
+                        </Typography>
+                      )}
+                    </Box>
+
+                    <Box mb={4}>
+                      <Typography 
+                        variant="h5" 
+                        sx={{ 
+                          fontFamily: 'Archivo Black',
+                          mb: 2,
+                          backgroundColor: '#00BBF9',
+                          p: 1,
+                          borderRadius: '0.5rem',
+                          border: '2px solid black',
+                          display: 'inline-block'
+                        }}
+                      >
+                        Location
+                      </Typography>
+                      <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                          {editing ? (
+                            <TextField
+                              fullWidth
+                              label="City"
+                              name="location.city"
+                              value={formData.location.city}
+                              onChange={handleInputChange}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  border: '2px solid black',
+                                  borderRadius: '0.75rem',
+                                  backgroundColor: 'white',
+                                  '&:hover': {
+                                    border: '2px solid black',
+                                  }
+                                }
+                              }}
+                            />
+                          ) : (
+                            <Box 
+                              sx={{
+                                p: 2,
+                                backgroundColor: 'rgba(255,255,255,0.5)',
+                                borderRadius: '0.75rem',
+                                border: '2px solid black',
+                                boxShadow: '2px 3px 0 black'
+                              }}
+                            >
+                              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>City</Typography>
+                              <Typography variant="body1">{formData.location.city || 'Not specified'}</Typography>
+                            </Box>
+                          )}
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          {editing ? (
+                            <TextField
+                              fullWidth
+                              label="Country"
+                              name="location.country"
+                              value={formData.location.country}
+                              onChange={handleInputChange}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  border: '2px solid black',
+                                  borderRadius: '0.75rem',
+                                  backgroundColor: 'white',
+                                  '&:hover': {
+                                    border: '2px solid black',
+                                  }
+                                }
+                              }}
+                            />
+                          ) : (
+                            <Box 
+                              sx={{
+                                p: 2,
+                                backgroundColor: 'rgba(255,255,255,0.5)',
+                                borderRadius: '0.75rem',
+                                border: '2px solid black',
+                                boxShadow: '2px 3px 0 black'
+                              }}
+                            >
+                              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Country</Typography>
+                              <Typography variant="body1">{formData.location.country || 'Not specified'}</Typography>
+                            </Box>
+                          )}
+                        </Grid>
+                      </Grid>
+                    </Box>
+
+                    {editing && (
+                      <Box mt={4} display="flex" justifyContent="flex-end">
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          sx={{
+                            backgroundColor: '#9B5DE5',
+                            color: 'white',
+                            border: '2px solid black',
+                            boxShadow: '4px 6px 0 black',
+                            borderRadius: '0.75rem',
+                            '&:hover': {
+                              backgroundColor: '#9B5DE5',
+                              transform: 'translate(2px, 2px)',
+                              boxShadow: '2px 4px 0 black',
+                            }
+                          }}
+                        >
+                          Save Changes
+                        </Button>
+                      </Box>
+                    )}
+                  </Grid>
+                </Grid>
+              </StyledPaper>
+            </form>
+
+            {/* Stats Section */}
+            <Grid container spacing={3} sx={{ mt: 2 }}>
+              <Grid item xs={12} sm={4}>
+                <GreenStatsCard>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontFamily: 'Archivo Black',
+                        backgroundColor: 'rgba(0,0,0,0.1)',
+                        p: 1,
+                        borderRadius: '0.5rem',
+                        mb: 2,
+                        border: '2px solid black'
+                      }}
+                    >
+                      ECO SCORE
+                    </Typography>
+                    <Typography 
+                      variant="h2" 
+                      sx={{ 
+                        fontFamily: 'Lexend Mega',
+                        mb: 1,
+                        fontSize: '3.5rem'
+                      }}
+                    >
+                      {formatNumber(profileData?.metrics?.ecoScore || 0)}
+                    </Typography>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        fontWeight: 'bold',
+                        backgroundColor: '#ffffff40',
+                        p: 0.5,
+                        borderRadius: '4px',
+                        display: 'inline-block'
+                      }}
+                    >
+                      Out of 100
+                    </Typography>
+                  </CardContent>
+                </GreenStatsCard>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <YellowStatsCard>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontFamily: 'Archivo Black',
+                        backgroundColor: 'rgba(0,0,0,0.1)',
+                        p: 1,
+                        borderRadius: '0.5rem',
+                        mb: 2,
+                        border: '2px solid black'
+                      }}
+                    >
+                      TOTAL EMISSION
+                    </Typography>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography 
+                        variant="h2" 
+                        sx={{ 
+                          fontFamily: 'Lexend Mega',
+                          mb: 1,
+                          fontSize: '3.5rem'
+                        }}
+                      >
+                        {formatNumber(profileData?.metrics?.totalEmissions || 0)}
+                      </Typography>
+                      <Typography 
+                        variant="h5" 
+                        sx={{ 
+                          fontFamily: 'Lexend Mega',
+                          color: 'rgba(0,0,0,0.7)'
+                        }}
+                      >
+                        kg CO₂
+                      </Typography>
+                    </Box>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        fontWeight: 'bold',
+                        backgroundColor: '#ffffff40',
+                        p: 0.5,
+                        borderRadius: '4px',
+                        display: 'inline-block'
+                      }}
+                    >
+                      Across {profileData?.metrics?.tripCount || 0} trips
+                    </Typography>
+                  </CardContent>
+                </YellowStatsCard>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <BlueStatsCard>
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontFamily: 'Archivo Black',
+                        backgroundColor: 'rgba(0,0,0,0.1)',
+                        p: 1,
+                        borderRadius: '0.5rem',
+                        mb: 2,
+                        border: '2px solid black'
+                      }}
+                    >
+                      AVG EMISSION
+                    </Typography>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography 
+                        variant="h2" 
+                        sx={{ 
+                          fontFamily: 'Lexend Mega',
+                          mb: 1,
+                          fontSize: '3.5rem'
+                        }}
+                      >
+                        {formatNumber(profileData?.metrics?.avgEmission || 0)}
+                      </Typography>
+                      <Typography 
+                        variant="h5" 
+                        sx={{ 
+                          fontFamily: 'Lexend Mega',
+                          color: 'rgba(0,0,0,0.7)'
+                        }}
+                      >
+                        kg CO₂
+                      </Typography>
+                    </Box>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        fontWeight: 'bold',
+                        backgroundColor: '#ffffff40',
+                        p: 0.5,
+                        borderRadius: '4px',
+                        display: 'inline-block'
+                      }}
+                    >
+                      Per Trip
+                    </Typography>
+                  </CardContent>
+                </BlueStatsCard>
+              </Grid>
+            </Grid>
+
+            {/* Travel History */}
+            <StyledPaper sx={{ mt: 3 }}>
+              <Typography 
+                variant="h4" 
+                sx={{ 
+                  fontFamily: 'Archivo Black',
+                  mb: 3,
+                  backgroundColor: '#00BBF9',
+                  p: 1.5,
+                  borderRadius: '0.75rem',
+                  border: '2px solid black',
+                  display: 'inline-block'
+                }}
+              >
+                Travel History
+              </Typography>
+              <List>
+                {profileData?.travelHistory?.map((trip) => (
+                  <ListItem 
+                    key={trip.id}
+                    sx={{
+                      mb: 2,
+                      backgroundColor: 'rgba(255,255,255,0.5)',
+                      borderRadius: '0.75rem',
+                      border: '2px solid black',
+                      boxShadow: '2px 3px 0 black'
+                    }}
+                  >
+                    <ListItemText
+                      primary={
+                        <Box display="flex" alignItems="center">
+                          {getTransportIcon(trip.type)}
+                          <Typography 
+                            variant="h6" 
+                            sx={{ 
+                              ml: 2,
+                              fontFamily: 'Lexend Mega',
+                              fontSize: '1.1rem'
+                            }}
+                          >
+                            {trip.type.charAt(0).toUpperCase() + trip.type.slice(1)} Journey - {formatNumber(trip.distance)} {trip.unit}
+                          </Typography>
+                        </Box>
+                      }
+                      secondary={
+                        <Box sx={{ mt: 1 }}>
+                          <Typography 
+                            component="span" 
+                            variant="body1"
+                            sx={{ 
+                              fontFamily: 'Archivo Black',
+                              color: 'black',
+                              opacity: 0.8
+                            }}
+                          >
+                            {new Date(trip.date).toLocaleDateString()}
+                          </Typography>
+                          <Chip 
+                            label={`${formatNumber(trip.carbonEmission || 0)} kg CO₂`}
+                            size="small"
+                            sx={{ 
+                              ml: 2,
+                              backgroundColor: '#F15BB5',
+                              color: 'black',
+                              fontFamily: 'Lexend Mega',
+                              border: '1px solid black',
+                              '& .MuiChip-label': {
+                                px: 2
+                              }
+                            }}
+                          />
+                        </Box>
+                      }
                     />
-                  </Typography>
-                }
-              />
-            </ListItem>
-          ))}
-        </List>
-      </StyledPaper>
-    </Container>
+                  </ListItem>
+                ))}
+              </List>
+            </StyledPaper>
+          </>
+        )}
+      </Container>
+    </Box>
   );
 };
 

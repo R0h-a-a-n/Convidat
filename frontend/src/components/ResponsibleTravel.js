@@ -119,7 +119,7 @@ const ResponsibleTravel = () => {
         minHeight: '100vh',
         pt: 10,
         pb: 6,
-        backgroundColor: '#D0F4DE',
+        backgroundColor: '#c0f4e4',
         backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         px: 2

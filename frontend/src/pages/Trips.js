@@ -101,11 +101,11 @@ const Trips = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#B4F8C8',
+        backgroundColor: '#c0f4e4',
         backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         px: 2,
-        py: 6
+        py: 8
       }}
     >
       <Container maxWidth="lg">

@@ -12,6 +12,28 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import BrutalButton from './Brutalbutton';
+
+const inputStyles = {
+  '& .MuiOutlinedInput-root': {
+    backgroundColor: 'white',
+    border: '2px solid black',
+    borderRadius: '0.75rem',
+    '&:hover': {
+      borderColor: 'black',
+    },
+    '&.Mui-focused': {
+      borderColor: 'black',
+      boxShadow: '4px 4px 0 black',
+    }
+  },
+  '& .MuiInputLabel-root': {
+    fontFamily: 'Lexend Mega, sans-serif',
+    '&.Mui-focused': {
+      color: 'black',
+    }
+  }
+};
 
 const TripForm = ({ trip, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -61,28 +83,39 @@ const TripForm = ({ trip, onSave, onCancel }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+    <Box 
+      component="form" 
+      onSubmit={handleSubmit} 
+      sx={{ 
+        mt: 2,
+        '& .MuiGrid-item': {
+          '& .MuiFormControl-root': {
+            width: '100%'
+          }
+        }
+      }}
+    >
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            fullWidth
             label="Trip Title"
             name="title"
             value={formData.title}
             onChange={handleChange}
             required
+            sx={inputStyles}
           />
         </Grid>
 
         <Grid item xs={12}>
           <TextField
-            fullWidth
             label="Description"
             name="description"
             value={formData.description}
             onChange={handleChange}
             multiline
             rows={3}
+            sx={inputStyles}
           />
         </Grid>
 
@@ -92,7 +125,12 @@ const TripForm = ({ trip, onSave, onCancel }) => {
               label="Start Date"
               value={formData.startDate}
               onChange={handleDateChange('startDate')}
-              renderInput={(params) => <TextField {...params} fullWidth required />}
+              slotProps={{ 
+                textField: { 
+                  sx: inputStyles,
+                  required: true
+                } 
+              }}
             />
           </LocalizationProvider>
         </Grid>
@@ -103,14 +141,19 @@ const TripForm = ({ trip, onSave, onCancel }) => {
               label="End Date"
               value={formData.endDate}
               onChange={handleDateChange('endDate')}
-              renderInput={(params) => <TextField {...params} fullWidth required />}
               minDate={formData.startDate}
+              slotProps={{ 
+                textField: { 
+                  sx: inputStyles,
+                  required: true
+                } 
+              }}
             />
           </LocalizationProvider>
         </Grid>
 
         <Grid item xs={12}>
-          <FormControl fullWidth>
+          <FormControl sx={inputStyles}>
             <InputLabel>Status</InputLabel>
             <Select
               name="status"
@@ -128,7 +171,6 @@ const TripForm = ({ trip, onSave, onCancel }) => {
 
         <Grid item xs={12}>
           <TextField
-            fullWidth
             label="Tags (comma-separated)"
             name="tags"
             value={formData.tags.join(', ')}
@@ -139,37 +181,62 @@ const TripForm = ({ trip, onSave, onCancel }) => {
                 tags,
               }));
             }}
+            sx={inputStyles}
           />
         </Grid>
 
         <Grid item xs={12}>
-  <TextField
-    fullWidth
-    label="Destinations (comma-separated ObjectIds or leave empty)"
-    name="destinations"
-    value={formData.destinations?.join(', ') || ''}
-    onChange={(e) => {
-      const destinations = e.target.value
-        .split(',')
-        .map((id) => id.trim())
-        .filter(Boolean); // remove empty strings
-      setFormData((prev) => ({
-        ...prev,
-        destinations,
-      }));
-    }}
-  />
-</Grid>
-
+          <TextField
+            label="Destinations (comma-separated)"
+            name="destinations"
+            value={formData.destinations?.join(', ') || ''}
+            onChange={(e) => {
+              const destinations = e.target.value
+                .split(',')
+                .map((id) => id.trim())
+                .filter(Boolean);
+              setFormData((prev) => ({
+                ...prev,
+                destinations,
+              }));
+            }}
+            sx={inputStyles}
+          />
+        </Grid>
 
         <Grid item xs={12}>
-          <Box display="flex" justifyContent="flex-end" gap={2}>
-            <Button variant="outlined" onClick={onCancel}>
+          <Box 
+            display="flex" 
+            justifyContent="flex-end" 
+            gap={2}
+            sx={{
+              mt: 2,
+              borderTop: '2px solid black',
+              pt: 3
+            }}
+          >
+            <BrutalButton
+              onClick={onCancel}
+              sx={{
+                backgroundColor: '#FF69B4',
+                '&:hover': {
+                  backgroundColor: '#FF8BC9'
+                }
+              }}
+            >
               Cancel
-            </Button>
-            <Button variant="contained" color="primary" type="submit">
+            </BrutalButton>
+            <BrutalButton
+              type="submit"
+              sx={{
+                backgroundColor: '#FEE440',
+                '&:hover': {
+                  backgroundColor: '#FFD60A'
+                }
+              }}
+            >
               {trip ? 'Update Trip' : 'Create Trip'}
-            </Button>
+            </BrutalButton>
           </Box>
         </Grid>
       </Grid>

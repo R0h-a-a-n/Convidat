@@ -176,220 +176,217 @@ const Dashboard = () => {
   );
 
   return (
-    <Box
+    <Container 
+      maxWidth="lg" 
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#B4F8C8',
-        backgroundImage: 'radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px)',
+        backgroundColor: '#c0f4e4',
+        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
         backgroundSize: '25px 25px',
-        backgroundRepeat: 'repeat',
-        backgroundAttachment: 'scroll',
         px: 2,
         py: 4
       }}
     >
-      <Container maxWidth="lg">
-        <Typography
-          variant="h3"
-          sx={{
-            fontFamily: 'Lexend Mega, sans-serif',
-            mb: 4,
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            border: '2px solid black',
-            p: 2,
-            boxShadow: '4px 6px 0px black',
-            backgroundColor: '#F15BB5',
-            color: 'black',
-            borderRadius: '1rem'
-          }}
-        >
-          Dashboard
-          <Tooltip title="Refresh Data">
-            <IconButton onClick={fetchData} disabled={refreshing} sx={{ ml: 2 }}>
-              {refreshing ? <CircularProgress size={24} /> : <Refresh />}
-            </IconButton>
-          </Tooltip>
-        </Typography>
+      <Typography
+        variant="h3"
+        sx={{
+          fontFamily: 'Lexend Mega, sans-serif',
+          mb: 4,
+          fontWeight: 'bold',
+          textTransform: 'uppercase',
+          border: '2px solid black',
+          p: 2,
+          boxShadow: '4px 6px 0px black',
+          backgroundColor: '#F15BB5',
+          color: 'black',
+          borderRadius: '1rem'
+        }}
+      >
+        Dashboard
+        <Tooltip title="Refresh Data">
+          <IconButton onClick={fetchData} disabled={refreshing} sx={{ ml: 2 }}>
+            {refreshing ? <CircularProgress size={24} /> : <Refresh />}
+          </IconButton>
+        </Tooltip>
+      </Typography>
 
-        {error && <Alert severity="error" sx={{ mb: 4 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 4 }}>{error}</Alert>}
 
-        <Grid container spacing={3}>
-          {[{ label: 'Eco Score', value: ecoScore.toFixed(2), note: 'Out of 100' },
-            { label: 'Total Emission', value: `${carbonData.totalEmission.toFixed(2)} kg`, note: `Across ${carbonData.count} trips` },
-            { label: 'Avg Emission', value: `${carbonData.averageEmission.toFixed(2)} kg`, note: 'Per Trip' }].map((item, idx) => (
-              <Grid item xs={12} md={4} key={idx}>
-                <Card sx={{ 
-                  border: '2px solid black', 
-                  boxShadow: '4px 6px 0 black', 
-                  backgroundColor: pastelColors[idx % pastelColors.length], 
-                  borderRadius: '1rem',
-                  '& .MuiTypography-root': {
-                    fontWeight: 'bold'
+      <Grid container spacing={3}>
+        {[{ label: 'Eco Score', value: ecoScore.toFixed(2), note: 'Out of 100' },
+          { label: 'Total Emission', value: `${carbonData.totalEmission.toFixed(2)} kg`, note: `Across ${carbonData.count} trips` },
+          { label: 'Avg Emission', value: `${carbonData.averageEmission.toFixed(2)} kg`, note: 'Per Trip' }].map((item, idx) => (
+            <Grid item xs={12} md={4} key={idx}>
+              <Card sx={{ 
+                border: '2px solid black', 
+                boxShadow: '4px 6px 0 black', 
+                backgroundColor: pastelColors[idx % pastelColors.length], 
+                borderRadius: '1rem',
+                '& .MuiTypography-root': {
+                  fontWeight: 'bold'
+                }
+              }}>
+                <CardContent>
+                  <Typography variant="h5" sx={{ fontFamily: 'Lexend Mega', textTransform: 'uppercase', fontWeight: 'bold' }}>{item.label}</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{item.value}</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{item.note}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+      </Grid>
+
+      {/* Emissions Over Time Chart */}
+      <Grid container spacing={3} sx={{ mt: 3 }}>
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3, border: '2px solid black', boxShadow: '4px 6px 0 black', borderRadius: '1rem', backgroundColor: '#F0F7FF' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Lexend Mega', fontWeight: 'bold' }}>Daily Emissions</Typography>
+            <LineChart width={700} height={300} data={monthlyEmissions} margin={{ top: 5, right: 30, left: 50, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                tick={{ fill: '#000000', fontWeight: 'bold' }}
+              />
+              <YAxis 
+                tick={{ fill: '#000000', fontWeight: 'bold' }}
+                label={{ 
+                  value: 'CO₂ Emissions (kg)', 
+                  angle: -90, 
+                  position: 'insideLeft', 
+                  offset: -35,
+                  style: { 
+                    textAnchor: 'middle',
+                    fontWeight: 'bold',
+                    fill: '#000000'
                   }
-                }}>
-                  <CardContent>
-                    <Typography variant="h5" sx={{ fontFamily: 'Lexend Mega', textTransform: 'uppercase', fontWeight: 'bold' }}>{item.label}</Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 'bold' }}>{item.value}</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{item.note}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                }}
+              />
+              <RechartsTooltip 
+                formatter={(value) => [`${value} kg CO₂`, 'Emissions']}
+                labelFormatter={(label) => `Date: ${label}`}
+                contentStyle={{ fontWeight: 'bold' }}
+              />
+              <Legend wrapperStyle={{ fontWeight: 'bold' }}/>
+              <Line 
+                type="monotone" 
+                dataKey="emission" 
+                stroke="#2196F3" 
+                name="CO₂ Emissions (kg)"
+                strokeWidth={3}
+                dot={{ r: 4, fill: '#2196F3' }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </Paper>
         </Grid>
 
-        {/* Emissions Over Time Chart */}
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3, border: '2px solid black', boxShadow: '4px 6px 0 black', borderRadius: '1rem', backgroundColor: '#F0F7FF' }}>
-              <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Lexend Mega', fontWeight: 'bold' }}>Daily Emissions</Typography>
-              <LineChart width={700} height={300} data={monthlyEmissions} margin={{ top: 5, right: 30, left: 50, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="date" 
-                  tick={{ fill: '#000000', fontWeight: 'bold' }}
-                />
-                <YAxis 
-                  tick={{ fill: '#000000', fontWeight: 'bold' }}
-                  label={{ 
-                    value: 'CO₂ Emissions (kg)', 
-                    angle: -90, 
-                    position: 'insideLeft', 
-                    offset: -35,
-                    style: { 
-                      textAnchor: 'middle',
-                      fontWeight: 'bold',
-                      fill: '#000000'
-                    }
-                  }}
-                />
-                <RechartsTooltip 
-                  formatter={(value) => [`${value} kg CO₂`, 'Emissions']}
-                  labelFormatter={(label) => `Date: ${label}`}
-                  contentStyle={{ fontWeight: 'bold' }}
-                />
-                <Legend wrapperStyle={{ fontWeight: 'bold' }}/>
-                <Line 
-                  type="monotone" 
-                  dataKey="emission" 
-                  stroke="#2196F3" 
-                  name="CO₂ Emissions (kg)"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#2196F3' }}
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3, border: '2px solid black', boxShadow: '4px 6px 0 black', borderRadius: '1rem', backgroundColor: '#FFF5E6' }}>
-              <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Lexend Mega', fontWeight: 'bold' }}>Emissions by Transport</Typography>
-              <PieChart width={300} height={300}>
-                <Pie
-                  data={emissionsByType}
-                  cx={150}
-                  cy={150}
-                  labelLine={false}
-                  label={({ name, cx, cy, midAngle, outerRadius }) => {
-                    const RADIAN = Math.PI / 180;
-                    const radius = outerRadius + 10; // Slightly outside the pie
-                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                    const textAnchor = x > cx ? 'start' : 'end';
-                  
-                    return (
-                      <text
-                        x={x}
-                        y={y}
-                        textAnchor={textAnchor}
-                        fill="#000"
-                        fontWeight="bold"
-                        fontSize={12}
-                      >
-                        {name}
-                      </text>
-                    );
-                  }}
-                  
-                  
-                  outerRadius={90}
-                  innerRadius={60}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {emissionsByType.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={pastelColors[index % pastelColors.length]}
-                      stroke="#000000"
-                      strokeWidth={2}
-                    />
-                  ))}
-                </Pie>
-                <RechartsTooltip 
-                  formatter={(value) => `${Number(value).toFixed(2)} kg CO₂`}
-                  contentStyle={{ fontWeight: 'bold' }}
-                />
-              </PieChart>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* Upcoming Trips */}
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h4" sx={{ fontFamily: 'Lexend Mega', textTransform: 'uppercase', mb: 2, border: '2px solid black', p: 2, boxShadow: '4px 6px 0 black', backgroundColor: '#FEE440', borderRadius: '1rem' }}>
-            Upcoming Trips
-          </Typography>
-          <Grid container spacing={2}>
-            {upcomingTrips.map((trip, index) => (
-              <Grid item xs={12} md={4} key={trip._id}>
-                <Card sx={{ border: '2px solid black', boxShadow: '4px 6px 0 black', backgroundColor: pastelColors[index % pastelColors.length], borderRadius: '1rem' }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{trip.title}</Typography>
-                    <Typography variant="body2">
-                      {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                      {trip.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-            {upcomingTrips.length === 0 && (
-              <Grid item xs={12}>
-                <Typography variant="body1" sx={{ textAlign: 'center' }}>No upcoming trips scheduled.</Typography>
-              </Grid>
-            )}
-          </Grid>
-        </Box>
-
-        {/* Recent Activity */}
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h4" sx={{ fontFamily: 'Lexend Mega', textTransform: 'uppercase', mb: 2, border: '2px solid black', p: 2, boxShadow: '4px 6px 0 black', backgroundColor: '#FEE440', borderRadius: '1rem' }}>
-            Recent Activity
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          {recentActivity.length ? (
-            <List>
-              {recentActivity.map((a, i) => (
-                <ListItem key={i} sx={{ border: '2px solid black', boxShadow: '4px 6px 0 black', backgroundColor: pastelColors[i % pastelColors.length], mb: 2, borderRadius: '1rem' }}>
-                  <Box sx={{ mr: 2 }}>{getTravelIcon(a.travelType)}</Box>
-                  <ListItemText
-                    primary={<Typography variant="h6">{`${a.travelType.charAt(0).toUpperCase() + a.travelType.slice(1).toLowerCase()} Journey`}</Typography>}
-                    secondary={formatDate(a.date)}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3, border: '2px solid black', boxShadow: '4px 6px 0 black', borderRadius: '1rem', backgroundColor: '#FFF5E6' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Lexend Mega', fontWeight: 'bold' }}>Emissions by Transport</Typography>
+            <PieChart width={300} height={300}>
+              <Pie
+                data={emissionsByType}
+                cx={150}
+                cy={150}
+                labelLine={false}
+                label={({ name, cx, cy, midAngle, outerRadius }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = outerRadius + 10; // Slightly outside the pie
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  const textAnchor = x > cx ? 'start' : 'end';
+                
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      textAnchor={textAnchor}
+                      fill="#000"
+                      fontWeight="bold"
+                      fontSize={12}
+                    >
+                      {name}
+                    </text>
+                  );
+                }}
+                
+                
+                outerRadius={90}
+                innerRadius={60}
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {emissionsByType.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={pastelColors[index % pastelColors.length]}
+                    stroke="#000000"
+                    strokeWidth={2}
                   />
-                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{(a.carbonEmission || 0).toFixed(2)} kg CO₂</Typography>
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Typography>No recent activity to show.</Typography>
+                ))}
+              </Pie>
+              <RechartsTooltip 
+                formatter={(value) => `${Number(value).toFixed(2)} kg CO₂`}
+                contentStyle={{ fontWeight: 'bold' }}
+              />
+            </PieChart>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Upcoming Trips */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h4" sx={{ fontFamily: 'Lexend Mega', textTransform: 'uppercase', mb: 2, border: '2px solid black', p: 2, boxShadow: '4px 6px 0 black', backgroundColor: '#FEE440', borderRadius: '1rem' }}>
+          Upcoming Trips
+        </Typography>
+        <Grid container spacing={2}>
+          {upcomingTrips.map((trip, index) => (
+            <Grid item xs={12} md={4} key={trip._id}>
+              <Card sx={{ border: '2px solid black', boxShadow: '4px 6px 0 black', backgroundColor: pastelColors[index % pastelColors.length], borderRadius: '1rem' }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{trip.title}</Typography>
+                  <Typography variant="body2">
+                    {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    {trip.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+          {upcomingTrips.length === 0 && (
+            <Grid item xs={12}>
+              <Typography variant="body1" sx={{ textAlign: 'center' }}>No upcoming trips scheduled.</Typography>
+            </Grid>
           )}
-        </Box>
-      </Container>
-    </Box>
+        </Grid>
+      </Box>
+
+      {/* Recent Activity */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h4" sx={{ fontFamily: 'Lexend Mega', textTransform: 'uppercase', mb: 2, border: '2px solid black', p: 2, boxShadow: '4px 6px 0 black', backgroundColor: '#FEE440', borderRadius: '1rem' }}>
+          Recent Activity
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        {recentActivity.length ? (
+          <List>
+            {recentActivity.map((a, i) => (
+              <ListItem key={i} sx={{ border: '2px solid black', boxShadow: '4px 6px 0 black', backgroundColor: pastelColors[i % pastelColors.length], mb: 2, borderRadius: '1rem' }}>
+                <Box sx={{ mr: 2 }}>{getTravelIcon(a.travelType)}</Box>
+                <ListItemText
+                  primary={<Typography variant="h6">{`${a.travelType.charAt(0).toUpperCase() + a.travelType.slice(1).toLowerCase()} Journey`}</Typography>}
+                  secondary={formatDate(a.date)}
+                />
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{(a.carbonEmission || 0).toFixed(2)} kg CO₂</Typography>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography>No recent activity to show.</Typography>
+        )}
+      </Box>
+    </Container>
   );
 };
 

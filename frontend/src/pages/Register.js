@@ -44,15 +44,16 @@ const Register = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#B4F8C8',
-        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
+        backgroundColor: '#C0F4E4',
+        backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         backgroundRepeat: 'repeat',
         backgroundAttachment: 'fixed',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        fontFamily: 'Lexend Mega, sans-serif'
+        alignItems: 'flex-start',
+        fontFamily: 'Lexend Mega, sans-serif',
+        pt: 10
       }}
     >
       <Container maxWidth="sm">

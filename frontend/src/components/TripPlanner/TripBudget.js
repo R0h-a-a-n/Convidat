@@ -83,10 +83,10 @@ const TripBudget = ({ tripId }) => {
     categories: [
       { name: 'Accommodation', allocated: 0 },
       { name: 'Transportation', allocated: 0 },
-      { name: 'Food', allocated: 0 },
+      { name: 'Food & Dining', allocated: 0 },
       { name: 'Activities', allocated: 0 },
       { name: 'Shopping', allocated: 0 },
-      { name: 'Other', allocated: 0 },
+      { name: 'Miscellaneous', allocated: 0 },
     ],
   });
 
@@ -230,10 +230,10 @@ const TripBudget = ({ tripId }) => {
         categories: budget.categories || [
           { name: 'Accommodation', allocated: 0 },
           { name: 'Transportation', allocated: 0 },
-          { name: 'Food', allocated: 0 },
+          { name: 'Food & Dining', allocated: 0 },
           { name: 'Activities', allocated: 0 },
           { name: 'Shopping', allocated: 0 },
-          { name: 'Other', allocated: 0 },
+          { name: 'Miscellaneous', allocated: 0 },
         ]
       });
     } else {
@@ -243,10 +243,10 @@ const TripBudget = ({ tripId }) => {
         categories: [
           { name: 'Accommodation', allocated: 0 },
           { name: 'Transportation', allocated: 0 },
-          { name: 'Food', allocated: 0 },
+          { name: 'Food & Dining', allocated: 0 },
           { name: 'Activities', allocated: 0 },
           { name: 'Shopping', allocated: 0 },
-          { name: 'Other', allocated: 0 },
+          { name: 'Miscellaneous', allocated: 0 },
         ]
       });
     }
@@ -340,218 +340,351 @@ const TripBudget = ({ tripId }) => {
   }
 
   return (
-    <Box className="trip-budget-wrapper">
-  <Box className="trip-budget-container">
-    <Typography className="trip-budget-header">Trip Budget</Typography>
-    <BrutalButton startIcon={<AddIcon />} onClick={handleAddExpense}>
-      Add Expense
-    </BrutalButton>
-  </Box>
+    <Box 
+      sx={{ 
+        backgroundColor: '#B4F8C8',
+        minHeight: '100vh',
+        margin: '-24px',
+        padding: '24px',
+        pb: 4,
+        position: 'relative',
+        '&:before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: '#B4F8C8',
+          zIndex: -1
+        }
+      }}
+    >
+      <Box 
+        sx={{ 
+          backgroundColor: '#B4F8C8',
+          backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px)',
+          backgroundSize: '25px 25px',
+          p: 4,
+          borderRadius: '1rem',
+          border: '2px solid black',
+          boxShadow: '6px 8px 0 black',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3
+        }}
+      >
+        <Typography 
+          sx={{
+            fontFamily: 'Lexend Mega, sans-serif',
+            fontSize: '1.75rem',
+            fontWeight: 'bold',
+            backgroundColor: '#F15BB5',
+            px: 3,
+            py: 1.5,
+            borderRadius: '0.75rem',
+            border: '2px solid black',
+            boxShadow: '4px 6px 0 black',
+            color: 'black'
+          }}
+        >
+          Trip Budget
+        </Typography>
+        <BrutalButton startIcon={<AddIcon />} onClick={handleAddExpense}>
+          Add Expense
+        </BrutalButton>
+      </Box>
 
-  {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert 
+          severity="error" 
+          sx={{ 
+            mb: 3,
+            border: '2px solid black',
+            borderRadius: '0.75rem',
+            boxShadow: '4px 4px 0 black',
+            '& .MuiAlert-icon': {
+              color: 'black'
+            }
+          }}
+        >
+          {error}
+        </Alert>
+      )}
 
-  {summary && (
-    <BrutalCard sx={{ mb: 4 }}>
-      <CardContent>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">Budget Summary</Typography>
-          <BrutalButton variant="outlined" size="small" onClick={handleEditBudget}>
-            Edit Total Budget
-          </BrutalButton>
-        </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="subtitle2">Total Budget</Typography>
-            <Typography variant="h6">{budget.currency} {summary.totalBudget.toFixed(2)}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="subtitle2">Total Spent</Typography>
-            <Typography variant="h6">{budget.currency} {summary.totalSpent.toFixed(2)}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="subtitle2">Remaining</Typography>
-            <Typography variant="h6">{budget.currency} {summary.remaining.toFixed(2)}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="subtitle2">Exchange Rate</Typography>
-            <Typography variant="h6">1 {budget.currency} = {exchangeRate?.rate.toFixed(4)} USD</Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </BrutalCard>
-  )}
-
-  <Grid container spacing={3} sx={{ background: '#B4F8C8', m: 0 }}>
-    {summary?.categories.map((cat) => (
-      <Grid item xs={12} md={6} key={cat.name}>
-        <BrutalCard>
+      {summary && (
+        <BrutalCard sx={{ mb: 4 }}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontFamily: 'Archivo Black' }}>{cat.name}</Typography>
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              Allocated: {budget.currency} {cat.allocated.toFixed(2)} | Spent: {budget.currency} {cat.spent.toFixed(2)}
-            </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={Math.min((cat.spent / cat.allocated) * 100, 100)}
-              color={cat.spent > cat.allocated ? 'error' : 'primary'}
-              sx={{ height: 8, borderRadius: 4 }}
-            />
-            <TextField
-              fullWidth
-              label="Update Allocation"
-              type="number"
-              value={cat.allocated}
-              onChange={(e) => handleUpdateAllocation(cat.name, e.target.value)}
-              size="small"
-              sx={{ mt: 2 }}
-            />
-          </CardContent>
-        </BrutalCard>
-      </Grid>
-    ))}
-  </Grid>
-
-  <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
-    <DialogTitle>Add Expense</DialogTitle>
-    <DialogContent>
-      <Box component="form" sx={{ mt: 2 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
-              {budget?.categories ? (
-  <Select
-    value={formData.category}
-    onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
-    label="Category"
-  >
-    {budget.categories.map((category) => (
-      <MenuItem key={category.name} value={category.name}>
-        {category.name}
-      </MenuItem>
-    ))}
-  </Select>
-) : (
-  <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-    Budget not loaded. Please create a budget first.
-  </Typography>
-)}
-
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Description"
-              value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              required
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Amount"
-              type="number"
-              value={formData.amount}
-              onChange={(e) => setFormData((prev) => ({ ...prev, amount: parseFloat(e.target.value) }))}
-              required
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Date"
-                value={formData.date}
-                onChange={(date) => setFormData((prev) => ({ ...prev, date }))}
-                renderInput={(params) => <TextField {...params} fullWidth />}
-              />
-            </LocalizationProvider>
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel>Payment Method</InputLabel>
-              <Select
-                value={formData.paymentMethod}
-                onChange={(e) => setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))}
-                label="Payment Method"
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontFamily: 'Lexend Mega, sans-serif',
+                  fontWeight: 'bold'
+                }}
               >
-                <MenuItem value="cash">Cash</MenuItem>
-                <MenuItem value="credit_card">Credit Card</MenuItem>
-                <MenuItem value="debit_card">Debit Card</MenuItem>
-                <MenuItem value="mobile_payment">Mobile Payment</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Notes"
-              value={formData.notes}
-              onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
-              multiline
-              rows={2}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="flex-end" gap={2}>
-              <BrutalButton variant="outlined" onClick={() => setOpenDialog(false)}>
-                Cancel
-              </BrutalButton>
-              <BrutalButton variant="contained" onClick={handleSaveExpense}>
-                Add Expense
+                Budget Summary
+              </Typography>
+              <BrutalButton variant="outlined" size="small" onClick={handleEditBudget}>
+                Edit Total Budget
               </BrutalButton>
             </Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="subtitle2" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>Total Budget</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>{budget.currency} {summary.totalBudget.toFixed(2)}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="subtitle2" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>Total Spent</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>{budget.currency} {summary.totalSpent.toFixed(2)}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="subtitle2" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>Remaining</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>{budget.currency} {summary.remaining.toFixed(2)}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="subtitle2" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>Exchange Rate</Typography>
+                <Typography variant="h6" sx={{ fontFamily: 'Lexend Mega, sans-serif' }}>1 {budget.currency} = {exchangeRate?.rate.toFixed(4)} USD</Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </BrutalCard>
+      )}
+
+      <Grid 
+        container 
+        spacing={3} 
+        sx={{ 
+          width: '100%',
+          margin: 0,
+          '& > .MuiGrid-item': {
+            pt: '12px',
+            pb: '12px'
+          }
+        }}
+      >
+        {summary?.categories.map((cat) => (
+          <Grid item xs={12} md={6} key={cat.name}>
+            <BrutalCard>
+              <CardContent 
+                sx={{ 
+                  pb: '48px !important',
+                  position: 'relative',
+                  '& .MuiTextField-root': {
+                    position: 'absolute',
+                    bottom: 24,
+                    left: 16,
+                    right: 16
+                  }
+                }}
+              >
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontFamily: 'Archivo Black',
+                    textTransform: 'capitalize',
+                    mb: 2
+                  }}
+                >
+                  {cat.name}
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    mb: 1,
+                    fontFamily: 'Lexend Mega, sans-serif'
+                  }}
+                >
+                  Allocated: {budget.currency} {cat.allocated.toFixed(2)} | Spent: {budget.currency} {cat.spent.toFixed(2)}
+                </Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={Math.min((cat.spent / cat.allocated) * 100, 100)}
+                  color={cat.spent > cat.allocated ? 'error' : 'primary'}
+                  sx={{ 
+                    height: 8, 
+                    borderRadius: 4,
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    mb: 4,
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: cat.spent > cat.allocated ? '#FF69B4' : '#00F5D4'
+                    }
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Update Allocation"
+                  type="number"
+                  value={cat.allocated}
+                  onChange={(e) => handleUpdateAllocation(cat.name, e.target.value)}
+                  size="small"
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'white',
+                      border: '2px solid black',
+                      borderRadius: '0.75rem',
+                      '&:hover': {
+                        borderColor: 'black',
+                      },
+                      '&.Mui-focused': {
+                        borderColor: 'black',
+                        boxShadow: '4px 4px 0 black',
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontFamily: 'Lexend Mega, sans-serif',
+                      '&.Mui-focused': {
+                        color: 'black',
+                      }
+                    }
+                  }}
+                />
+              </CardContent>
+            </BrutalCard>
           </Grid>
-        </Grid>
-      </Box>
-    </DialogContent>
-  </Dialog>
+        ))}
+      </Grid>
 
-  <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
-    <DialogTitle>{budget ? 'Edit Trip Budget' : 'Create Trip Budget'}</DialogTitle>
-    <DialogContent>
-      <TextField
-        margin="dense"
-        label="Total Budget Amount"
-        type="number"
-        fullWidth
-        value={budgetFormData.totalAmount}
-        onChange={(e) => setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value })}
-      />
-      <FormControl fullWidth margin="dense">
-        <InputLabel>Currency</InputLabel>
-        <Select
-          value={budgetFormData.currency}
-          onChange={(e) => setBudgetFormData({ ...budgetFormData, currency: e.target.value })}
-        >
-          <MenuItem value="USD">USD</MenuItem>
-          <MenuItem value="EUR">EUR</MenuItem>
-          <MenuItem value="GBP">GBP</MenuItem>
-          <MenuItem value="JPY">JPY</MenuItem>
-          <MenuItem value="AUD">AUD</MenuItem>
-          <MenuItem value="CAD">CAD</MenuItem>
-        </Select>
-      </FormControl>
-    </DialogContent>
-    <DialogActions>
-      <BrutalButton onClick={() => setOpenBudgetDialog(false)} variant="outlined">
-        Cancel
-      </BrutalButton>
-      <BrutalButton onClick={handleCreateBudget}>
-        {budget ? 'Update' : 'Create'}
-      </BrutalButton>
-    </DialogActions>
-  </Dialog>
-</Box>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Add Expense</DialogTitle>
+        <DialogContent>
+          <Box component="form" sx={{ mt: 2 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Category</InputLabel>
+                  {budget?.categories ? (
+                    <Select
+                      value={formData.category}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                      label="Category"
+                    >
+                      {budget.categories.map((category) => (
+                        <MenuItem key={category.name} value={category.name}>
+                          {category.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
+                      Budget not loaded. Please create a budget first.
+                    </Typography>
+                  )}
+                </FormControl>
+              </Grid>
 
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  value={formData.description}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  required
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, amount: parseFloat(e.target.value) }))}
+                  required
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Date"
+                    value={formData.date}
+                    onChange={(date) => setFormData((prev) => ({ ...prev, date }))}
+                    renderInput={(params) => <TextField {...params} fullWidth />}
+                  />
+                </LocalizationProvider>
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Payment Method</InputLabel>
+                  <Select
+                    value={formData.paymentMethod}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))}
+                    label="Payment Method"
+                  >
+                    <MenuItem value="cash">Cash</MenuItem>
+                    <MenuItem value="credit_card">Credit Card</MenuItem>
+                    <MenuItem value="debit_card">Debit Card</MenuItem>
+                    <MenuItem value="mobile_payment">Mobile Payment</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Box display="flex" justifyContent="flex-end" gap={2}>
+                  <BrutalButton variant="outlined" onClick={() => setOpenDialog(false)}>
+                    Cancel
+                  </BrutalButton>
+                  <BrutalButton variant="contained" onClick={handleSaveExpense}>
+                    Add Expense
+                  </BrutalButton>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openBudgetDialog} onClose={() => setOpenBudgetDialog(false)}>
+        <DialogTitle>{budget ? 'Edit Trip Budget' : 'Create Trip Budget'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Total Budget Amount"
+            type="number"
+            fullWidth
+            value={budgetFormData.totalAmount}
+            onChange={(e) => setBudgetFormData({ ...budgetFormData, totalAmount: e.target.value })}
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Currency</InputLabel>
+            <Select
+              value={budgetFormData.currency}
+              onChange={(e) => setBudgetFormData({ ...budgetFormData, currency: e.target.value })}
+            >
+              <MenuItem value="USD">USD</MenuItem>
+              <MenuItem value="EUR">EUR</MenuItem>
+              <MenuItem value="GBP">GBP</MenuItem>
+              <MenuItem value="JPY">JPY</MenuItem>
+              <MenuItem value="AUD">AUD</MenuItem>
+              <MenuItem value="CAD">CAD</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <BrutalButton onClick={() => setOpenBudgetDialog(false)} variant="outlined">
+            Cancel
+          </BrutalButton>
+          <BrutalButton onClick={handleCreateBudget}>
+            {budget ? 'Update' : 'Create'}
+          </BrutalButton>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

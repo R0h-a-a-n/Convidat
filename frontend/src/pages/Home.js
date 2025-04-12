@@ -99,13 +99,13 @@ const Home = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#B4F8C8', // Consistent light green background
-        backgroundImage: 'radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px)', // Subtle dots
+        backgroundColor: '#C0F4E4',
+        backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         px: { xs: 2, md: 4 },
         py: 6,
         overflowX: 'hidden',
-        position: 'relative', // Crucial for absolute positioning
+        position: 'relative',
       }}
     >
       <Container maxWidth="lg">
@@ -294,7 +294,7 @@ const Home = () => {
               }}
             >
               Furthermore, eco-tourism brings a more meaningful travel experience. It attracts
-              conscious travelers who value authenticity and connection—whether that’s spotting
+              conscious travelers who value authenticity and connection—whether that's spotting
               wildlife in a national park, volunteering for reforestation, or staying at an eco-lodge
               run by locals. Such experiences inspire people to continue making sustainable choices
               in their daily lives and advocate for greener practices globally.
@@ -309,7 +309,7 @@ const Home = () => {
               }}
             >
               As the demand for eco-friendly travel grows, digital platforms must support and guide
-              users toward sustainable options. That’s where your eco-tourism website plays a
+              users toward sustainable options. That's where your eco-tourism website plays a
               game-changing role.
             </Typography>
           </Box>

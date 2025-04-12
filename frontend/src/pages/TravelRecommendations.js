@@ -350,35 +350,142 @@ const TravelRecommendations = () => {
   return (
     <Container>
       <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="caption" display="block" gutterBottom>
-          Submit Count: {submitCount}
+        <Typography 
+          variant="h2" 
+          sx={{
+            fontFamily: 'Lexend Mega, sans-serif',
+            textTransform: 'uppercase',
+            fontWeight: '900',
+            color: 'black',
+            backgroundColor: '#FF69B4',
+            border: '3px solid black',
+            borderRadius: '1rem',
+            boxShadow: '8px 8px 0 black',
+            p: 3,
+            mb: 4,
+            textAlign: 'center',
+            width: '100%',
+            fontSize: { xs: '1.75rem', md: '2.5rem' }
+          }}
+        >
+          TRAVEL RECOMMENDATIONS
         </Typography>
-        <Typography className="neo-header" variant="h4" gutterBottom>
-          Travel Recommendations
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            fontFamily: 'Lexend Mega, sans-serif',
+            mb: 3,
+            textAlign: 'center',
+            backgroundColor: '#FEE440',
+            border: '2px solid black',
+            borderRadius: '0.75rem',
+            boxShadow: '4px 4px 0 black',
+            p: 2,
+            display: 'inline-block',
+            width: 'auto',
+            mx: 'auto'
+          }}
+        >
           Tell us your preferences and we'll recommend the perfect destinations for you
         </Typography>
-  
-        {error && <Alert severity="error" className="neo-alert" sx={{ mb: 2 }}>{error}</Alert>}
-  
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-          <Tabs value={activeTab} onChange={handleTabChange} aria-label="travel tabs">
+
+        {error && (
+          <Alert 
+            severity="error" 
+            sx={{ 
+              mb: 3,
+              border: '2px solid black',
+              borderRadius: '0.75rem',
+              boxShadow: '4px 4px 0 black',
+              '& .MuiAlert-icon': {
+                color: 'black'
+              }
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+
+        <Box 
+          sx={{ 
+            borderBottom: '3px solid black',
+            mb: 4,
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'black',
+              height: 3
+            }
+          }}
+        >
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            sx={{
+              '& .MuiTab-root': {
+                fontFamily: 'Lexend Mega, sans-serif',
+                fontWeight: 'bold',
+                color: 'black',
+                '&.Mui-selected': {
+                  color: 'black',
+                  backgroundColor: '#FEE440',
+                  borderRadius: '0.75rem 0.75rem 0 0',
+                  border: '2px solid black',
+                  borderBottom: 'none'
+                }
+              }
+            }}
+          >
             <Tab label="Search" />
             <Tab label="Recommendations" />
             <Tab label="Favorites" />
           </Tabs>
         </Box>
-  
+
         {activeTab === 0 && (
           <>
-            <Paper className="neo-card" sx={{ mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
+            <Paper 
+              sx={{ 
+                p: 4,
+                mb: 4,
+                border: '3px solid black',
+                borderRadius: '1rem',
+                boxShadow: '8px 8px 0 black',
+                backgroundColor: '#FFFFFF'
+              }}
+            >
+              <Typography 
+                variant="h4" 
+                sx={{ 
+                  mb: 4,
+                  fontFamily: 'Lexend Mega, sans-serif',
+                  fontWeight: 'bold',
+                  color: 'black',
+                  textTransform: 'uppercase'
+                }}
+              >
                 Your Preferences
               </Typography>
-              <Grid container spacing={3}>
+
+              <Grid container spacing={4}>
                 <Grid item xs={12} md={4}>
-                  <FormControl fullWidth>
+                  <FormControl 
+                    fullWidth 
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        border: '2px solid black',
+                        borderRadius: '0.75rem',
+                        backgroundColor: 'transparent',
+                        '&:hover': {
+                          borderColor: 'black',
+                          borderWidth: '2px'
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontFamily: 'Lexend Mega, sans-serif',
+                        fontWeight: 'bold'
+                      }
+                    }}
+                  >
                     <InputLabel>Season</InputLabel>
                     <Select
                       name="season"
@@ -387,12 +494,42 @@ const TravelRecommendations = () => {
                       label="Season"
                     >
                       <MenuItem value="">Any Season</MenuItem>
-                      {metaData.seasons?.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+                      {metaData.seasons?.map(s => (
+                        <MenuItem 
+                          key={s} 
+                          value={s}
+                          sx={{
+                            fontFamily: 'Lexend Mega, sans-serif',
+                            '&:hover': {
+                              backgroundColor: '#FEE440'
+                            }
+                          }}
+                        >
+                          {s}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <FormControl fullWidth>
+                  <FormControl 
+                    fullWidth
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        border: '2px solid black',
+                        borderRadius: '0.75rem',
+                        backgroundColor: 'transparent',
+                        '&:hover': {
+                          borderColor: 'black',
+                          borderWidth: '2px'
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontFamily: 'Lexend Mega, sans-serif',
+                        fontWeight: 'bold'
+                      }
+                    }}
+                  >
                     <InputLabel>Preferred Climate</InputLabel>
                     <Select
                       name="climate"
@@ -401,12 +538,42 @@ const TravelRecommendations = () => {
                       label="Preferred Climate"
                     >
                       <MenuItem value="">Any Climate</MenuItem>
-                      {metaData.climates?.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+                      {metaData.climates?.map(c => (
+                        <MenuItem 
+                          key={c} 
+                          value={c}
+                          sx={{
+                            fontFamily: 'Lexend Mega, sans-serif',
+                            '&:hover': {
+                              backgroundColor: '#FEE440'
+                            }
+                          }}
+                        >
+                          {c}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  <FormControl fullWidth>
+                  <FormControl 
+                    fullWidth
+                    sx={{ 
+                      '& .MuiOutlinedInput-root': {
+                        border: '2px solid black',
+                        borderRadius: '0.75rem',
+                        backgroundColor: 'transparent',
+                        '&:hover': {
+                          borderColor: 'black',
+                          borderWidth: '2px'
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontFamily: 'Lexend Mega, sans-serif',
+                        fontWeight: 'bold'
+                      }
+                    }}
+                  >
                     <InputLabel>Budget</InputLabel>
                     <Select
                       name="budget"
@@ -416,7 +583,16 @@ const TravelRecommendations = () => {
                     >
                       <MenuItem value="">Any Budget</MenuItem>
                       {metaData.budgets?.map(b => (
-                        <MenuItem key={b} value={b}>
+                        <MenuItem 
+                          key={b} 
+                          value={b}
+                          sx={{
+                            fontFamily: 'Lexend Mega, sans-serif',
+                            '&:hover': {
+                              backgroundColor: '#FEE440'
+                            }
+                          }}
+                        >
                           {b.charAt(0).toUpperCase() + b.slice(1)}
                         </MenuItem>
                       ))}
@@ -526,12 +702,27 @@ const TravelRecommendations = () => {
                 </Box>
               )}
   
-              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
                 <Button
-                  className="neo-btn"
                   onClick={handleSubmit}
                   disabled={loading}
-                  size="large"
+                  sx={{
+                    backgroundColor: '#FEE440',
+                    color: 'black',
+                    border: '2px solid black',
+                    borderRadius: '0.75rem',
+                    boxShadow: '4px 4px 0 black',
+                    px: 4,
+                    py: 1.5,
+                    fontFamily: 'Lexend Mega, sans-serif',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    '&:hover': {
+                      backgroundColor: '#FFD60A',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '6px 6px 0 black'
+                    }
+                  }}
                 >
                   {loading ? <CircularProgress size={24} /> : 'Get Recommendations'}
                 </Button>

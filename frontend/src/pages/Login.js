@@ -37,8 +37,8 @@ const Login = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#B4F8C8',
-        backgroundImage: 'radial-gradient(#aaa 1px, transparent 1px)',
+        backgroundColor: '#C0F4E4',
+        backgroundImage: 'radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px)',
         backgroundSize: '25px 25px',
         backgroundRepeat: 'repeat',
         backgroundAttachment: 'fixed',
@@ -54,7 +54,7 @@ const Login = () => {
           sx={{
             p: 4,
             borderRadius: '1rem',
-            backgroundColor: '#D0F4DE',
+            backgroundColor: '#C0F4E4',
             border: '2px solid black',
             boxShadow: '6px 6px 0 black'
           }}

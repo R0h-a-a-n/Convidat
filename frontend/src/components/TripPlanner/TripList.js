@@ -17,6 +17,8 @@ import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/ico
 import { format } from 'date-fns';
 import TripForm from './TripForm';
 import axios from 'axios';
+import BrutalButton from './Brutalbutton';
+import BrutalCard from './Brutalcard';
 
 const TripList = () => {
   const [trips, setTrips] = useState([]);
@@ -119,57 +121,165 @@ const TripList = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <CircularProgress />
+        <CircularProgress sx={{ color: '#FF69B4' }} />
       </Box>
     );
   }
 
   return (
-    <Box p={3}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4">My Trips</Typography>
-        <Button
-          variant="contained"
-          color="primary"
+    <Box 
+      sx={{ 
+        p: 3,
+        backgroundColor: '#c0f4e4',
+        backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
+        backgroundSize: '25px 25px',
+        minHeight: '100vh'
+      }}
+    >
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        alignItems="center" 
+        mb={4}
+        sx={{
+          backgroundColor: '#FEE440',
+          p: 3,
+          borderRadius: '1rem',
+          border: '3px solid black',
+          boxShadow: '8px 8px 0 black'
+        }}
+      >
+        <Typography 
+          variant="h3" 
+          sx={{
+            fontFamily: 'Lexend Mega, sans-serif',
+            fontWeight: '900',
+            color: 'black',
+            textTransform: 'uppercase'
+          }}
+        >
+          My Trips
+        </Typography>
+        <BrutalButton
           startIcon={<AddIcon />}
           onClick={handleCreateTrip}
         >
           Create Trip
-        </Button>
+        </BrutalButton>
       </Box>
 
       {error && (
-        <Typography color="error" mb={2}>
-          {error}
-        </Typography>
+        <Box 
+          sx={{ 
+            mb: 4,
+            p: 2,
+            backgroundColor: '#FF8FAB',
+            border: '2px solid black',
+            borderRadius: '0.75rem',
+            boxShadow: '4px 4px 0 black'
+          }}
+        >
+          <Typography color="error" fontFamily="Lexend Mega, sans-serif">
+            {error}
+          </Typography>
+        </Box>
       )}
 
-      <Grid container spacing={3}>
+      <Grid container spacing={4}>
         {trips.map((trip) => (
           <Grid item xs={12} sm={6} md={4} key={trip._id}>
-            <Card>
+            <Card
+              sx={{
+                height: '100%',
+                cursor: 'pointer',
+                backgroundColor: '#9B5DE5',
+                color: 'white',
+                border: '3px solid black',
+                boxShadow: '6px 6px 0 black',
+                borderRadius: '1rem',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '8px 8px 0 black'
+                }
+              }}
+            >
               <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  <Typography variant="h6" gutterBottom>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{
+                      fontFamily: 'Lexend Mega, sans-serif',
+                      fontWeight: 'bold',
+                      color: '#FEE440'
+                    }}
+                  >
                     {trip.title}
                   </Typography>
                   <Box>
-                    <IconButton size="small" onClick={() => handleEditTrip(trip)}>
-                      <EditIcon />
+                    <IconButton 
+                      size="small" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditTrip(trip);
+                      }}
+                      sx={{
+                        backgroundColor: '#FEE440',
+                        mr: 1,
+                        border: '2px solid black',
+                        '&:hover': { backgroundColor: '#FFD60A' }
+                      }}
+                    >
+                      <EditIcon sx={{ color: 'black' }} />
                     </IconButton>
-                    <IconButton size="small" onClick={() => handleDeleteTrip(trip._id)}>
-                      <DeleteIcon />
+                    <IconButton 
+                      size="small" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteTrip(trip._id);
+                      }}
+                      sx={{
+                        backgroundColor: '#FF69B4',
+                        border: '2px solid black',
+                        '&:hover': { backgroundColor: '#FF8BC9' }
+                      }}
+                    >
+                      <DeleteIcon sx={{ color: 'black' }} />
                     </IconButton>
                   </Box>
                 </Box>
-                <Typography variant="body2" color="textSecondary" gutterBottom>
+                <Typography 
+                  sx={{ 
+                    mb: 2,
+                    fontFamily: 'Lexend Mega, sans-serif',
+                    fontSize: '0.9rem'
+                  }}
+                >
                   {trip.description}
                 </Typography>
-                <Typography variant="body2">
-                  {format(new Date(trip.startDate), 'MMM d, yyyy')} -{' '}
-                  {format(new Date(trip.endDate), 'MMM d, yyyy')}
+                <Typography 
+                  sx={{
+                    mb: 2,
+                    fontFamily: 'Lexend Mega, sans-serif',
+                    fontSize: '0.85rem',
+                    color: '#FEE440'
+                  }}
+                >
+                  {format(new Date(trip.startDate), 'MMM d, yyyy')} - {format(new Date(trip.endDate), 'MMM d, yyyy')}
                 </Typography>
-                <Typography variant="body2" color="primary">
+                <Typography 
+                  sx={{
+                    fontFamily: 'Lexend Mega, sans-serif',
+                    fontSize: '0.85rem',
+                    backgroundColor: '#00F5D4',
+                    color: 'black',
+                    display: 'inline-block',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: '0.5rem',
+                    border: '2px solid black'
+                  }}
+                >
                   Status: {trip.status}
                 </Typography>
               </CardContent>
@@ -178,11 +288,32 @@ const TripList = () => {
         ))}
       </Grid>
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
+      <Dialog 
+        open={openDialog} 
+        onClose={() => setOpenDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: '#c0f4e4',
+            border: '3px solid black',
+            borderRadius: '1rem',
+            boxShadow: '8px 8px 0 black'
+          }
+        }}
+      >
+        <DialogTitle 
+          sx={{ 
+            fontFamily: 'Lexend Mega, sans-serif',
+            fontWeight: 'bold',
+            borderBottom: '2px solid black',
+            backgroundColor: '#FF69B4',
+            color: 'black'
+          }}
+        >
           {selectedTrip ? 'Edit Trip' : 'Create New Trip'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ mt: 2 }}>
           <TripForm
             trip={selectedTrip}
             onSave={handleSaveTrip}
