@@ -71,9 +71,14 @@ export const updateBudget = async (req, res) => {
     }
 
     // Update budget fields
-    Object.keys(req.body).forEach(key => {
-      budget[key] = req.body[key];
-    });
+    if ('totalBudget' in req.body) {
+      budget.totalBudget = req.body.totalBudget;
+    }
+    
+    if ('currency' in req.body) {
+      budget.currency = req.body.currency;
+    }
+    
 
     await budget.save();
 
