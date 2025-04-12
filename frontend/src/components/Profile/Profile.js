@@ -90,10 +90,6 @@ const Profile = () => {
       city: '',
       country: ''
     },
-    preferences: {
-      notifications: false,
-      emailUpdates: false
-    },
     travelPreferences: {
       preferredMode: 'car',
       routeOptimization: 'fastest'
@@ -130,10 +126,6 @@ const Profile = () => {
         location: {
           city: profileData.user.profile.location?.city || '',
           country: profileData.user.profile.location?.country || ''
-        },
-        preferences: profileData.user.profile.preferences || {
-          notifications: false,
-          emailUpdates: false
         },
         travelPreferences: profileData.user.profile.travelPreferences || {
           preferredMode: 'car',
@@ -191,10 +183,6 @@ const Profile = () => {
             city: formData.location?.city || '',
             country: formData.location?.country || ''
           },
-          preferences: {
-            notifications: formData.preferences?.notifications || false,
-            emailUpdates: formData.preferences?.emailUpdates || false
-          },
           travelPreferences: {
             preferredMode: formData.travelPreferences?.preferredMode || 'car',
             routeOptimization: formData.travelPreferences?.routeOptimization || 'fastest'
@@ -207,7 +195,7 @@ const Profile = () => {
         }
       };
 
-      console.log('Sending update data:', updateData); // Debug log
+      console.log('Sending update data:', updateData);
 
       const response = await profileApi.put('/api/profile', updateData);
       if (response.data.success) {
@@ -242,261 +230,172 @@ const Profile = () => {
         </Alert>
       )}
       
-      {/* User Profile Section */}
-      <StyledPaper elevation={3}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4">
-            {(authUser?.name || profileData?.user?.name || '').split(' ')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
-          </Typography>
-          <Button
-            variant="contained"
-            color={editing ? "secondary" : "primary"}
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? 'Cancel' : 'Edit Profile'}
-          </Button>
-        </Box>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Box display="flex" flexDirection="column" alignItems="center">
-              <Avatar
-                src={formData.avatar}
-                sx={{ width: 150, height: 150, mb: 2 }}
-              />
-              {editing && (
-                <TextField
-                  fullWidth
-                  label="Avatar URL"
-                  name="avatar"
-                  value={formData.avatar}
-                  onChange={handleInputChange}
-                  margin="normal"
-                />
-              )}
-              <Typography variant="body2" color="textSecondary">
-                Member since {new Date(profileData?.user?.createdAt).toLocaleDateString()}
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} md={8}>
-            <Box>
-              <Typography variant="h6" gutterBottom>Bio</Typography>
-              {editing ? (
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Bio"
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  margin="normal"
-                />
-              ) : (
-                <Typography variant="body1" paragraph>
-                  {formData.bio || 'No bio added yet.'}
-                </Typography>
-              )}
-            </Box>
-
-            <Box mt={3}>
-              <Typography variant="h6" gutterBottom>Location</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {editing ? (
-                    <TextField
-                      fullWidth
-                      label="City"
-                      name="location.city"
-                      value={formData.location.city}
-                      onChange={handleInputChange}
-                      margin="normal"
-                    />
-                  ) : (
-                    <Typography variant="body1">
-                      City: {formData.location.city || 'Not specified'}
-                    </Typography>
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {editing ? (
-                    <TextField
-                      fullWidth
-                      label="Country"
-                      name="location.country"
-                      value={formData.location.country}
-                      onChange={handleInputChange}
-                      margin="normal"
-                    />
-                  ) : (
-                    <Typography variant="body1">
-                      Country: {formData.location.country || 'Not specified'}
-                    </Typography>
-                  )}
-                </Grid>
-              </Grid>
-            </Box>
-
-            <Box mt={3}>
-              <Typography variant="h6" gutterBottom>Preferences</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1" gutterBottom>Notifications</Typography>
-                  {editing ? (
-                    <>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={formData.preferences.notifications.email}
-                            onChange={(e) => handleInputChange({
-                              target: {
-                                name: 'preferences.notifications.email',
-                                value: e.target.checked
-                              }
-                            })}
-                          />
-                        }
-                        label="Email Notifications"
-                      />
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={formData.preferences.notifications.push}
-                            onChange={(e) => handleInputChange({
-                              target: {
-                                name: 'preferences.notifications.push',
-                                value: e.target.checked
-                              }
-                            })}
-                          />
-                        }
-                        label="Push Notifications"
-                      />
-                    </>
-                  ) : (
-                    <Box>
-                      <Typography variant="body2">
-                        Email: {formData.preferences.notifications.email ? 'Enabled' : 'Disabled'}
-                      </Typography>
-                      <Typography variant="body2">
-                        Push: {formData.preferences.notifications.push ? 'Enabled' : 'Disabled'}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle1" gutterBottom>Settings</Typography>
-                  {editing ? (
-                    <>
-                      <TextField
-                        select
-                        fullWidth
-                        label="Language"
-                        name="preferences.language"
-                        value={formData.preferences.language}
-                        onChange={handleInputChange}
-                        margin="normal"
-                      >
-                        <MenuItem value="en">English</MenuItem>
-                        <MenuItem value="es">Spanish</MenuItem>
-                        <MenuItem value="fr">French</MenuItem>
-                      </TextField>
-                      <TextField
-                        select
-                        fullWidth
-                        label="Theme"
-                        name="preferences.theme"
-                        value={formData.preferences.theme}
-                        onChange={handleInputChange}
-                        margin="normal"
-                      >
-                        <MenuItem value="light">Light</MenuItem>
-                        <MenuItem value="dark">Dark</MenuItem>
-                      </TextField>
-                    </>
-                  ) : (
-                    <Box>
-                      <Typography variant="body2">
-                        Language: {formData.preferences.language.toUpperCase()}
-                      </Typography>
-                      <Typography variant="body2">
-                        Theme: {formData.preferences.theme.charAt(0).toUpperCase() + formData.preferences.theme.slice(1)}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
-              </Grid>
-            </Box>
-
-            <Box mt={3}>
-              <Typography variant="h6" gutterBottom>Travel Preferences</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {editing ? (
-                    <TextField
-                      select
-                      fullWidth
-                      label="Preferred Mode"
-                      name="travelPreferences.preferredMode"
-                      value={formData.travelPreferences.preferredMode}
-                      onChange={handleInputChange}
-                      margin="normal"
-                    >
-                      <MenuItem value="car">Car</MenuItem>
-                      <MenuItem value="bus">Bus</MenuItem>
-                      <MenuItem value="train">Train</MenuItem>
-                      <MenuItem value="flight">Flight</MenuItem>
-                    </TextField>
-                  ) : (
-                    <Typography variant="body1">
-                      Preferred Mode: {formData.travelPreferences.preferredMode.charAt(0).toUpperCase() + 
-                      formData.travelPreferences.preferredMode.slice(1)}
-                    </Typography>
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {editing ? (
-                    <TextField
-                      select
-                      fullWidth
-                      label="Route Optimization"
-                      name="travelPreferences.routeOptimization"
-                      value={formData.travelPreferences.routeOptimization}
-                      onChange={handleInputChange}
-                      margin="normal"
-                    >
-                      <MenuItem value="fastest">Fastest</MenuItem>
-                      <MenuItem value="eco">Eco-Friendly</MenuItem>
-                      <MenuItem value="balanced">Balanced</MenuItem>
-                    </TextField>
-                  ) : (
-                    <Typography variant="body1">
-                      Route Optimization: {formData.travelPreferences.routeOptimization.charAt(0).toUpperCase() + 
-                      formData.travelPreferences.routeOptimization.slice(1)}
-                    </Typography>
-                  )}
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
-        </Grid>
-
-        {editing && (
-          <Box mt={3} display="flex" justifyContent="flex-end">
+      <form onSubmit={handleSubmit}>
+        {/* User Profile Section */}
+        <StyledPaper elevation={3}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Typography variant="h4">
+              {(authUser?.name || profileData?.user?.name || '').split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+            </Typography>
             <Button
-              type="submit"
               variant="contained"
-              color="primary"
+              color={editing ? "secondary" : "primary"}
+              onClick={() => setEditing(!editing)}
             >
-              Save Changes
+              {editing ? 'Cancel' : 'Edit Profile'}
             </Button>
           </Box>
-        )}
-      </StyledPaper>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <Box display="flex" flexDirection="column" alignItems="center">
+                <Avatar
+                  src={formData.avatar}
+                  sx={{ width: 150, height: 150, mb: 2 }}
+                />
+                {editing && (
+                  <TextField
+                    fullWidth
+                    label="Avatar URL"
+                    name="avatar"
+                    value={formData.avatar}
+                    onChange={handleInputChange}
+                    margin="normal"
+                  />
+                )}
+                <Typography variant="body2" color="textSecondary">
+                  Member since {new Date(profileData?.user?.createdAt).toLocaleDateString()}
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={8}>
+              <Box>
+                <Typography variant="h6" gutterBottom>Bio</Typography>
+                {editing ? (
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    label="Bio"
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    margin="normal"
+                  />
+                ) : (
+                  <Typography variant="body1" paragraph>
+                    {formData.bio || 'No bio added yet.'}
+                  </Typography>
+                )}
+              </Box>
+
+              <Box mt={3}>
+                <Typography variant="h6" gutterBottom>Location</Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    {editing ? (
+                      <TextField
+                        fullWidth
+                        label="City"
+                        name="location.city"
+                        value={formData.location.city}
+                        onChange={handleInputChange}
+                        margin="normal"
+                      />
+                    ) : (
+                      <Typography variant="body1">
+                        City: {formData.location.city || 'Not specified'}
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {editing ? (
+                      <TextField
+                        fullWidth
+                        label="Country"
+                        name="location.country"
+                        value={formData.location.country}
+                        onChange={handleInputChange}
+                        margin="normal"
+                      />
+                    ) : (
+                      <Typography variant="body1">
+                        Country: {formData.location.country || 'Not specified'}
+                      </Typography>
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+
+              <Box mt={3}>
+                <Typography variant="h6" gutterBottom>Travel Preferences</Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    {editing ? (
+                      <TextField
+                        select
+                        fullWidth
+                        label="Preferred Mode"
+                        name="travelPreferences.preferredMode"
+                        value={formData.travelPreferences.preferredMode}
+                        onChange={handleInputChange}
+                        margin="normal"
+                      >
+                        <MenuItem value="car">Car</MenuItem>
+                        <MenuItem value="bus">Bus</MenuItem>
+                        <MenuItem value="train">Train</MenuItem>
+                        <MenuItem value="flight">Flight</MenuItem>
+                      </TextField>
+                    ) : (
+                      <Typography variant="body1">
+                        Preferred Mode: {formData.travelPreferences.preferredMode.charAt(0).toUpperCase() + 
+                        formData.travelPreferences.preferredMode.slice(1)}
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {editing ? (
+                      <TextField
+                        select
+                        fullWidth
+                        label="Route Optimization"
+                        name="travelPreferences.routeOptimization"
+                        value={formData.travelPreferences.routeOptimization}
+                        onChange={handleInputChange}
+                        margin="normal"
+                      >
+                        <MenuItem value="fastest">Fastest</MenuItem>
+                        <MenuItem value="eco">Eco-Friendly</MenuItem>
+                        <MenuItem value="balanced">Balanced</MenuItem>
+                      </TextField>
+                    ) : (
+                      <Typography variant="body1">
+                        Route Optimization: {formData.travelPreferences.routeOptimization.charAt(0).toUpperCase() + 
+                        formData.travelPreferences.routeOptimization.slice(1)}
+                      </Typography>
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+            </Grid>
+          </Grid>
+
+          {editing && (
+            <Box mt={3} display="flex" justifyContent="flex-end">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Save Changes
+              </Button>
+            </Box>
+          )}
+        </StyledPaper>
+      </form>
 
       {/* Stats Section */}
       <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -566,4 +465,4 @@ const Profile = () => {
   );
 };
 
-export default Profile; 
+export default Profile;
