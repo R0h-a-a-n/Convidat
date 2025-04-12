@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '../contexts/AuthContext';
+import PersonIcon from '@mui/icons-material/Person';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -118,9 +119,20 @@ const Navbar = () => {
             ))}
 
             {user && (
-              <Button onClick={handleLogout} sx={{ ...navItemStyle, backgroundColor: '#FF69B4' }}>
-                Logout
-              </Button>
+              <>
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/profile"
+                  startIcon={<PersonIcon />}
+                  sx={navItemStyle}
+                >
+                  Profile
+                </Button>
+                <Button onClick={handleLogout} sx={{ ...navItemStyle, backgroundColor: '#FF69B4' }}>
+                  Logout
+                </Button>
+              </>
             )}
           </Box>
 
@@ -147,15 +159,31 @@ const Navbar = () => {
               ))}
 
               {user && (
-                <MenuItem
-                  onClick={() => {
-                    handleMenuClose();
-                    handleLogout();
-                  }}
-                  sx={{ ...navItemStyle, my: 1, backgroundColor: '#FF69B4' }}
-                >
-                  Logout
-                </MenuItem>
+                <>
+                  <MenuItem
+                    onClick={handleMenuClose}
+                    sx={{ ...navItemStyle, my: 1, boxShadow: 'none' }}
+                  >
+                    <Button
+                      color="inherit"
+                      component={RouterLink}
+                      to="/profile"
+                      startIcon={<PersonIcon />}
+                      sx={{ width: '100%', justifyContent: 'flex-start' }}
+                    >
+                      Profile
+                    </Button>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose();
+                      handleLogout();
+                    }}
+                    sx={{ ...navItemStyle, my: 1, backgroundColor: '#FF69B4' }}
+                  >
+                    Logout
+                  </MenuItem>
+                </>
               )}
             </Menu>
           </Box>

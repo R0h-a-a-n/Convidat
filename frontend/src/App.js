@@ -19,6 +19,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Destinations from './components/Destinations';
 import Trips from './pages/Trips';
 import TripDetails from './components/TripPlanner/TripDetails';
+import Profile from './components/Profile/Profile';
 
 const theme = createTheme({
   palette: {
@@ -59,6 +60,7 @@ function App() {
               <Route path="/destinations" element={<PrivateRoute><Destinations /></PrivateRoute>} />
               <Route path="/trips" element={<PrivateRoute><Trips /></PrivateRoute>} />
               <Route path="/trips/:id" element={<PrivateRoute><TripDetails /></PrivateRoute>} />
+              <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </Layout>
