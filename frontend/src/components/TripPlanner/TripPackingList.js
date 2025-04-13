@@ -92,27 +92,29 @@ const TripPackingList = ({ tripId }) => {
     }
   };
 
-  const handleToggleItem = async (category, itemId, packed) => {
+  const handleToggleItem = async (category, itemId, isPacked) => {
     try {
       const token = localStorage.getItem('token');
+      console.log('Sending update request:', { category, itemId, isPacked: !isPacked });
+      
       const response = await axios.put(`http://localhost:3010/api/packing/${tripId}/items/${itemId}`, {
-        packed: !packed,
+        isPacked: !isPacked,
         category
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
+      console.log('Server response:', response.data);
+
       if (response.data.success) {
-        setPackingList(prev => {
-          const updated = { ...prev };
-          const cat = updated.categories.find(c => c.name === category);
-          const item = cat?.items.find(i => i._id === itemId);
-          if (item) item.packed = !packed;
-          return updated;
-        });
+        // Update the entire packing list with the server response
+        setPackingList(response.data.data);
       } else {
+        console.error('Failed to update item:', response.data.error);
         setError('Failed to update item');
       }
     } catch (err) {
+      console.error('Error updating item:', err);
       setError(err.response?.data?.error || 'Failed to update item');
     }
   };
@@ -171,7 +173,7 @@ const TripPackingList = ({ tripId }) => {
               <ListItem
                 key={item._id}
                 sx={{
-                  backgroundColor: item.packed ? '#B4F8C8' : 'transparent',
+                  backgroundColor: item.isPacked ? '#B4F8C8' : 'transparent',
                   border: '1px dashed black',
                   borderRadius: '0.5rem',
                   mb: 1
@@ -180,13 +182,13 @@ const TripPackingList = ({ tripId }) => {
                 <ListItemText
                   primary={item.name}
                   sx={{
-                    textDecoration: item.packed ? 'line-through' : 'none',
-                    color: item.packed ? 'gray' : 'black'
+                    textDecoration: item.isPacked ? 'line-through' : 'none',
+                    color: item.isPacked ? 'gray' : 'black'
                   }}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton onClick={() => handleToggleItem(category.name, item._id, item.packed)}>
-                    <CheckIcon color={item.packed ? 'success' : 'action'} />
+                  <IconButton onClick={() => handleToggleItem(category.name, item._id, item.isPacked)}>
+                    <CheckIcon color={item.isPacked ? 'success' : 'action'} />
                   </IconButton>
                   <IconButton onClick={() => handleDeleteItem(category.name, item._id)}>
                     <DeleteIcon />

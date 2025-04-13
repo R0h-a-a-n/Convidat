@@ -8,12 +8,12 @@ export const createPackingList = async (req, res) => {
     const packingList = new PackingList({
       tripId,
       categories: categories || [
-        { name: 'clothing', items: [] },
-        { name: 'toiletries', items: [] },
-        { name: 'electronics', items: [] },
-        { name: 'documents', items: [] },
-        { name: 'medications', items: [] },
-        { name: 'miscellaneous', items: [] },
+        { name: 'Clothing', items: [] },
+        { name: 'Toiletries', items: [] },
+        { name: 'Electronics', items: [] },
+        { name: 'Documents', items: [] },
+        { name: 'Medications', items: [] },
+        { name: 'Miscellaneous', items: [] },
       ],
       weatherConsiderations,
       specialRequirements,
@@ -358,10 +358,10 @@ function generateMiscellaneousSuggestions(activities) {
 // Update a specific item
 export const updateItem = async (req, res) => {
   try {
-    const { category, packed } = req.body;
+    const { category, isPacked } = req.body;
     const { tripId, itemId } = req.params;
 
-    console.log('Updating item:', { tripId, itemId, category, packed });
+    console.log('Updating item:', { tripId, itemId, category, isPacked });
 
     const packingList = await PackingList.findOne({ tripId });
 
@@ -391,10 +391,12 @@ export const updateItem = async (req, res) => {
       });
     }
 
-    // Update the packed status
-    packingList.categories[categoryIndex].items[itemIndex].packed = packed;
+    // Update the isPacked status
+    packingList.categories[categoryIndex].items[itemIndex].isPacked = isPacked;
+    console.log('Saving item with isPacked:', isPacked);
 
     await packingList.save();
+    console.log('PackingList saved successfully');
 
     res.status(200).json({
       success: true,
